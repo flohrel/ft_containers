@@ -23,6 +23,25 @@
 		"unordered_map": "cpp",
 		"tuple": "cpp",
 		"functional": "cpp",
-		"random": "cpp"
+		"random": "cpp",
+		"cctype": "cpp",
+		"clocale": "cpp",
+		"cmath": "cpp",
+		"cstdarg": "cpp",
+		"cstdint": "cpp",
+		"cstdio": "cpp",
+		"cstdlib": "cpp",
+		"cwctype": "cpp",
+		"exception": "cpp",
+		"map": "cpp",
+		"memory_resource": "cpp",
+		"optional": "cpp",
+		"fstream": "cpp",
+		"initializer_list": "cpp",
+		"iosfwd": "cpp",
+		"iostream": "cpp",
+		"sstream": "cpp",
+		"streambuf": "cpp",
+		"typeinfo": "cpp"
 	}
 }
