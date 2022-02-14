@@ -1,5 +1,5 @@
-#ifndef __ITERATOR__H__
-#define __ITERATOR__H__
+#ifndef __ITERATOR_TRAITS__H__
+# define __ITERATOR_TRAITS__H__
 
 #include <cstddef>
 #include <memory>
@@ -52,7 +52,12 @@ namespace ft
     	typedef const T&					reference;
     };
 
-
+	template< typename Iter >
+    typename iterator_traits< Iter >::iterator_category
+    iterator_category( const Iter& )
+    {
+		return (typename iterator_traits<Iter>::iterator_category());
+	}
 }
 
 #endif
