@@ -10,6 +10,10 @@ LIBDIR		=	libft
 INCLDIR		=	incld
 
 SRC			=	main.cpp
+INCLD		=	iterator_traits.hpp \
+				iterator.hpp \
+				reverse_iterator.hpp \
+				vector.hpp
 OBJ			=	$(SRC:%.cpp=$(OBJDIR)/%.o)
 
 CC			=	clang++
