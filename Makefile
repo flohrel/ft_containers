@@ -6,7 +6,6 @@ NAME		=	test
 
 VPATH		=	src
 OBJDIR		=	obj
-LIBDIR		=	libft
 INCLDIR		=	incld
 
 SRC			=	main.cpp
@@ -14,11 +13,12 @@ INCLD		=	iterator_traits.hpp \
 				iterator.hpp \
 				reverse_iterator.hpp \
 				vector.hpp
+INCLDS		=	$(addprefix -include,$(INCLD))
 OBJ			=	$(SRC:%.cpp=$(OBJDIR)/%.o)
 
 CC			=	clang++
-CFLAGS		=	-Wall -Wextra -Werror -std=c++98 -fsanitize=address -g3
-INCFLAGS	=	-I./$(INCLDIR) -I./$(LIBDIR)/incld
+CFLAGS		=	-Wall -Wextra -Werror -std=c++98 -g3
+INCFLAGS	=	$(addprefix -I./$(INCLDIR) , $(INCLDS))
 LFLAGS		=
 RM			=	/bin/rm -rf
 UNAME		:=	$(shell uname -s)

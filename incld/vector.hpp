@@ -100,6 +100,16 @@ namespace ft
 				}
 				_alloc.deallocate(_start, capacity());
 			}
+			
+			// vector&
+			// operator=(const vector& other)
+			// {
+				
+			// }
+
+			alloc_type
+			get_allocator() const
+			{ return (alloc_type(_alloc)); }
 
 			iterator
 			begin()
@@ -144,10 +154,6 @@ namespace ft
 			size_type
 			capacity() const
 			{ return (size_type(_end_of_storage - _start)); }
-
-			alloc_type
-			get_allocator() const
-			{ return (alloc_type(_alloc)); }
 
 	};
 }

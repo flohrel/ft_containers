@@ -38,7 +38,8 @@ namespace ft
 			: _current(x._current)
 			{ }
 
-			reverse_iterator(const reverse_iterator<T>& x)
+			template <typename Iter>
+			reverse_iterator(const reverse_iterator<Iter>& x)
 			: _current(x.base())
 			{ }
 
