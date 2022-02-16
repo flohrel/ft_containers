@@ -38,6 +38,10 @@ namespace ft
 			: _current(x._current)
 			{ }
 
+			reverse_iterator(const reverse_iterator<T>& x)
+			: _current(x.base())
+			{ }
+
 			iterator_type
 			base(void) const 
 			{ return (_current); }

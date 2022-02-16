@@ -6,36 +6,35 @@
 namespace ft
 {
 	template<typename Iterator>
-	struct random_access_iterator : public iterator<random_access_iterator_tag,
-			typename iterator_traits<Iterator>::value_type,
-			typename iterator_traits<Iterator>::difference_type,
-			typename iterator_traits<Iterator>::pointer,
-			typename iterator_traits<Iterator>::reference>
+	struct random_access_iterator
 	{
-		public:
-			typedef iterator_traits<Iterator>				traits_type;
-    		typedef Iterator								iterator_type;
-    		typedef typename traits_type::difference_type	difference_type;
-    		typedef typename traits_type::pointer			pointer;
-    		typedef typename traits_type::reference			reference;
-
 		protected:
-			pointer		_current;
+			Iterator	_current;
+
+			typedef iterator_traits<Iterator>					traits_type;
 
 		public:
+			typedef Iterator									iterator_type;
+    		typedef typename traits_type::value_type			value_type;
+    		typedef typename traits_type::difference_type		difference_type;
+    		typedef typename traits_type::pointer				pointer;
+    		typedef typename traits_type::reference				reference;
+
 			random_access_iterator(void)
-			: _current()
+			: _current(Iterator())
 			{ }
 
-			random_access_iterator(iterator_type x)
-			: _current(x)
+			explicit
+			random_access_iterator(const Iterator& it)
+			: _current(it)
 			{ }
 
-			random_access_iterator(const random_access_iterator& x)
-			: _current(x._current)
+			template<typename Iter>
+			random_access_iterator(const random_access_iterator<Iter>& it)
+			: _current(it.base())
 			{ }
 
-			iterator_type
+			const Iterator&
 			base(void) const
 			{ return (_current); }
 			
@@ -102,9 +101,6 @@ namespace ft
 			reference
 			operator[](difference_type n) const
 			{ return (*(*this + n)); }
-
-			operator random_access_iterator< const Iterator >() const
-			{ return _current; }
 
 	};
 

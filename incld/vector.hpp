@@ -79,7 +79,7 @@ namespace ft
 			{
 				_start = _alloc.allocate(x.size());
 				_finish = _start;
-				for (iterator it = x.begin(); it != x.end(); it++)
+				for (const_iterator it = x.begin(); it != x.end(); it++)
 				{
 					*_finish++ = *it;
 				}
@@ -96,7 +96,7 @@ namespace ft
 				tmp = _start;
 				while (tmp != _finish)
 				{
-					_alloc.destroy(tmp);
+					_alloc.destroy(tmp++);
 				}
 				_alloc.deallocate(_start, capacity());
 			}
@@ -148,6 +148,7 @@ namespace ft
 			alloc_type
 			get_allocator() const
 			{ return (alloc_type(_alloc)); }
+
 	};
 }
 
