@@ -3,11 +3,11 @@
 #include "iterator.hpp"
 #include "reverse_iterator.hpp"
 #include <iostream>
-//#include <iterator>
+#include <iterator>
 //#include <vector>
 
 int	main(void)
 {
-	ft::vector<int>	v;
+	ft::vector<char>	v;
 	return (0);
 }

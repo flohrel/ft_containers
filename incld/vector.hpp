@@ -30,24 +30,22 @@ namespace ft
 			pointer			_start;
 			pointer			_finish;
 			pointer			_end_of_storage;
-			size_type		_size;
-			size_type		_capacity;
 
 		public:
 			/**
 			 * @brief default constructor
 			 */
 			explicit vector(const alloc_type& alloc = alloc_type())
-			: _alloc(alloc), _size(0), _capacity(0), _start(), _finish(), _end_of_storage()
+			: _alloc(alloc), _start(), _finish(), _end_of_storage()
 			{ }
 
 			/**
 			 * @brief fill constructor
 			 */
 			explicit vector(size_type n, const value_type& val = value_type(), const alloc_type& alloc = alloc_type())
-				: _alloc(alloc), _size(n), _capacity(n)
+				: _alloc(alloc)
 			{
-				_start = _alloc.allocate(_capacity);
+				_start = _alloc.allocate(n);
 				_finish = _start;
 				while (n--)
 				{
@@ -65,9 +63,7 @@ namespace ft
 					typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL)
 				: _alloc(alloc)
 			{
-				_capacity = distance(first, last);
-				_size = _capacity;
-				_start = _alloc.allocate(_capacity);
+				_start = _alloc.allocate(distance(first, last));
 				while (first != last)
 				{
 					_alloc.construct(_finish++, *first++);
@@ -76,17 +72,34 @@ namespace ft
 			}
 
 			/**
-TODO		 * @brief copy constructor
+			 * @brief copy constructor
 			 */
 			vector(const vector& x)
-				: _alloc(x._alloc), _size(x._size), _capacity(x._capacity)
+				: _alloc(x._alloc)
 			{
+				_start = _alloc.allocate(x.size());
+				_finish = _start;
+				for (iterator it = x.begin(); it != x.end(); it++)
+				{
+					*_finish++ = *it;
+				}
+				_end_of_storage = _finish;
 			}
 
 			/**
-TODO		 * @brief destructor
+			 * @brief destructor
 			 */
-			~vector() { delete (_start); }
+			~vector()
+			{
+				pointer	tmp;
+
+				tmp = _start;
+				while (tmp != _finish)
+				{
+					_alloc.destroy(tmp);
+				}
+				_alloc.deallocate(_start, capacity());
+			}
 
 			iterator
 			begin()
@@ -120,6 +133,21 @@ TODO		 * @brief destructor
 			rend() const
 			{ return (const_reverse_iterator(begin())); }
 
+			size_type
+			size() const
+			{ return (size_type(_finish - _start)); }
+
+			size_type
+			max_size() const
+			{ return (_alloc.max_size()); }
+
+			size_type
+			capacity() const
+			{ return (size_type(_end_of_storage - _start)); }
+
+			alloc_type
+			get_allocator() const
+			{ return (alloc_type(_alloc)); }
 	};
 }
 
