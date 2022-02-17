@@ -4,7 +4,7 @@
 
 NAME		=	runner
 
-SRCDIR		=	src
+VPATH		=	src
 INCLDIR		=	incld
 OBJDIR		=	obj
 TESTDIR		=	cxxtest
@@ -38,7 +38,7 @@ all:			$(NAME)
 				$(TESTDIR)/bin/cxxtestgen --error-printer -o src/$@ $(INCLDIR)/$(TEST)
 
 $(OBJDIR)/%.o:	%.cpp | $(OBJDIR)
-				$(CXX) $(CXXFLAGS) $(INCFLAGS) -c $(SRCDIR)/$< -o $@
+				$(CXX) $(CXXFLAGS) $(INCFLAGS) -c $< -o $@
 
 $(NAME):		$(OBJ)
 				$(CXX) $(CXXFLAGS) -o $@ $(INCFLAGS) $<
@@ -50,7 +50,7 @@ bonus:
 				@make all
 
 clean:
-				$(RM) $(OBJ) $(SRCDIR)/$(SRC)
+				$(RM) $(OBJ) $(VPATH)/$(SRC)
 
 
 fclean:			clean
