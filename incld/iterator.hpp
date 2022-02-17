@@ -6,7 +6,11 @@
 namespace ft
 {
 	template<typename Iterator>
-	struct random_access_iterator
+	struct random_access_iterator : public iterator<typename iterator_traits<Iterator>::iterator_category,
+			typename iterator_traits<Iterator>::value_type,
+			typename iterator_traits<Iterator>::difference_type,
+			typename iterator_traits<Iterator>::pointer,
+			typename iterator_traits<Iterator>::reference>
 	{
 		protected:
 			Iterator	_current;
@@ -145,7 +149,7 @@ namespace ft
     typename iterator_traits<InputIterator>::difference_type
 	_distance(InputIterator first, InputIterator last, input_iterator_tag)
     {
-		typename iterator_traits< InputIterator >::difference_type	n = 0;
+		typename iterator_traits<InputIterator>::difference_type	n = 0;
 
 		while (first++ != last)
 		{
@@ -160,7 +164,7 @@ namespace ft
 	template<typename RandomAccessIterator>
     typename iterator_traits<RandomAccessIterator>::difference_type
 	_distance(RandomAccessIterator first, RandomAccessIterator last, random_access_iterator_tag)
-    { return (last - first); }
+    { return (last.base() - first.base()); }
 
 	/**
 	 * @brief determine the distance between two iterators

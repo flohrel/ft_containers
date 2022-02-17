@@ -64,6 +64,7 @@ namespace ft
 				: _alloc(alloc)
 			{
 				_start = _alloc.allocate(distance(first, last));
+				_finish = _start;
 				while (first != last)
 				{
 					_alloc.construct(_finish++, *first++);
@@ -91,13 +92,7 @@ namespace ft
 			 */
 			~vector()
 			{
-				pointer	tmp;
-
-				tmp = _start;
-				while (tmp != _finish)
-				{
-					_alloc.destroy(tmp++);
-				}
+				clear();
 				_alloc.deallocate(_start, capacity());
 			}
 			
@@ -155,7 +150,45 @@ namespace ft
 			capacity() const
 			{ return (size_type(_end_of_storage - _start)); }
 
+			void
+			clear()
+			{
+				while (_finish-- != _start)
+				{
+					_alloc.destroy(_finish);
+				}
+			}
+
+			bool
+			empty() const
+			{ return (size() == 0); }
+
 	};
+
+	// template <class T, class Alloc>
+	// bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	// { }
+
+	// template <class T, class Alloc>
+	// bool operator!=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	// { }
+
+	// template <class T, class Alloc>
+	// bool operator<(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	// { }
+
+	// template <class T, class Alloc>
+	// bool operator<=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	// { }
+
+	// template <class T, class Alloc>
+	// bool operator>(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	// { }
+
+	// template <class T, class Alloc>
+	// bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	// { }
+
 }
 
 #endif

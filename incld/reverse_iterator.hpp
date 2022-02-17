@@ -13,16 +13,16 @@ namespace ft
 			typename iterator_traits<Iterator>::pointer,
 			typename iterator_traits<Iterator>::reference>
 	{
-		public:
+		protected:
+			pointer		_current;
+
 			typedef iterator_traits<Iterator>				traits_type;
+
+		public:
     		typedef Iterator								iterator_type;
     		typedef typename traits_type::difference_type	difference_type;
     		typedef typename traits_type::pointer			pointer;
     		typedef typename traits_type::reference			reference;
-
-
-		protected:
-			pointer		_current;
 
 
 		public:

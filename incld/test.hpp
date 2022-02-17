@@ -1,11 +1,20 @@
 #include "cxxtest/TestSuite.h"
+#include <vector>
+#include "vector.hpp"
+#include <iostream>
 
-class MyTestSuite : public CxxTest::TestSuite
+ft::vector<int> v1;
+ft::vector<int>	v2(3, 0);
+ft::vector<int>	v3(v2.begin(), v2.end());
+
+class VectorTestSuite : public CxxTest::TestSuite
 {
 	public:
-		void testAddition( void )
+
+		void testConstructor( void )
 		{
-			TS_ASSERT( 1 + 1 > 1 );
-			TS_ASSERT_EQUALS( 1 + 1, 2 );
+			TS_ASSERT_EQUALS(v1.size(), 0);
+			TS_ASSERT_EQUALS(v2.size(), 3);
+			TS_ASSERT_EQUALS(v2, v3);
 		}
 };
