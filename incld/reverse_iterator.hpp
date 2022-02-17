@@ -14,8 +14,6 @@ namespace ft
 			typename iterator_traits<Iterator>::reference>
 	{
 		protected:
-			pointer		_current;
-
 			typedef iterator_traits<Iterator>				traits_type;
 
 		public:
@@ -24,6 +22,8 @@ namespace ft
     		typedef typename traits_type::pointer			pointer;
     		typedef typename traits_type::reference			reference;
 
+		protected:
+			pointer		_current;
 
 		public:
 			reverse_iterator(void)
