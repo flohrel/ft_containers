@@ -33,7 +33,7 @@ all:			$(NAME)
 $(SRC):
 				$(TESTDIR)/bin/cxxtestgen --error-printer -o $@ $(INCLDIR)/$(TEST)
 
-$(BUILD_DIR)/%.o:	%.cpp | $(DEPDIR)
+$(BUILD_DIR)/%.o:	$(SRC) | $(DEPDIR)
 				$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(NAME):		$(OBJ)
