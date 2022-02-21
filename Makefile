@@ -9,19 +9,13 @@ INCLDIR		=	incld
 OBJDIR		=	obj
 TESTDIR		=	cxxtest
 
-INCLD		=	algorithm.hpp \
-				iterator.hpp \
-				iterator_traits.hpp \
-				reverse_iterator.hpp \
-				vector.hpp
 TEST		=	test.hpp
 SRC			=	runner.cpp
-INCLDS		=	$(addprefix -include,$(INCLD))
 OBJ			=	$(SRC:%.cpp=$(OBJDIR)/%.o)
 
 CXX			=	clang++
 CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98 -g3
-INCFLAGS	=	$(addprefix -I./$(INCLDIR) , $(INCLDS)) -I./$(TESTDIR)
+CPPFLAGS	=	-I./$(INCLDIR) -I./$(TESTDIR)
 RM			=	/bin/rm -rf
 UNAME		:=	$(shell uname -s)
 
@@ -35,13 +29,13 @@ UNAME		:=	$(shell uname -s)
 all:			$(NAME)
 
 %.cpp:
-				$(TESTDIR)/bin/cxxtestgen --error-printer -o src/$@ $(INCLDIR)/$(TEST)
+				$(TESTDIR)/bin/cxxtestgen --error-printer -o $@ $(INCLDIR)/$(TEST)
 
 $(OBJDIR)/%.o:	%.cpp | $(OBJDIR)
-				$(CXX) $(CXXFLAGS) $(INCFLAGS) -c $< -o $@
+				$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(NAME):		$(OBJ)
-				$(CXX) $(CXXFLAGS) -o $@ $(INCFLAGS) $<
+				$(CXX) $(CXXFLAGS) -o $@ $(CPPFLAGS) $<
 
 $(OBJDIR):
 				mkdir $(OBJDIR)
