@@ -9,7 +9,7 @@ BUILD_DIR	=	build
 TESTDIR		=	cxxtest
 DEPDIR		=	$(BUILD_DIR)/.deps
 
-TEST		=	test.hpp
+TEST		=	vectorSuite.hpp
 SRC			=	runner.cpp
 OBJ			=	$(SRC:%.cpp=$(BUILD_DIR)/%.o)
 DEP			=	$(SRC:%.cpp=$(DEPDIR)/%.d)

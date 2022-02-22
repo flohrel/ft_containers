@@ -7,6 +7,7 @@
 # include "reverse_iterator.hpp"
 # include "type_traits.hpp"
 # include "algorithm.hpp"
+# include "utility.hpp"
 
 namespace ft
 {
@@ -108,7 +109,10 @@ namespace ft
 			get_allocator() const
 			{ return (alloc_type(_alloc)); }
 
-		// ITERATORS
+
+		/* 
+		**	ITERATORS
+		*/
 
 			iterator
 			begin()
@@ -142,7 +146,9 @@ namespace ft
 			rend() const
 			{ return (const_reverse_iterator(begin())); }
 
-		// CAPACITY
+		/* 
+		**	CAPACITY
+		*/
 
 			size_type
 			size() const
@@ -154,8 +160,36 @@ namespace ft
 
 			// void
 			// resize(size_type n, value_type val = value_type())
-			// {				
+			// {
+			// 	if (n < size())
+				
+
 			// }
+
+			void
+			reserve(size_type n)
+			{
+				if (n > max_size())
+					throw (std::length_error("vector::reserve"));
+
+				size_t	old_capacity = capacity();
+
+				if (n > old_capacity)
+				{
+					pointer	new_start = _alloc.allocate(n);
+					pointer new_finish = new_start;
+
+					for (pointer p = _start; p != _finish; p++)
+					{
+						_alloc.construct(new_finish++, *p);
+						_alloc.destroy(p);
+					}
+					_alloc.deallocate(_start, old_capacity);
+					_start = new_start;
+					_finish = new_finish;
+					_end_of_storage = _start + n;
+				}
+			}
 
 			size_type
 			capacity() const
@@ -164,15 +198,71 @@ namespace ft
 			void
 			clear()
 			{
-				while (_finish-- != _start)
+				while (_finish != _start)
 				{
-					_alloc.destroy(_finish);
+					_alloc.destroy(--_finish);
 				}
 			}
 
 			bool
 			empty() const
 			{ return (size() == 0); }
+
+		/* 
+		**	ELEMENT ACCESS
+		*/
+
+			reference
+			operator[](size_type pos)
+			{
+				return (*(_start + pos));
+			}
+
+			const_reference
+			operator[](size_type pos) const
+			{
+				return (*(_start + pos));
+			}
+
+			reference
+			at(size_type n)
+			{
+				_range_check(n, size());
+				return ((*this)[n]);
+			}
+
+			const_reference
+			at(size_type n) const
+			{
+				_range_check(n, size());
+				return ((*this)[n]);
+			}
+
+			reference
+			front()
+			{ return (*(_start)); }
+
+			const_reference
+			front() const
+			{ return (*(_start)); }
+
+			reference
+			back()
+			{ return (*(_finish - 1)); }
+
+			const_reference
+			back() const
+			{ return (*(_finish - 1)); }
+
+		private:
+			void
+			_range_check(size_type n, size_type size)
+			{
+				if (n >= size)
+					throw (std::out_of_range("vector::_range_check: n (which is " + ft::to_string(n)
+											+ ") >= this->size() (which is " + ft::to_string(size) + ")"));
+			}
+
 
 	};
 
@@ -210,11 +300,11 @@ namespace ft
 
 	template <class T, class Alloc>
 	bool operator>(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
-	{ return (rhs <= lhs); }
+	{ return (rhs < lhs); }
 
 	template <class T, class Alloc>
 	bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
-	{ return (rhs < lhs); }
+	{ return (!(lhs < rhs)); }
 
 }
 
