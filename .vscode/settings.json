@@ -47,6 +47,9 @@
 		"complex": "cpp",
 		"cstring": "cpp",
 		"ctime": "cpp",
-		"set": "cpp"
+		"set": "cpp",
+		"iterator.hpp": "c",
+		"algorithm.hpp": "c",
+		"reverse_iterator.hpp": "c"
 	}
 }

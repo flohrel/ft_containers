@@ -35,7 +35,7 @@ namespace ft
 			alloc_type		_alloc;
 			pointer			_start;
 			pointer			_finish;
-			pointer			_end_of_storage;
+			size_type		_capacity;
 
 
 		public:
@@ -44,22 +44,22 @@ namespace ft
 			 * @brief default constructor
 			 */
 			explicit vector(const alloc_type& alloc = alloc_type())
-			: _alloc(alloc), _start(), _finish(), _end_of_storage()
+			: _alloc(alloc), _start(), _finish(), _capacity(2)
 			{ }
 
 			/**
 			 * @brief fill constructor
 			 */
 			explicit vector(size_type n, const value_type& val = value_type(), const alloc_type& alloc = alloc_type())
-				: _alloc(alloc)
+				: _alloc(alloc), _capacity(2)
 			{
-				_start = _alloc.allocate(n);
+				_compute_capacity(n);
+				_start = _alloc.allocate(_capacity);
 				_finish = _start;
 				for (; n > 0; n--, _finish++)
 				{
 					_alloc.construct(_finish, val);
 				}
-				_end_of_storage = _finish;
 			}
 
 			/**
@@ -69,30 +69,30 @@ namespace ft
 			template <class InputIterator>
 			vector(InputIterator first, InputIterator last, const alloc_type& alloc = alloc_type(),
 					typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL)
-				: _alloc(alloc)
+				: _alloc(alloc), _capacity(2)
 			{
-				_start = _alloc.allocate(distance(first, last));
+				_compute_capacity(distance(first, last));
+				_start = _alloc.allocate(_capacity);
 				_finish = _start;
 				for (; first != last; first++, _finish++)
 				{
 					_alloc.construct(_finish, *first);
 				}
-				_end_of_storage = _finish;
 			}
 
 			/**
 			 * @brief copy constructor
 			 */
 			vector(const vector& x)
-				: _alloc(x._alloc)
+				: _alloc(x._alloc), _capacity(2)
 			{
-				_start = _alloc.allocate(x.size());
+				_compute_capacity(x.size());
+				_start = _alloc.allocate(_capacity);
 				_finish = _start;
 				for (const_iterator it = x.begin(); it != x.end(); it++, _finish++)
 				{
 					*_finish = *it;
 				}
-				_end_of_storage = _finish;
 			}
 
 			/**
@@ -101,14 +101,18 @@ namespace ft
 			~vector()
 			{
 				clear();
-				_alloc.deallocate(_start, capacity());
+				_alloc.deallocate(_start, _capacity);
 			}
 			
-			// vector&
-			// operator=(const vector& other)
-			// {
-				
-			// }
+			vector&
+			operator=(const vector& rhs)
+			{
+				if (this != &rhs)
+				{
+					assign(rhs.begin(), rhs.end());
+				}
+				return (*this);
+			}
 
 			alloc_type
 			get_allocator() const
@@ -180,7 +184,7 @@ namespace ft
 				}
 				else
 				{
-					if (n > capacity())
+					if (n > _capacity)
 					{
 						reserve(n);
 					}
@@ -196,13 +200,11 @@ namespace ft
 			void
 			reserve(size_type n)
 			{
-				if (n > max_size())
-					throw (std::length_error("vector::reserve"));
-
-				size_t	old_capacity = capacity();
+				size_t	old_capacity = _capacity;
 
 				if (n > old_capacity)
 				{
+					_compute_capacity(n);
 					pointer	new_start = _alloc.allocate(n);
 					pointer new_finish = new_start;
 
@@ -214,13 +216,12 @@ namespace ft
 					_alloc.deallocate(_start, old_capacity);
 					_start = new_start;
 					_finish = new_finish;
-					_end_of_storage = _start + n;
 				}
 			}
 
 			size_type
 			capacity() const
-			{ return (size_type(_end_of_storage - _start)); }
+			{ return (_capacity); }
 
 			bool
 			empty() const
@@ -277,9 +278,9 @@ namespace ft
 			assign(InputIterator first, InputIterator last,
 					typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL)
 			{
-				size_t	size = ft::distance(first, last);
+				size_type	size = distance(first, last);
 
-				if (size > capacity())
+				if (size > _capacity)
 				{
 					reserve(size);
 				}
@@ -296,7 +297,7 @@ namespace ft
 			void
 			assign(size_type n, const value_type& val)
 			{
-				if (n > capacity())
+				if (n > _capacity)
 				{
 					reserve(n);
 				}
@@ -351,28 +352,31 @@ namespace ft
 			iterator
 			insert(iterator position, const value_type& val)
 			{
-				if (size() == capacity())
+				if (size() == _capacity)
 				{
 					reserve(size() + 1);
 				}
 
-				iterator	current = position;
-				value_type	tmp = *position;
-
-				*current = val;
-				for (iterator next = position + 1; current != _finish; next++)
-				{
-					++current;
-					tmp = *position;
-					*current = tmp;
-				}
 				++_finish;
+				for (iterator it = end(); it > position; )
+				{
+					--it;
+					*(it + 1) = *it;
+				}
+				*position = val;
 				return (position);
 			}
 
 			// void
 			// insert(iterator position, size_type n, const value_type& val)
-			// {}
+			// {
+			// 	size_type	new_size = size() + n;
+
+			// 	if (capacity() < new_size)
+			// 	{
+			// 		reserve(new_size);
+			// 	}
+			// }
 
 			// template <class InputIterator>
     		// void
@@ -383,7 +387,7 @@ namespace ft
 			void
 			push_back(const value_type& val)
 			{
-				if (_finish == _end_of_storage)
+				if (size() == _capacity)
 				{
 					reserve(size() + 1);
 				}
@@ -405,11 +409,33 @@ namespace ft
 		private:
 
 			void
-			_range_check(size_type n, size_type size)
+			_range_check(size_type n, size_type size) const
 			{
 				if (n >= size)
+				{
 					throw (std::out_of_range("vector::_range_check: n (which is " + ft::to_string(n)
 											+ ") >= this->size() (which is " + ft::to_string(size) + ")"));
+				}
+			}
+
+			void
+			_compute_capacity(size_type n)
+			{
+				if (n > max_size())
+				{
+					throw (std::length_error("vector::reserve"));
+				}
+				else if (n > (max_size() / 2))
+				{
+					_capacity = max_size();
+				}
+				else
+				{
+					while (_capacity < n)
+					{
+						_capacity *= 2;
+					}
+				}
 			}
 
 	};
