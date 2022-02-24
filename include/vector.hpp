@@ -200,7 +200,7 @@ namespace ft
 			void
 			reserve(size_type n)
 			{
-				size_t	old_capacity = _capacity;
+				size_type	old_capacity = _capacity;
 
 				if (n > old_capacity)
 				{
