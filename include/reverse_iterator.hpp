@@ -47,6 +47,14 @@ namespace ft
 			base(void) const 
 			{ return (_current); }
 
+			template<typename Iter>
+			reverse_iterator&
+			operator=(const reverse_iterator& rhs)
+			{
+				_current = rhs.base();
+				return (*this);
+			}
+
 			reference
 			operator*(void) const
 			{

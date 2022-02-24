@@ -42,6 +42,14 @@ namespace ft
 			base(void) const
 			{ return (_current); }
 			
+			template<typename Iter>
+			random_access_iterator&
+			operator=(const random_access_iterator& rhs)
+			{
+				_current = rhs.base();
+				return (*this);
+			}
+
 			reference
 			operator*(void) const
 			{ return (*_current); }

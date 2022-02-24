@@ -5,13 +5,13 @@
 NAME		=	runner
 
 INCLDIR		=	include
-BUILD_DIR	=	build
+BUILDIR	=	build
 TESTDIR		=	cxxtest
-DEPDIR		=	$(BUILD_DIR)/.deps
+DEPDIR		=	$(BUILDIR)/.deps
 
 TEST		=	vectorSuite.hpp
 SRC			=	runner.cpp
-OBJ			=	$(SRC:%.cpp=$(BUILD_DIR)/%.o)
+OBJ			=	$(SRC:%.cpp=$(BUILDIR)/%.o)
 DEP			=	$(SRC:%.cpp=$(DEPDIR)/%.d)
 
 CXX			=	clang++
@@ -33,13 +33,13 @@ all:			$(NAME)
 $(SRC):
 				$(TESTDIR)/bin/cxxtestgen --error-printer -o $@ $(INCLDIR)/$(TEST)
 
-$(BUILD_DIR)/%.o:	$(SRC) | $(DEPDIR)
+$(BUILDIR)/%.o:	$(SRC) | $(DEPDIR)
 				$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(NAME):		$(OBJ)
 				$(CXX) $(CXXFLAGS) -o $@ $(CPPFLAGS) $<
 
-$(DEPDIR): ; @mkdir -p $@
+$(DEPDIR):		; @mkdir -p $@
 $(DEP):
 -include $(wildcard $(DEP))
 
@@ -51,7 +51,7 @@ clean:
 
 
 fclean:			clean
-				$(RM) $(NAME) $(BUILD_DIR)
+				$(RM) $(NAME) $(BUILDIR)
 
 re:				fclean all
 
