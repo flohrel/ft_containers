@@ -142,13 +142,13 @@ namespace ft
 
 	template<typename Iter>
 	random_access_iterator<Iter>
-	operator+(typename random_access_iterator< Iter >::difference_type n, const random_access_iterator< Iter >& it)
-	{ return (random_access_iterator< Iter >(it.base() + n)); }
+	operator+(typename random_access_iterator<Iter>::difference_type n, const random_access_iterator<Iter>& it)
+	{ return (it + n); }
 
 	template<typename IteratorL, typename IteratorR>
-	typename random_access_iterator< IteratorL >::difference_type
-	operator-(const random_access_iterator< IteratorL >& lhs, const random_access_iterator< IteratorR >& rhs)
-	{ return (rhs.base() - lhs.base()); }
+	typename random_access_iterator<IteratorL>::difference_type
+	operator-(const random_access_iterator<IteratorL>& lhs, const random_access_iterator<IteratorR>& rhs)
+	{ return (lhs.base() - rhs.base()); }
 
 	/**
 	 * @brief ft::distance specialization

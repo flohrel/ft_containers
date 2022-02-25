@@ -8,7 +8,6 @@
 # include "type_traits.hpp"
 # include "algorithm.hpp"
 # include "utility.hpp"
-
 namespace ft
 {
 	template <typename T, typename Allocator = std::allocator<T> >
@@ -205,7 +204,7 @@ namespace ft
 				if (n > old_capacity)
 				{
 					_compute_capacity(n);
-					pointer	new_start = _alloc.allocate(n);
+					pointer	new_start = _alloc.allocate(_capacity);
 					pointer new_finish = new_start;
 
 					for (pointer p = _start; p != _finish; p++, new_finish++)
@@ -352,31 +351,52 @@ namespace ft
 			iterator
 			insert(iterator position, const value_type& val)
 			{
+				size_type	index = position - begin();
+
 				if (size() == _capacity)
 				{
 					reserve(size() + 1);
 				}
-
 				++_finish;
-				for (iterator it = end(); it > position; )
+
+				pointer		pos = _start + index;
+
+				for (pointer it = _finish; it > pos; --it)
 				{
-					--it;
-					*(it + 1) = *it;
+					_alloc.construct(it, *(it - 1));
+					_alloc.destroy(it - 1);
 				}
-				*position = val;
-				return (position);
+				_alloc.construct(pos, val);
+				return (iterator(pos));
 			}
 
-			// void
-			// insert(iterator position, size_type n, const value_type& val)
-			// {
-			// 	size_type	new_size = size() + n;
+			void
+			insert(iterator position, size_type n, const value_type& val)
+			{
+				size_type	new_size = size() + n;
+				size_type	index = position - begin();
 
-			// 	if (capacity() < new_size)
-			// 	{
-			// 		reserve(new_size);
-			// 	}
-			// }
+				if (capacity() < new_size)
+				{
+					reserve(new_size);
+				}
+				_finish += n;
+
+				pointer		pos = _start + index;
+				pointer		it = _finish;
+
+				while (it > (pos + n))
+				{
+					--it;
+					_alloc.construct(it, *(it - n));
+				}
+				while (it > pos)
+				{
+					it--;
+					_alloc.destroy(it);
+					_alloc.construct(it, val);
+				}
+			}
 
 			// template <class InputIterator>
     		// void
