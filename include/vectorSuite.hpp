@@ -48,6 +48,7 @@ class VectorTestSuite : public CxxTest::TestSuite
 		void	testReserve(void)
 		{
 			std::allocator<int> alloc;
+
 			v2.reserve(10);
 			TS_ASSERT_LESS_THAN_EQUALS(10, v2.capacity());
 			TS_ASSERT_EQUALS(v2.size(), 3);
@@ -72,8 +73,8 @@ class VectorTestSuite : public CxxTest::TestSuite
 
 		void	testInsert1(void)
 		{
-			ft::vector<int>::iterator it = v2.begin();
-			it++;
+			ft::vector<int>::iterator it = v2.begin() + 1;
+
 			TS_ASSERT_EQUALS(v2.insert(it, 21), it);
 			TS_ASSERT_EQUALS(v2[1], 21);
 			TS_ASSERT_EQUALS(v2[1], 21);
@@ -102,6 +103,19 @@ class VectorTestSuite : public CxxTest::TestSuite
 			TS_ASSERT_EQUALS(v2[42], 42);
 			TS_ASSERT_EQUALS(v2[43], 21);
 			TS_ASSERT_EQUALS(v2[44], 666);
+		}
+
+		void	testSwap(void)
+		{
+			size_t	v2size = v2.size();
+			size_t	v3size = v3.size();
+
+			v2.swap(v3);
+			TS_ASSERT_EQUALS(v2.size(), v3size);
+			TS_ASSERT_EQUALS(v3.size(), v2size);
+			swap(v2, v3);
+			TS_ASSERT_EQUALS(v2.size(), v2size);
+			TS_ASSERT_EQUALS(v3.size(), v3size);
 		}
 
 };

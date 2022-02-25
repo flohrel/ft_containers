@@ -1,6 +1,7 @@
 #ifndef __VECTOR__H__
 # define __VECTOR__H__
 
+# include <algorithm>
 # include <memory>
 # include <stdexcept>
 # include "iterator.hpp"
@@ -8,13 +9,13 @@
 # include "type_traits.hpp"
 # include "algorithm.hpp"
 # include "utility.hpp"
+
 namespace ft
 {
 	template <typename T, typename Allocator = std::allocator<T> >
 	class vector
 	{
 		public:
-
 			typedef T											value_type;
 			typedef Allocator 									alloc_type;
 			typedef std::size_t									size_type;
@@ -30,7 +31,6 @@ namespace ft
 
 
 		private:
-
 			alloc_type		_alloc;
 			pointer			_start;
 			pointer			_finish;
@@ -38,12 +38,11 @@ namespace ft
 
 
 		public:
-
 			/**
 			 * @brief default constructor
 			 */
 			explicit vector(const alloc_type& alloc = alloc_type())
-			: _alloc(alloc), _start(), _finish(), _capacity(2)
+				: _alloc(alloc), _start(), _finish(), _capacity(2)
 			{ }
 
 			/**
@@ -451,9 +450,17 @@ namespace ft
 				}
 			}
 
+			void
+			swap(vector& x)
+			{
+				std::swap(_alloc, x._alloc);
+				std::swap(_start, x._start);
+				std::swap(_finish, x._finish);
+				std::swap(_capacity, x._capacity);
+			}
+
 
 		private:
-
 			void
 			_range_check(size_type n, size_type size) const
 			{
@@ -485,6 +492,13 @@ namespace ft
 			}
 
 	};
+
+	template<class T, class Alloc>
+	void
+	swap(vector<T,Alloc>& lhs, vector<T,Alloc>& rhs)
+	{
+		lhs.swap(rhs);
+	}
 
 	template <class T, class Alloc>
 	bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
