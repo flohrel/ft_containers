@@ -33,8 +33,8 @@ namespace ft
 			{
 				if (this != &rhs)
 				{
-					first = other.first;
-					second = other.second;
+					first = rhs.first;
+					second = rhs.second;
 				}
 				return (*this);
 			}
