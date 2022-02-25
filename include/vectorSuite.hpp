@@ -96,4 +96,12 @@ class VectorTestSuite : public CxxTest::TestSuite
 			TS_ASSERT_EQUALS(v2.size(), 42);
 		}
 
+		void	testInsert3(void)
+		{
+			v2.insert(v2.end(), v2.begin(), v2.begin() + 5);
+			TS_ASSERT_EQUALS(v2[42], 42);
+			TS_ASSERT_EQUALS(v2[43], 21);
+			TS_ASSERT_EQUALS(v2[44], 666);
+		}
+
 };

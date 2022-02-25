@@ -398,11 +398,37 @@ namespace ft
 				}
 			}
 
-			// template <class InputIterator>
-    		// void
-			// insert(iterator position, InputIterator first, InputIterator last,
-			// 		typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL)
-			// {}
+			template <class InputIterator>
+    		void
+			insert(iterator position, InputIterator first, InputIterator last,
+					typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL)
+			{
+				size_type	n = distance(first, last);
+				size_type	new_size = size() + n;
+				size_type	index = position - begin();
+
+				if (capacity() < new_size)
+				{
+					reserve(new_size);
+				}
+				_finish += n;
+
+				pointer		pos = _start + index;
+				pointer		it = _finish;
+
+				while (it > (pos + n))
+				{
+					--it;
+					_alloc.construct(it, *(it - n));
+				}
+				while (last != first)
+				{
+					it--;
+					last--;
+					_alloc.destroy(it);
+					_alloc.construct(it, *last);
+				}
+			}
 
 			void
 			push_back(const value_type& val)
