@@ -6,24 +6,22 @@
 namespace ft
 {
 	template<typename Iterator>
-	struct random_access_iterator : public iterator<typename iterator_traits<Iterator>::iterator_category,
-			typename iterator_traits<Iterator>::value_type,
-			typename iterator_traits<Iterator>::difference_type,
-			typename iterator_traits<Iterator>::pointer,
-			typename iterator_traits<Iterator>::reference>
+	struct random_access_iterator
 	{
 		protected:
-			Iterator	_current;
-
 			typedef iterator_traits<Iterator>					traits_type;
 
 		public:
-			typedef Iterator									iterator_type;
     		typedef typename traits_type::value_type			value_type;
     		typedef typename traits_type::difference_type		difference_type;
     		typedef typename traits_type::pointer				pointer;
     		typedef typename traits_type::reference				reference;
+			typedef typename traits_type::iterator_category		iterator_category;
 
+		protected:
+			Iterator	_current;
+
+		public:
 			random_access_iterator(void)
 			: _current(Iterator())
 			{ }
@@ -36,6 +34,9 @@ namespace ft
 			template<typename Iter>
 			random_access_iterator(const random_access_iterator<Iter>& it)
 			: _current(it.base())
+			{ }
+
+			virtual ~random_access_iterator(void)
 			{ }
 
 			const Iterator&

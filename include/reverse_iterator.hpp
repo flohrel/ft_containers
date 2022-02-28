@@ -7,20 +7,17 @@
 namespace ft
 {
 	template<typename Iterator>
-	struct reverse_iterator : public iterator<typename iterator_traits<Iterator>::iterator_category,
-			typename iterator_traits<Iterator>::value_type,
-			typename iterator_traits<Iterator>::difference_type,
-			typename iterator_traits<Iterator>::pointer,
-			typename iterator_traits<Iterator>::reference>
+	struct reverse_iterator
 	{
 		protected:
-			typedef iterator_traits<Iterator>				traits_type;
+			typedef iterator_traits<Iterator>					traits_type;
 
 		public:
-    		typedef Iterator								iterator_type;
-    		typedef typename traits_type::difference_type	difference_type;
-    		typedef typename traits_type::pointer			pointer;
-    		typedef typename traits_type::reference			reference;
+    		typedef typename traits_type::value_type			value_type;
+    		typedef typename traits_type::difference_type		difference_type;
+    		typedef typename traits_type::pointer				pointer;
+    		typedef typename traits_type::reference				reference;
+			typedef typename traits_type::iterator_category		iterator_category;
 
 		protected:
 			pointer		_current;
@@ -30,7 +27,7 @@ namespace ft
 			: _current()
 			{ }
 
-			reverse_iterator(iterator_type x)
+			reverse_iterator(value_type x)
 			: _current(x)
 			{ }
 
@@ -43,7 +40,7 @@ namespace ft
 			: _current(x.base())
 			{ }
 
-			iterator_type
+			value_type
 			base(void) const 
 			{ return (_current); }
 
@@ -124,6 +121,7 @@ namespace ft
 
 			operator reverse_iterator<const Iterator>() const
 			{ return _current; }
+
 	};
 
 	// logical comparison between two reverse_iterator
