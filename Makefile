@@ -7,7 +7,7 @@ NAME		=	runner
 INCLDIR		=	include
 BUILDIR		=	build
 TESTDIR		=	cxxtest
-DEPDIR		=	$(BUILDIR)/.deps
+DEPDIR		:=	$(BUILDIR)/.deps
 
 TEST		=	mapSuite.hpp
 SRC			=	runner.cpp
@@ -16,7 +16,7 @@ DEP			=	$(SRC:%.cpp=$(DEPDIR)/%.d)
 
 CXX			=	clang++
 CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98 -g3
-CPPFLAGS	=	-I./$(INCLDIR) -I./$(TESTDIR)
+CPPFLAGS	:=	-I./$(INCLDIR) -I./$(TESTDIR)
 DEPFLAGS	=	-MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
 RM			=	/bin/rm -rf
 UNAME		:=	$(shell uname -s)
@@ -41,25 +41,25 @@ DELETE		=	\033[2K
 all:			$(NAME)
 
 $(SRC):
-				@echo -n "$(YELLOW)Generating $@...$(DEFAULT)"
+				@printf "$(YELLOW)Generating $@...$(DEFAULT)"
 				@$(TESTDIR)/bin/cxxtestgen --error-printer -o $@ $(INCLDIR)/$(TEST)
-				@echo "$(DELETE)\r$(GREEN)$@ generated$(DEFAULT)"
+				@printf "$(DELETE)\r$(GREEN)$@ generated$(DEFAULT)\n"
 
 
 $(BUILDIR)/%.o:	$(SRC) | $(DEPDIR)
-				@echo -n "$(YELLOW)Compiling $@ and generating/checking make dependency file...$(DEFAULT)"
+				@printf "$(YELLOW)Compiling $@ and generating/checking make dependency file...$(DEFAULT)"
 				@$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
-				@echo "$(DELETE)\r$(GREEN)$@ compiled$(DEFAULT)"
+				@printf "$(DELETE)\r$(GREEN)$@ compiled$(DEFAULT)\n"
 
 $(NAME):		$(OBJ)
-				@echo -n "$(YELLOW)Linking source files and generating $@ binary...$(DEFAULT)"
+				@printf "$(YELLOW)Linking source files and generating $@ binary...$(DEFAULT)"
 				@$(CXX) $(CXXFLAGS) -o $@ $(CPPFLAGS) $<
-				@echo "$(DELETE)\r$(GREEN)$@ binary generated$(DEFAULT)"
+				@printf "$(DELETE)\r$(GREEN)$@ binary generated$(DEFAULT)\n"
 
 $(DEPDIR):
-				@echo -n "$(YELLOW)Creating $@ folder...$(DEFAULT)"
+				@printf "$(YELLOW)Creating $@ folder...$(DEFAULT)"
 				@mkdir -p $@
-				@echo "$(DELETE)\r$(GREEN)$@ created$(DEFAULT)"
+				@printf "$(DELETE)\r$(GREEN)$@ created$(DEFAULT)\n"
 $(DEP):
 -include $(wildcard $(DEP))
 
@@ -67,15 +67,15 @@ bonus:
 				@make all
 
 clean:
-				@echo -n "$(YELLOW)Deleting object and dependency files...$(DEFAULT)"
+				@printf "$(YELLOW)Deleting object and dependency files...$(DEFAULT)"
 				@$(RM) $(OBJ)
-				@echo "$(DELETE)\r$(GREEN)Build files deleted$(DEFAULT)"
+				@printf "$(DELETE)\r$(GREEN)Build files deleted$(DEFAULT)\n"
 
 
 fclean:			clean
-				@echo -n "$(YELLOW)Deleting build directory and binary...$(DEFAULT)"
+				@printf "$(YELLOW)Deleting build directory and binary...$(DEFAULT)"
 				@$(RM) $(NAME) $(SRC) $(BUILDIR)
-				@echo "$(DELETE)\r$(GREEN)Build directory and binary deleted$(DEFAULT)"
+				@printf "$(DELETE)\r$(GREEN)Build directory and binary deleted$(DEFAULT)\n"
 
 re:				fclean
 				@make -s all

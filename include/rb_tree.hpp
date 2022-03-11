@@ -32,8 +32,8 @@ namespace ft
 				rb_tree_node*	right;
 				value_type		data;
 
-				rb_tree_node()
-					: color(RED), parent(NULL), left(NULL), right(NULL), data()
+				rb_tree_node(enum rb_tree_color def_color = RED)
+					: color(def_color), parent(NULL), left(NULL), right(NULL), data()
 				{ }
 
 				rb_tree_node(const node& x)
@@ -60,11 +60,11 @@ namespace ft
 
 		public:
 			rb_tree()
-				: _TNULL(), _root(&_TNULL), _leftmost(&_TNULL), _rightmost(&_TNULL), _count(0)
+				: _TNULL(BLACK), _root(&_TNULL), _leftmost(&_TNULL), _rightmost(&_TNULL), _count(0)
 			{ }
 
 			rb_tree(const rb_tree& x)
-				: _TNULL(), _root(x._root), _leftmost(x._leftmost), _rightmost(x._rightmost), _count(x._count)
+				: _TNULL(BLACK), _root(x._root), _leftmost(x._leftmost), _rightmost(x._rightmost), _count(x._count)
 			{ }
 
 			~rb_tree()
