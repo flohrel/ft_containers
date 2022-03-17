@@ -2,6 +2,7 @@
 #define __UTILITY__H__
 
 #include <string>
+#include <utility>
 
 namespace ft
 {
@@ -20,7 +21,7 @@ namespace ft
 			{ }
 
 			template<class U, class V>
-			pair(const pair<U,V>& pr)
+			pair(const pair<U, V>& pr)
 				: first(pr.first), second(pr.second)
 			{ }
 
@@ -33,8 +34,7 @@ namespace ft
 			{
 				if (this != &rhs)
 				{
-					first = rhs.first;
-					second = rhs.second;
+					return (make_pair(rhs.first, rhs.second));
 				}
 				return (*this);
 			}

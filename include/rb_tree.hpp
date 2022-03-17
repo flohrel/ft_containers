@@ -45,7 +45,7 @@ namespace ft
 				node&
 				operator=(const node& rhs)
 				{
-					if (*this != rhs)
+					if (this != &rhs)
 					{
 						color = rhs.color;
 						parent = rhs.parent;

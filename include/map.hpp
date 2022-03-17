@@ -65,9 +65,42 @@ namespace ft
 			~map()
 			{ }
 
+			map&
+			operator=(const map& rhs)
+			{
+				if (this != &rhs)
+				{
+					_alloc = rhs._alloc;
+					_comp = rhs._comp;
+					_bst = rhs._bst;
+				}
+				return (*this);
+			}
+
+			allocator_type
+			get_allocator() const
+			{ return (allocator_type(_alloc)); }
+
+		/* 
+		**	CAPACITY
+		*/
+
+			bool
+			empty() const
+			{ return (_bst.size() == 0); }
+
+			size_type
+			max_size() const
+			{ return(_alloc.max_size()); }
+
 			size_t
-			size(void) const
+			size() const
 			{ return (_bst.size()); }
+
+		/* 
+		**	MODIFIERS
+		*/
+			
 
 	};
 }
