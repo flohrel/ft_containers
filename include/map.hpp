@@ -4,7 +4,8 @@
 #include "utility.hpp"
 #include "rb_tree.hpp"
 #include "reverse_iterator.hpp"
-#include <map>
+#include <map>								// TO DELETE
+
 namespace ft
 {
 	template <class Key, class T, class Compare = std::less<Key>, class Allocator = std::allocator<pair<const Key,T> > >
@@ -53,9 +54,9 @@ namespace ft
 			};
 
 		private:
-			allocator_type					_alloc;
-			Compare							_comp;
-			rb_tree<value_type, Compare>	_bst;
+			allocator_type											_alloc;
+			key_compare												_comp;
+			rb_tree<ft::pair<key_type, mapped_type>, key_compare>	_bst;
 
 		public:
 			explicit map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())

@@ -6,7 +6,7 @@
 
 namespace ft
 {
-	template <class T1, class T2>
+	template <typename T1, typename T2>
 	struct pair
 	{
 		public:
@@ -34,7 +34,8 @@ namespace ft
 			{
 				if (this != &rhs)
 				{
-					return (make_pair(rhs.first, rhs.second));
+					first = rhs.first;
+					second = rhs.second;
 				}
 				return (*this);
 			}
