@@ -50,6 +50,22 @@
 		"set": "cpp",
 		"iterator.hpp": "c",
 		"algorithm.hpp": "c",
-		"reverse_iterator.hpp": "c"
+		"reverse_iterator.hpp": "c",
+		"variant": "cpp",
+		"bit": "cpp",
+		"chrono": "cpp",
+		"compare": "cpp",
+		"concepts": "cpp",
+		"condition_variable": "cpp",
+		"numeric": "cpp",
+		"ratio": "cpp",
+		"iomanip": "cpp",
+		"mutex": "cpp",
+		"numbers": "cpp",
+		"semaphore": "cpp",
+		"stop_token": "cpp",
+		"thread": "cpp",
+		"cinttypes": "cpp",
+		"valarray": "cpp"
 	}
 }

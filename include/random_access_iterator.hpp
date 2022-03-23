@@ -6,7 +6,7 @@
 namespace ft
 {
 	template<typename Iterator>
-	struct  random_access_iterator
+	struct random_access_iterator
 	{
 		protected:
 			typedef iterator_traits<Iterator>					traits_type;
@@ -23,17 +23,17 @@ namespace ft
 
 		public:
 			random_access_iterator(void)
-			: _current(Iterator())
+				: _current(Iterator())
 			{ }
 
 			explicit
 			random_access_iterator(const Iterator& it)
-			: _current(it)
+				: _current(it)
 			{ }
 
 			template<typename Iter>
 			random_access_iterator(const random_access_iterator<Iter>& it)
-			: _current(it.base())
+				: _current(it.base())
 			{ }
 
 			virtual ~random_access_iterator(void)
