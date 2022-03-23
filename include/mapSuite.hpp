@@ -1,7 +1,7 @@
 #include "cxxtest/TestSuite.h"
 #include "map.hpp"
 
-std::map<std::string, int>	test1;
+std::map<std::string, int>	test;
 ft::map<std::string, int>	map1;
 ft::map<std::string, int>	map2;
 
@@ -22,9 +22,13 @@ class MapTestSuite : public CxxTest::TestSuite
 
 		void	testInsert(void)
 		{
-			ft::pair<ft::map<std::string, int>::iterator, bool> test = map1.insert(ft::make_pair("foo", 42));
+			ft::pair<ft::map<std::string, int>::iterator, bool> test1 = map1.insert(ft::make_pair("foo", 42));
+			ft::pair<ft::map<std::string, int>::iterator, bool> test2 = map1.insert(ft::make_pair("foo", 42));
+			ft::pair<ft::map<std::string, int>::iterator, bool> test3 = map1.insert(ft::make_pair("bar", 1337));
+			std::cout << test1.second << std::endl;
+			std::cout << test2.second << std::endl;
+			std::cout << test3.second << std::endl;
 
-			std::cout << test.first->first << std::endl;
 		}
 
 		// void	testDummy()
