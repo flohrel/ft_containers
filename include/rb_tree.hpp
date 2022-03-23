@@ -4,6 +4,8 @@
 # include "iterator_traits.hpp"
 # include "reverse_iterator.hpp"
 # include "utility.hpp"
+#pragma clang diagnostic ignored "-Wunused-parameter"
+
 
 namespace ft
 {
@@ -211,49 +213,67 @@ namespace ft
 			ft::pair<iterator, bool>
 			insert(const value_type& value)
 			{
-				pointer new_node = NULL;
+				pointer new_node = _alloc.allocate(1);
 				key_type curr_key;
 				base_pointer curr_node = _header.parent;
 				base_pointer prev_node = NULL;
 
 				if (curr_node == NULL)
 				{
-					new_node = _alloc.allocate(1);
 					_alloc.construct(new_node, node(value, &_header, &_leaf, &_leaf, BLACK));
 					_header.parent = new_node;
-					_header.node_count++;
 					return (ft::make_pair(iterator(new_node), true));
-				}
-				while (curr_node != &_leaf)
-				{
-					curr_key = static_cast<pointer>(curr_node)->data.first;
-					if (value.first == curr_key)
-					{
-						return (ft::make_pair(iterator(curr_node), false));
-					}
-					prev_node = curr_node;
-					if (_comp(value.first, curr_key) == true)
-					{
-						curr_node = curr_node->left;
-					}
-					else
-					{
-						curr_node = curr_node->right;
-					}
-				}
-				if (_comp(value.first, static_cast<pointer>(prev_node)->data.first) == true)
-				{
-					prev_node->left = new_node;
 				}
 				else
 				{
-					prev_node->right = new_node;
+					while (curr_node != &_leaf)
+					{
+						curr_key = static_cast<pointer>(curr_node)->data.first;
+						if (value.first == curr_key)
+						{
+							return (ft::make_pair(iterator(curr_node), false));
+						}
+						prev_node = curr_node;
+						if (_comp(value.first, curr_key) == true)
+						{
+							curr_node = curr_node->left;
+						}
+						else
+						{
+							curr_node = curr_node->right;
+						}
+					}
+					if (_comp(value.first, static_cast<pointer>(prev_node)->data.first) == true)
+					{
+						prev_node->left = new_node;
+					}
+					else
+					{
+						prev_node->right = new_node;
+					}
+					_alloc.construct(new_node, node(value, prev_node, &_leaf, &_leaf));
 				}
-				new_node = _alloc.allocate(1);
-				_alloc.construct(new_node, node(value, &_header, &_leaf, &_leaf));
 				_header.node_count++;
 				// insertFix();
 				return (ft::make_pair(iterator(new_node), true));
+			}
+
+			void	display_tabs(int size)
+			{
+				while (size)
+				{
+					std::cout << "\x1b(0\x78\x1b(B\t";
+					size--;
+				}
+			}
+
+			void	display_tree()
+			{
+				base_pointer node = _header.parent;
+				int height = 0;
+				bool is_right = true;
+
+				_display_tree(node, height, is_right);
 			}
 
 		private:
@@ -261,6 +281,28 @@ namespace ft
 			rb_tree_header		_header;
 			allocator_type		_alloc;
 			Compare				_comp;
+
+			void
+			_display_tree(base_pointer node, int height, bool is_right)
+			{
+				std::string horiz = "\x1b(0\x71\x1b(B";
+
+				if (node == &_leaf)
+					return ;
+				display_tabs(height);
+				// if (is_right)
+				// 	std::cout << "\x1b(0\x74\x1b(B";
+				// else
+				// 	std::cout << "\x1b(0\x6d\x1b(B";
+				// if (node->color == BLACK)
+				// 	std::cout << "\033[41m";
+				// else
+				// 	std::cout << "\033[40m";
+				// std::cout << node->color << "\033[49m";
+				_display_tree(node->right, height + 1, true);
+				_display_tree(node->left, height + 1, false);
+			}
+
 
 	};
 	

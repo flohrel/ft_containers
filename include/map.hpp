@@ -53,6 +53,11 @@ namespace ft
 
 			};
 
+			void	display_tree()
+			{
+				_bst.display_tree();
+			}
+
 		private:
 			Allocator							_alloc;
 			Compare								_comp;
@@ -88,6 +93,7 @@ namespace ft
 			allocator_type
 			get_allocator() const
 			{ return (allocator_type(_alloc)); }
+
 
 		/* 
 		**	CAPACITY

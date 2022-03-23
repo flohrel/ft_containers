@@ -24,10 +24,11 @@ class MapTestSuite : public CxxTest::TestSuite
 		{
 			ft::pair<ft::map<std::string, int>::iterator, bool> test1 = map1.insert(ft::make_pair("foo", 42));
 			ft::pair<ft::map<std::string, int>::iterator, bool> test2 = map1.insert(ft::make_pair("foo", 42));
-			ft::pair<ft::map<std::string, int>::iterator, bool> test3 = map1.insert(ft::make_pair("bar", 1337));
-			std::cout << test1.second << std::endl;
-			std::cout << test2.second << std::endl;
-			std::cout << test3.second << std::endl;
+			map1.insert(ft::make_pair("bar", 1337));
+			map1.insert(ft::make_pair("baz", 13));
+			// map1.insert(ft::make_pair("quux", 21));
+			// map1.insert(ft::make_pair("buidi", 42));
+			//map1.display_tree();
 
 		}
 
