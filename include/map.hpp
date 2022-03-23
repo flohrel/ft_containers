@@ -12,21 +12,21 @@ namespace ft
 	class map
 	{
 		public:
-			typedef Key																	key_type;
-			typedef T																	mapped_type;
-			typedef pair<const key_type, mapped_type>									value_type;
-			typedef Compare																key_compare;
-			typedef Allocator 															allocator_type;
-			typedef std::size_t															size_type;
-			typedef std::ptrdiff_t														difference_type;
-			typedef typename Allocator::pointer											pointer;
-			typedef typename Allocator::const_pointer									const_pointer;
-			typedef typename Allocator::reference										reference;
-			typedef typename Allocator::const_reference									const_reference;
-			typedef typename ft::rb_tree<value_type, Compare>::iterator					iterator;
-			typedef typename ft::rb_tree<value_type, Compare>::const_iterator			const_iterator;
-			typedef typename ft::rb_tree<value_type, Compare>::reverse_iterator			reverse_iterator;
-			typedef typename ft::rb_tree<value_type, Compare>::const_reverse_iterator	const_reverse_iterator;
+			typedef Key																			key_type;
+			typedef T																			mapped_type;
+			typedef pair<const key_type, mapped_type>											value_type;
+			typedef Compare																		key_compare;
+			typedef Allocator 																	allocator_type;
+			typedef std::size_t																	size_type;
+			typedef std::ptrdiff_t																difference_type;
+			typedef typename Allocator::pointer													pointer;
+			typedef typename Allocator::const_pointer											const_pointer;
+			typedef typename Allocator::reference												reference;
+			typedef typename Allocator::const_reference											const_reference;
+			typedef typename ft::rb_tree<value_type, key_type, Compare>::iterator				iterator;
+			typedef typename ft::rb_tree<value_type, key_type, Compare>::const_iterator			const_iterator;
+			typedef typename ft::rb_tree<value_type, key_type, Compare>::reverse_iterator		reverse_iterator;
+			typedef typename ft::rb_tree<value_type, key_type, Compare>::const_reverse_iterator	const_reverse_iterator;
 
 			class value_compare
 			{
@@ -54,9 +54,9 @@ namespace ft
 			};
 
 		private:
-			Allocator						_alloc;
-			Compare							_comp;
-			rb_tree<value_type, Compare>	_bst;
+			Allocator							_alloc;
+			Compare								_comp;
+			rb_tree<value_type, Key, Compare>	_bst;
 
 		public:
 			explicit map(const Compare& comp = Compare(), const Allocator& alloc = Allocator())

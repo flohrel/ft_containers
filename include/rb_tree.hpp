@@ -26,8 +26,8 @@ namespace ft
 			: color(RED), parent(NULL), left(NULL), right(NULL)
 		{ }
 
-		rb_tree_node_base(base_ptr p, base_ptr l, base_ptr r)
-			: color(RED), parent(p), left(l), right(r) 
+		rb_tree_node_base(base_ptr p, base_ptr l, base_ptr r, rb_tree_color c = RED)
+			: color(c), parent(p), left(l), right(r) 
 		{ }
 
 		rb_tree_node_base(const rb_tree_node_base& node)
@@ -79,8 +79,8 @@ namespace ft
 
 		value_type	data;
 
-		rb_tree_node(value_type val, base_ptr p, base_ptr l, base_ptr r)
-		 : rb_tree_node_base(p, l, r), data(val)
+		rb_tree_node(value_type val, base_ptr p, base_ptr l, base_ptr r, rb_tree_color c = RED)
+		 : rb_tree_node_base(p, l, r, c), data(val)
 		{ }
 
 	};
@@ -151,13 +151,15 @@ namespace ft
 
 	};
 
-	template<typename T, typename Compare, typename Alloc = std::allocator<rb_tree_node<T> > >
+	template<typename T, typename Key, typename Compare, typename Allocator = std::allocator<rb_tree_node<T> > >
 	class rb_tree
 	{
 		public:
-			typedef Alloc									allocator_type;
+			typedef Allocator								allocator_type;
 			typedef T										value_type;
+			typedef Key										key_type;
 			typedef rb_tree_node<T>							node;
+			typedef rb_tree_node_base*						base_pointer;
 			typedef node*									pointer;
 			typedef const node*								const_pointer;
 			typedef node&									reference;
@@ -169,8 +171,8 @@ namespace ft
 			typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 		public:
-			rb_tree()
-				: _alloc()
+			rb_tree(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
+				: _alloc(alloc), _comp(comp)
 			{
 				_leaf.color = BLACK;
 				_leaf.parent = NULL;
@@ -179,7 +181,7 @@ namespace ft
 			}
 
 			rb_tree(const rb_tree& x)
-				: rb_tree(), _alloc(x._alloc)
+				: rb_tree(), _alloc(x._alloc), _comp(x._comp)
 			{
 				_header.copy(x._header);
 			}
@@ -209,21 +211,56 @@ namespace ft
 			ft::pair<iterator, bool>
 			insert(const value_type& value)
 			{
-				pointer	new_node = NULL;
+				pointer new_node = NULL;
+				key_type curr_key;
+				base_pointer curr_node = _header.parent;
+				base_pointer prev_node = NULL;
 
-				if (_header.parent == NULL)
+				if (curr_node == NULL)
 				{
 					new_node = _alloc.allocate(1);
-					_alloc.construct(new_node, node(value, &_header, &_leaf, &_leaf));
+					_alloc.construct(new_node, node(value, &_header, &_leaf, &_leaf, BLACK));
+					_header.parent = new_node;
+					_header.node_count++;
 					return (ft::make_pair(iterator(new_node), true));
 				}
-				return (ft::make_pair(iterator(new_node), false));
+				while (curr_node != &_leaf)
+				{
+					curr_key = static_cast<pointer>(curr_node)->data.first;
+					if (value.first == curr_key)
+					{
+						return (ft::make_pair(iterator(curr_node), false));
+					}
+					prev_node = curr_node;
+					if (_comp(value.first, curr_key) == true)
+					{
+						curr_node = curr_node->left;
+					}
+					else
+					{
+						curr_node = curr_node->right;
+					}
+				}
+				if (_comp(value.first, static_cast<pointer>(prev_node)->data.first) == true)
+				{
+					prev_node->left = new_node;
+				}
+				else
+				{
+					prev_node->right = new_node;
+				}
+				new_node = _alloc.allocate(1);
+				_alloc.construct(new_node, node(value, &_header, &_leaf, &_leaf));
+				_header.node_count++;
+				// insertFix();
+				return (ft::make_pair(iterator(new_node), true));
 			}
 
 		private:
 			rb_tree_node_base	_leaf;
 			rb_tree_header		_header;
 			allocator_type		_alloc;
+			Compare				_comp;
 
 	};
 	
