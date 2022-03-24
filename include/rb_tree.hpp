@@ -257,6 +257,8 @@ namespace ft
 				}
 				_header.node_count++;
 				insert_fix(new_node);
+				_header.left = minimum(_header.parent);
+				_header.right = maximum(_header.parent);
 				return (ft::make_pair(iterator(new_node), true));
 			}
 
@@ -370,6 +372,26 @@ namespace ft
 				}
 				ptr->left = node;
 				node->parent = ptr;
+			}
+
+			base_pointer
+			minimum(base_pointer node)
+			{
+				while (node->left != &_leaf)
+				{
+					node = node->left;
+				}
+				return (node);
+			}
+
+			base_pointer
+			maximum(base_pointer node)
+			{
+				while (node->right != &_leaf)
+				{
+					node = node->right;
+				}
+				return (node);
 			}
 
 			void
