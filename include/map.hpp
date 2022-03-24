@@ -94,6 +94,24 @@ namespace ft
 			get_allocator() const
 			{ return (allocator_type(_alloc)); }
 
+		/* 
+		**	ITERATORS
+		*/
+			iterator
+			begin()
+			{ return (_bst.begin()); }
+
+			const iterator
+			begin() const
+			{ return (_bst.begin()); }
+
+			iterator
+			end()
+			{ return (_bst.end()); }
+
+			const iterator
+			end() const
+			{ return (_bst.end()); }
 
 		/* 
 		**	CAPACITY

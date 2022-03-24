@@ -76,6 +76,12 @@ namespace ft
 
 	};
 
+	rb_tree_node_base*
+	rb_minimum(rb_tree_node_base *node);
+
+	rb_tree_node_base*
+	rb_maximum(rb_tree_node_base *node);
+
 	template<typename T>
 	struct rb_tree_node : public rb_tree_node_base
 	{
@@ -129,21 +135,66 @@ namespace ft
 			operator->() const
 			{ return (&static_cast<link_type>(_current)->data); }
 
-			// rb_tree_iterator&
-			// operator++()
-			// {}
+			rb_tree_iterator&
+			operator++()
+			{
+				if (_current->right->right != NULL)
+				{
+					_current = rb_minimum(_current->right);
+					return (*this);
+				}
 
-			// rb_tree_iterator
-			// operator++(int)
-			// {}
+    			base_ptr ptr = _current->parent;
 
-			// rb_tree_iterator&
-			// operator--()
-			// {}
+				while ((ptr != ptr->parent) && (_current == ptr->right))
+				{
+					_current = ptr;
+    				ptr = ptr->parent;
+				}
+				if (_current->right != ptr)
+					_current = ptr;
+				return (*this);
+			}
 
-			// rb_tree_iterator
-			// operator--(int)
-			// {}
+			rb_tree_iterator
+			operator++(int)
+			{
+				rb_tree_iterator tmp = *this;
+				operator++();
+				return (tmp);
+			}
+
+			rb_tree_iterator&
+			operator--()
+			{
+				if (_current->color == RED && _current->parent->parent == _current)
+				{
+    				_current = _current->right;
+				}
+    			else if (_current->left->left != 0)
+    			{
+        			_current = rb_maximum(_current->left);
+    			}
+				else
+				{
+					base_ptr ptr = _current->parent;
+					while ((ptr != ptr->parent) && (_current == ptr->left))
+					{
+						_current = ptr;
+						ptr = ptr->parent;
+					}
+					_current = ptr;
+				}
+				return (*this);
+			}
+
+			rb_tree_iterator
+			operator--(int)
+			{
+				rb_tree_iterator tmp = *this;
+				operator--();
+				return (tmp);
+			}
 
 			bool
 			operator==(const rb_tree_iterator& it)
@@ -212,6 +263,22 @@ namespace ft
 				return (*this);
 			}
 
+			iterator
+			begin()
+			{ return (iterator(_header.left)); }
+
+			const iterator
+			begin() const
+			{ return (iterator(_header.left)); }
+
+			iterator
+			end()
+			{ return (iterator(_header.right)); }
+
+			const iterator
+			end() const
+			{ return (iterator(_header.right)); }
+
 			ft::pair<iterator, bool>
 			insert(const value_type& value)
 			{
@@ -257,8 +324,8 @@ namespace ft
 				}
 				_header.node_count++;
 				insert_fix(new_node);
-				_header.left = minimum(_header.parent);
-				_header.right = maximum(_header.parent);
+				_header.left = rb_minimum(_header.parent);
+				_header.right = rb_maximum(_header.parent);
 				return (ft::make_pair(iterator(new_node), true));
 			}
 
@@ -374,26 +441,6 @@ namespace ft
 				node->parent = ptr;
 			}
 
-			base_pointer
-			minimum(base_pointer node)
-			{
-				while (node->left != &_leaf)
-				{
-					node = node->left;
-				}
-				return (node);
-			}
-
-			base_pointer
-			maximum(base_pointer node)
-			{
-				while (node->right != &_leaf)
-				{
-					node = node->right;
-				}
-				return (node);
-			}
-
 			void
 			print_key(pointer node)
 			{
@@ -436,9 +483,6 @@ namespace ft
 			allocator_type		_alloc;
 			Compare				_comp;
 
-
-
-
 			size_t
 			_count_height(base_pointer node, size_t height = 0, size_t max_height = 0)
 			{
@@ -466,6 +510,26 @@ namespace ft
 
 
 	};
+
+	rb_tree_node_base*
+	rb_minimum(rb_tree_node_base *node)
+	{
+		while (node->left->left != NULL)
+		{
+			node = node->left;
+		}
+		return (node);
+	}
+
+	rb_tree_node_base*
+	rb_maximum(rb_tree_node_base *node)
+	{
+		while (node->right->right != NULL)
+		{
+			node = node->right;
+		}
+		return (node);
+	}
 	
 }
 
