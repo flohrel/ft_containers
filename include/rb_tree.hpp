@@ -167,11 +167,7 @@ namespace ft
 			rb_tree_iterator&
 			operator--()
 			{
-				if (_current->color == RED && _current->parent->parent == _current)
-				{
-    				_current = _current->right;
-				}
-    			else if (_current->left->left != 0)
+				if (_current->left->left != 0)
     			{
         			_current = rb_maximum(_current->left);
     			}
