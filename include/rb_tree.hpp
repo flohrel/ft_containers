@@ -192,13 +192,13 @@ namespace ft
 				return (tmp);
 			}
 
-			bool
-			operator==(const rb_tree_iterator& it)
-    		{ return (_current == it.current); }
+			friend bool
+			operator==(const rb_tree_iterator& rhs, const rb_tree_iterator& lhs)
+    		{ return (rhs._current == lhs._current); }
 
-			bool
-			operator!=(const rb_tree_iterator& it)
-    		{ return (_current != it.current); }
+			friend bool
+			operator!=(const rb_tree_iterator& rhs, const rb_tree_iterator& lhs)
+    		{ return (rhs._current == lhs._current); }
 
 	};
 
