@@ -4,6 +4,8 @@
 # include "iterator_traits.hpp"
 # include "reverse_iterator.hpp"
 # include "utility.hpp"
+# include <iostream>
+# include <iomanip>
 #pragma clang diagnostic ignored "-Wunused-parameter"
 
 
@@ -160,12 +162,12 @@ namespace ft
 			typedef Allocator								allocator_type;
 			typedef T										value_type;
 			typedef Key										key_type;
-			typedef rb_tree_node<T>							node;
+			typedef rb_tree_node<T>							Node;
 			typedef rb_tree_node_base*						base_pointer;
-			typedef node*									pointer;
-			typedef const node*								const_pointer;
-			typedef node&									reference;
-			typedef const node&								const_reference;
+			typedef Node*									pointer;
+			typedef const Node*								const_pointer;
+			typedef Node&									reference;
+			typedef const Node&								const_reference;
 			typedef size_t									size_type;
 			typedef rb_tree_iterator<value_type>			iterator;
 			typedef rb_tree_iterator<const value_type>		const_iterator;
@@ -220,7 +222,7 @@ namespace ft
 
 				if (curr_node == NULL)
 				{
-					_alloc.construct(new_node, node(value, &_header, &_leaf, &_leaf, BLACK));
+					_alloc.construct(new_node, Node(value, &_header, &_leaf, &_leaf, BLACK));
 					_header.parent = new_node;
 					return (ft::make_pair(iterator(new_node), true));
 				}
@@ -251,29 +253,159 @@ namespace ft
 					{
 						prev_node->right = new_node;
 					}
-					_alloc.construct(new_node, node(value, prev_node, &_leaf, &_leaf));
+					_alloc.construct(new_node, Node(value, prev_node, &_leaf, &_leaf));
 				}
 				_header.node_count++;
-				// insertFix();
+				insert_fix(new_node);
 				return (ft::make_pair(iterator(new_node), true));
 			}
 
-			void	display_tabs(int size)
+			void
+			insert_fix(base_pointer node)
 			{
-				while (size)
+				base_pointer ptr;
+
+				while (node->parent->color == RED)
 				{
-					std::cout << "\x1b(0\x78\x1b(B\t";
-					size--;
+    				if (node->parent == node->parent->parent->right)
+					{
+						ptr = node->parent->parent->left;
+						if (ptr->color == RED)
+						{
+							ptr->color = BLACK;
+							node->parent->color = BLACK;
+							node->parent->parent->color = RED;
+							node = node->parent->parent;
+						}
+						else
+						{
+							if (node == node->parent->left)
+							{
+								node = node->parent;
+								right_rotate(node);
+							}
+							node->parent->color = BLACK;
+							node->parent->parent->color = RED;
+							left_rotate(node->parent->parent);
+						}
+					}
+					else
+					{
+        				ptr = node->parent->parent->right;
+
+        				if (ptr->color == RED)
+						{
+        					ptr->color = BLACK;
+        					node->parent->color = BLACK;
+							node->parent->parent->color = RED;
+							node = node->parent->parent;
+						}
+						else
+						{
+							if (node == node->parent->right)
+							{
+								node = node->parent;
+								left_rotate(node);
+							}
+							node->parent->color = BLACK;
+							node->parent->parent->color = RED;
+							right_rotate(node->parent->parent);
+						}
+    				}
+    				if (node == _header.parent)
+        				break;
 				}
+    			_header.parent->color = BLACK;
 			}
 
-			void	display_tree()
+			void
+			right_rotate(base_pointer node)
 			{
-				base_pointer node = _header.parent;
-				int height = 0;
-				bool is_right = true;
+				base_pointer ptr = node->left;
 
-				_display_tree(node, height, is_right);
+    			node->left = ptr->right;
+				if (ptr->right != &_leaf)
+				{
+					ptr->right->parent = node;
+				}
+				ptr->parent = node->parent;
+				if (node->parent == &_header)
+				{
+    				_header.parent = ptr;
+				}
+				else if (node == node->parent->right)
+				{
+					node->parent->right = ptr;
+				}
+				else
+				{
+					node->parent->left = ptr;
+				}
+				ptr->right = node;
+				node->parent = ptr;
+			}
+
+			void
+			left_rotate(base_pointer node)
+			{
+				base_pointer ptr = node->right;
+
+    			node->right = ptr->left;
+				if (ptr->left != &_leaf)
+				{
+					ptr->left->parent = node;
+				}
+				ptr->parent = node->parent;
+				if (node->parent == &_header)
+				{
+    				_header.parent = ptr;
+				}
+				else if (node == node->parent->left)
+				{
+					node->parent->left = ptr;
+				}
+				else
+				{
+					node->parent->right = ptr;
+				}
+				ptr->left = node;
+				node->parent = ptr;
+			}
+
+			void
+			print_key(pointer node)
+			{
+				std::string color;
+
+				if (node->color == BLACK)
+					color = "\033[40m";
+				else
+					color = "\033[41m";
+				if (node == &_leaf)
+					std::cout << color << "NIL";
+				else
+					std::cout << color << node->data.first;
+				std::cout << "\033[49m" << std::endl;
+			}
+
+			void
+			print_tree(const std::string& prefix, base_pointer node, bool is_right = true)
+			{
+				std::cout << prefix;
+				std::cout << (is_right ? "└──" : "├──" );
+				print_key(static_cast<pointer>(node));
+				if (node == &_leaf)
+					return ;
+				print_tree(prefix + (is_right ? "\t" : "│\t"), node->left, false);
+				print_tree(prefix + (is_right ? "\t" : "│\t"), node->right, true);
+			}
+
+			void
+			print_tree(void)
+			{
+				base_pointer root = _header.parent;
+
+				print_tree("", root);
 			}
 
 		private:
@@ -282,25 +414,32 @@ namespace ft
 			allocator_type		_alloc;
 			Compare				_comp;
 
-			void
-			_display_tree(base_pointer node, int height, bool is_right)
+
+
+
+			size_t
+			_count_height(base_pointer node, size_t height = 0, size_t max_height = 0)
 			{
-				std::string horiz = "\x1b(0\x71\x1b(B";
+				if (node == &_leaf)
+				{
+					if (height > max_height)
+						return (height);
+					return (max_height);
+				}
+				max_height = _count_height(node->left, height + 1, max_height);
+				return (_count_height(node->right, height + 1, max_height));
+			}
+
+			size_t
+			_count_leaf(base_pointer node)
+			{
+				int count = 0;
 
 				if (node == &_leaf)
-					return ;
-				display_tabs(height);
-				// if (is_right)
-				// 	std::cout << "\x1b(0\x74\x1b(B";
-				// else
-				// 	std::cout << "\x1b(0\x6d\x1b(B";
-				// if (node->color == BLACK)
-				// 	std::cout << "\033[41m";
-				// else
-				// 	std::cout << "\033[40m";
-				// std::cout << node->color << "\033[49m";
-				_display_tree(node->right, height + 1, true);
-				_display_tree(node->left, height + 1, false);
+					return (1);
+				count += _count_leaf(node->left);
+				count += _count_leaf(node->right);
+				return (count);
 			}
 
 

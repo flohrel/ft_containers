@@ -53,9 +53,9 @@ namespace ft
 
 			};
 
-			void	display_tree()
+			void	print_tree()
 			{
-				_bst.display_tree();
+				_bst.print_tree();
 			}
 
 		private:
