@@ -53,17 +53,6 @@ namespace ft
 
 			};
 
-			void	print_tree()
-			{
-				_bst.print_tree();
-			}
-
-		private:
-			Allocator							_alloc;
-			Compare								_comp;
-			rb_tree<value_type, Key, Compare>	_bst;
-
-		public:
 			explicit map(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
 				: _alloc(alloc), _comp(comp), _bst()
 			{ }
@@ -75,8 +64,8 @@ namespace ft
 			// map(const map& other)
 			// { }
 
-			// ~map()
-			// { }
+			~map()
+			{ clear(); }
 
 			map&
 			operator=(const map& rhs)
@@ -93,6 +82,39 @@ namespace ft
 			allocator_type
 			get_allocator() const
 			{ return (allocator_type(_alloc)); }
+
+		/* 
+		**	ELEMENT ACCESS
+		*/
+			mapped_type&
+			at(const Key& key)
+			{
+				iterator it = find(key);
+
+				if (it == end())
+				{
+        			throw (std::out_of_range("map::at - index out of range"));
+				}
+				return (it->second);
+			}
+
+			const mapped_type&
+			at(const Key& key) const
+			{
+				const_iterator it = find(key);
+
+				if (it == end())
+				{
+        			throw (std::out_of_range("map::at - index out of range"));
+				}
+				return (it->second);
+			}
+
+			mapped_type&
+			operator[](const Key& key)
+			{
+				return (_bst.insert(ft::make_pair(key, mapped_type())).first->second);
+			}
 
 		/* 
 		**	ITERATORS
@@ -180,7 +202,15 @@ namespace ft
 			const_iterator
 			find( const Key& key ) const
 			{ return (_bst.find(key)); }
+
+			void
+			print_tree()
+			{ _bst.print_tree(); }
 			
+		private:
+			Allocator							_alloc;
+			Compare								_comp;
+			rb_tree<value_type, Key, Compare>	_bst;
 
 	};
 }

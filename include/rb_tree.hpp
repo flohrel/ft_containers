@@ -297,8 +297,11 @@ namespace ft
 			void
 			clear()
 			{
-				_clear(root());
-				_header.reset();
+				if (root() != NULL)
+				{
+					_clear(root());
+					_header.reset();
+				}
 			}
 
 			ft::pair<iterator, bool>
@@ -518,7 +521,7 @@ namespace ft
 
 				if (curr_key == to_find)
 					return (node);
-				else if (_comp(to_find, curr_key))
+				else if (_comp(to_find, curr_key) == true)
 					return (_find(node->left, to_find));
 				else
 					return (_find(node->right, to_find));

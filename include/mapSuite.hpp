@@ -76,6 +76,13 @@ class MapTestSuite : public CxxTest::TestSuite
 			std::cout << (*it).first << "/" << (*it).second << std::endl;
 		}
 
+		void	testAt()
+		{
+			std::cout << map1.at("quux") << std::endl;
+			map1["quux"] = 666;
+			std::cout << map1["quux"] << std::endl;
+		}
+
 		// void	testDummy()
 		// {
 		// 	test.insert(std::make_pair("foo", 42));
