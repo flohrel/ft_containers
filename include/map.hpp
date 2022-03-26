@@ -101,7 +101,7 @@ namespace ft
 			begin()
 			{ return (_bst.begin()); }
 
-			const iterator
+			const_iterator
 			begin() const
 			{ return (_bst.begin()); }
 
@@ -109,9 +109,25 @@ namespace ft
 			end()
 			{ return (_bst.end()); }
 
-			const iterator
+			const_iterator
 			end() const
 			{ return (_bst.end()); }
+
+			reverse_iterator
+			rbegin()
+			{ return (_bst.rbegin()); }
+
+			const_reverse_iterator
+			rbegin() const
+			{ return (_bst.rbegin()); }
+
+			reverse_iterator
+			rend()
+			{ return (_bst.rend()); }
+
+			const_reverse_iterator
+			rend() const
+			{ return (_bst.rend()); }
 
 		/* 
 		**	CAPACITY
@@ -137,19 +153,25 @@ namespace ft
 				return (_bst.insert(value));
 			}
 
-			// iterator
-			// insert(iterator hint, const value_type& value)
-			// {}
+			iterator
+			insert(iterator hint, const value_type& value)
+			{
+				return (_bst.insert(value).first);
+			}
 
-			// template<class InputIt>
-			// void
-			// insert(InputIt first, InputIt last)
-			// {}
+			template<class InputIt>
+			void
+			insert(InputIt first, InputIt last)
+			{
+				for (; first != last; first++)
+				{
+					insert(*first);
+				}
+			}
 
-			// void
-			// clear()
-			// {
-			// }
+			void
+			clear()
+			{ _bst.clear(); }
 			
 
 	};

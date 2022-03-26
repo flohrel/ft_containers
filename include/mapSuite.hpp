@@ -31,8 +31,16 @@ class MapTestSuite : public CxxTest::TestSuite
 			map1.insert(ft::make_pair("test", 42));
 			map1.insert(ft::make_pair("zest", 42));
 			map1.insert(ft::make_pair("zzz", 42));
+			map1.insert(test2.first, ft::make_pair("nouille", 42));
+			std::cout << std::endl;
+			map2.insert(map1.begin(), map1.end());
+			map2.print_tree();
 			std::cout << std::endl;
 			map1.print_tree();
+			std::cout << std::endl;
+			map2.clear();
+			std::cout << std::endl;
+			map2.print_tree();
 		}
 
 		void	testIterator(void)

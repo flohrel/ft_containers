@@ -129,7 +129,7 @@ namespace ft
 
 			reference
 			operator*() const
-			{ return (*static_cast<link_type>(_current)->data); }
+			{ return (static_cast<link_type>(_current)->data); }
 
 			pointer
 			operator->() const
@@ -192,13 +192,13 @@ namespace ft
 				return (tmp);
 			}
 
-			friend bool
-			operator==(const rb_tree_iterator& rhs, const rb_tree_iterator& lhs)
-    		{ return (rhs._current == lhs._current); }
+			bool
+			operator==(const rb_tree_iterator& it)
+    		{ return (_current == it._current); }
 
-			friend bool
-			operator!=(const rb_tree_iterator& rhs, const rb_tree_iterator& lhs)
-    		{ return (rhs._current == lhs._current); }
+			bool
+			operator!=(const rb_tree_iterator& it)
+    		{ return (_current != it._current); }
 
 	};
 
@@ -259,13 +259,17 @@ namespace ft
 				return (*this);
 			}
 
+			base_pointer
+			root()
+			{ return (_header.parent); }
+
 			iterator
 			begin()
 			{ return (iterator(_header.left)); }
 
 			const iterator
 			begin() const
-			{ return (iterator(_header.left)); }
+			{ return (const_iterator(_header.left)); }
 
 			iterator
 			end()
@@ -273,7 +277,47 @@ namespace ft
 
 			const iterator
 			end() const
-			{ return (iterator(_header.right)); }
+			{ return (const_iterator(_header.right)); }
+
+			reverse_iterator
+			rbegin()
+			{ return (reverse_iterator(end())); }
+
+			const_reverse_iterator
+			rbegin() const
+			{ return (const_reverse_iterator(end())); }
+
+			reverse_iterator
+			rend()
+			{ return (reverse_iterator(begin())); }
+
+			const_reverse_iterator
+			rend() const
+			{ return (const_reverse_iterator(begin())); }
+
+			void
+			clear(base_pointer node)
+			{
+				if (node->left != &_leaf)
+				{
+					clear(node->left);
+					_alloc.destroy(static_cast<pointer>(node->left));
+					_alloc.deallocate(static_cast<pointer>(node->left), 1);
+				}
+				if (node->right != &_leaf)
+				{
+					clear(node->right);
+					_alloc.destroy(static_cast<pointer>(node->right));
+					_alloc.deallocate(static_cast<pointer>(node->right), 1);
+				}
+			}
+
+			void
+			clear()
+			{
+				clear(root());
+				_header.reset();
+			}
 
 			ft::pair<iterator, bool>
 			insert(const value_type& value)
@@ -468,9 +512,9 @@ namespace ft
 			void
 			print_tree(void)
 			{
-				base_pointer root = _header.parent;
-
-				print_tree("", root);
+				if (root() == NULL)
+					return ;
+				print_tree("", root());
 			}
 
 		private:
