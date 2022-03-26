@@ -221,7 +221,6 @@ namespace ft
 			typedef ft::reverse_iterator<iterator>			reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
-		public:
 			rb_tree(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
 				: _alloc(alloc), _comp(comp)
 			{
@@ -296,26 +295,9 @@ namespace ft
 			{ return (const_reverse_iterator(begin())); }
 
 			void
-			clear(base_pointer node)
-			{
-				if (node->left != &_leaf)
-				{
-					clear(node->left);
-					_alloc.destroy(static_cast<pointer>(node->left));
-					_alloc.deallocate(static_cast<pointer>(node->left), 1);
-				}
-				if (node->right != &_leaf)
-				{
-					clear(node->right);
-					_alloc.destroy(static_cast<pointer>(node->right));
-					_alloc.deallocate(static_cast<pointer>(node->right), 1);
-				}
-			}
-
-			void
 			clear()
 			{
-				clear(root());
+				_clear(root());
 				_header.reset();
 			}
 
@@ -391,11 +373,11 @@ namespace ft
 							if (node == node->parent->left)
 							{
 								node = node->parent;
-								right_rotate(node);
+								_right_rotate(node);
 							}
 							node->parent->color = BLACK;
 							node->parent->parent->color = RED;
-							left_rotate(node->parent->parent);
+							_left_rotate(node->parent->parent);
 						}
 					}
 					else
@@ -414,11 +396,11 @@ namespace ft
 							if (node == node->parent->right)
 							{
 								node = node->parent;
-								left_rotate(node);
+								_left_rotate(node);
 							}
 							node->parent->color = BLACK;
 							node->parent->parent->color = RED;
-							right_rotate(node->parent->parent);
+							_right_rotate(node->parent->parent);
 						}
     				}
     				if (node == _header.parent)
@@ -427,58 +409,20 @@ namespace ft
     			_header.parent->color = BLACK;
 			}
 
-			void
-			right_rotate(base_pointer node)
+			iterator
+			find(const Key& key)
 			{
-				base_pointer ptr = node->left;
-
-    			node->left = ptr->right;
-				if (ptr->right != &_leaf)
-				{
-					ptr->right->parent = node;
-				}
-				ptr->parent = node->parent;
-				if (node->parent == &_header)
-				{
-    				_header.parent = ptr;
-				}
-				else if (node == node->parent->right)
-				{
-					node->parent->right = ptr;
-				}
-				else
-				{
-					node->parent->left = ptr;
-				}
-				ptr->right = node;
-				node->parent = ptr;
+				if (root() == NULL)
+					return (end());
+				return (iterator(_find(root(), key)));
 			}
 
-			void
-			left_rotate(base_pointer node)
+			const_iterator
+			find(const Key& key) const
 			{
-				base_pointer ptr = node->right;
-
-    			node->right = ptr->left;
-				if (ptr->left != &_leaf)
-				{
-					ptr->left->parent = node;
-				}
-				ptr->parent = node->parent;
-				if (node->parent == &_header)
-				{
-    				_header.parent = ptr;
-				}
-				else if (node == node->parent->left)
-				{
-					node->parent->left = ptr;
-				}
-				else
-				{
-					node->parent->right = ptr;
-				}
-				ptr->left = node;
-				node->parent = ptr;
+				if (root() == NULL)
+					return (end());
+				return (const_iterator(_find(root(), key)));
 			}
 
 			void
@@ -518,11 +462,6 @@ namespace ft
 			}
 
 		private:
-			rb_tree_node_base	_leaf;
-			rb_tree_header		_header;
-			allocator_type		_alloc;
-			Compare				_comp;
-
 			size_t
 			_count_height(base_pointer node, size_t height = 0, size_t max_height = 0)
 			{
@@ -548,6 +487,101 @@ namespace ft
 				return (count);
 			}
 
+			void
+			_clear(base_pointer node)
+			{
+				pointer ptr = NULL;
+
+				if (node->left != &_leaf)
+				{
+					_clear(node->left);
+					ptr = static_cast<pointer>(node->left);
+					_alloc.destroy(ptr);
+					_alloc.deallocate(ptr, 1);
+				}
+				if (node->right != &_leaf)
+				{
+					_clear(node->right);
+					ptr = static_cast<pointer>(node->right);
+					_alloc.destroy(ptr);
+					_alloc.deallocate(ptr, 1);
+				}
+			}
+
+			base_pointer
+			_find(base_pointer node, const Key& to_find)
+			{
+				if (node == &_leaf)
+					return (static_cast<base_pointer>(&_header));
+
+				const Key curr_key = static_cast<pointer>(node)->data.first;
+
+				if (curr_key == to_find)
+					return (node);
+				else if (_comp(to_find, curr_key))
+					return (_find(node->left, to_find));
+				else
+					return (_find(node->right, to_find));
+			}
+
+			void
+			_right_rotate(base_pointer node)
+			{
+				base_pointer ptr = node->left;
+
+    			node->left = ptr->right;
+				if (ptr->right != &_leaf)
+				{
+					ptr->right->parent = node;
+				}
+				ptr->parent = node->parent;
+				if (node->parent == &_header)
+				{
+    				_header.parent = ptr;
+				}
+				else if (node == node->parent->right)
+				{
+					node->parent->right = ptr;
+				}
+				else
+				{
+					node->parent->left = ptr;
+				}
+				ptr->right = node;
+				node->parent = ptr;
+			}
+
+			void
+			_left_rotate(base_pointer node)
+			{
+				base_pointer ptr = node->right;
+
+    			node->right = ptr->left;
+				if (ptr->left != &_leaf)
+				{
+					ptr->left->parent = node;
+				}
+				ptr->parent = node->parent;
+				if (node->parent == &_header)
+				{
+    				_header.parent = ptr;
+				}
+				else if (node == node->parent->left)
+				{
+					node->parent->left = ptr;
+				}
+				else
+				{
+					node->parent->right = ptr;
+				}
+				ptr->left = node;
+				node->parent = ptr;
+			}
+
+			rb_tree_node_base	_leaf;
+			rb_tree_header		_header;
+			allocator_type		_alloc;
+			Compare				_comp;
 
 	};
 

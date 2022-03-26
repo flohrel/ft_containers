@@ -172,6 +172,14 @@ namespace ft
 			void
 			clear()
 			{ _bst.clear(); }
+
+			iterator
+			find( const Key& key )
+			{ return (_bst.find(key)); }
+
+			const_iterator
+			find( const Key& key ) const
+			{ return (_bst.find(key)); }
 			
 
 	};

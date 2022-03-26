@@ -41,6 +41,7 @@ class MapTestSuite : public CxxTest::TestSuite
 			map2.clear();
 			std::cout << std::endl;
 			map2.print_tree();
+
 		}
 
 		void	testIterator(void)
@@ -66,6 +67,13 @@ class MapTestSuite : public CxxTest::TestSuite
 			--it2;
 			std::cout << it2->first << std::endl;
 
+		}
+
+		void	testFind()
+		{
+			ft::map<std::string, int>::iterator it = map1.find("buidi");
+
+			std::cout << (*it).first << "/" << (*it).second << std::endl;
 		}
 
 		// void	testDummy()
