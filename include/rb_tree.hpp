@@ -127,6 +127,10 @@ namespace ft
 			~rb_tree_iterator(void)
 			{ }
 
+			const base_ptr&
+			base(void) const
+			{ return (_current); }
+
 			reference
 			operator*() const
 			{ return (static_cast<link_type>(_current)->data); }
@@ -206,6 +210,7 @@ namespace ft
 	class rb_tree
 	{
 		public:
+
 			typedef Allocator								allocator_type;
 			typedef T										value_type;
 			typedef Key										key_type;
@@ -297,10 +302,58 @@ namespace ft
 			void
 			clear()
 			{
-				if (root() != NULL)
+				pointer	root = static_cast<pointer>(_header.parent);
+
+				if (root != NULL)
 				{
-					_clear(root());
+					_clear(root);
+					_alloc.destroy(root);
+					_alloc.deallocate(root, 1);
 					_header.reset();
+				}
+			}
+
+			void
+			erase(base_pointer node)
+			{
+				base_pointer	ptr1 = node, ptr2;
+				rb_tree_color	orig_color = ptr1->color;
+
+				if (node->left == &_leaf)
+				{
+					ptr2 = node->right;
+					_node_transplant(node, node->right);
+				}
+				else if (node->right == &_leaf)
+				{
+					ptr2 = node->left;
+					_node_transplant(node, node->left);
+				}
+				else
+				{
+					ptr1 = rb_minimum(node->right);
+					orig_color = ptr1->color;
+					ptr2 = ptr1->right;
+					if (ptr1->parent == node)
+					{
+						ptr1->parent = ptr1;
+					}
+					else
+					{
+						_node_transplant(ptr1, ptr1->right);
+						ptr1->right = node->right;
+						ptr1->right->parent = ptr1;
+					}
+					_node_transplant(node, ptr1);
+					ptr1->left = node->left;
+					ptr1->left->parent = ptr1;
+					ptr1->color = node->color;
+				}
+				_alloc.destroy(static_cast<pointer>(node));
+				_alloc.deallocate(static_cast<pointer>(node), 1);
+				if (orig_color == BLACK)
+				{
+					_delete_fix(ptr2);
 				}
 			}
 
@@ -325,6 +378,7 @@ namespace ft
 						curr_key = static_cast<pointer>(curr_node)->data.first;
 						if (value.first == curr_key)
 						{
+							_alloc.deallocate(new_node, 1);
 							return (ft::make_pair(iterator(curr_node), false));
 						}
 						prev_node = curr_node;
@@ -348,14 +402,132 @@ namespace ft
 					_alloc.construct(new_node, Node(value, prev_node, &_leaf, &_leaf));
 				}
 				_header.node_count++;
-				insert_fix(new_node);
+				_insert_fix(new_node);
 				_header.left = rb_minimum(_header.parent);
 				_header.right = rb_maximum(_header.parent);
 				return (ft::make_pair(iterator(new_node), true));
 			}
 
+			iterator
+			find(const Key& key)
+			{
+				if (root() == NULL)
+					return (end());
+				return (iterator(_find(root(), key)));
+			}
+
+			const_iterator
+			find(const Key& key) const
+			{
+				if (root() == NULL)
+					return (end());
+				return (const_iterator(_find(root(), key)));
+			}
+
 			void
-			insert_fix(base_pointer node)
+			print_tree(void)
+			{
+				if (root() == NULL)
+					return ;
+				_print_tree("", root());
+			}
+
+
+		private:
+
+			void
+			_node_transplant(base_pointer x, base_pointer y)
+			{
+				if (x->parent == NULL)
+				{
+					_header.parent = y;
+				}
+				else if (x == x->parent->left)
+				{
+					x->parent->left = y;
+				}
+				else
+				{
+					x->parent->right = y;
+				}
+				y->parent = x->parent;
+			}
+
+			void
+			_delete_fix(base_pointer node)
+			{
+				base_pointer	ptr;
+				
+				while ((node != _header.parent) && (node->color == BLACK))
+				{
+					if (node == node->parent->left)
+					{
+    					ptr = node->parent->right;
+						if (ptr->color == RED)
+						{
+							ptr->color = BLACK;
+							node->parent->color = RED;
+        					_left_rotate(node->parent);
+							ptr = node->parent->right;
+						}
+						if ((ptr->left->color == BLACK) && (ptr->right->color == BLACK))
+						{
+							ptr->color = RED;
+							node = node->parent;
+						}
+						else
+						{
+							if (ptr->right->color == BLACK)
+							{
+								ptr->left->color = BLACK;
+								ptr->color = RED;
+								_right_rotate(ptr);
+								ptr = node->parent->right;
+							}
+							ptr->color = node->parent->color;
+							node->parent->color = BLACK;
+							ptr->right->color = BLACK;
+							_left_rotate(node->parent);
+							node = _header.parent;
+						}
+					}
+					else
+					{
+						ptr = node->parent->left;
+						if (ptr->color == RED)
+						{
+							ptr->color = BLACK;
+							node->parent->color = RED;
+							_right_rotate(node->parent);
+							ptr = node->parent->left;
+						}
+						if ((ptr->right->color == BLACK) && (ptr->right->color == BLACK))
+						{
+							ptr->color = RED;
+							node = node->parent;
+						}
+						else
+						{
+							if (ptr->left->color == BLACK)
+							{
+								ptr->right->color = BLACK;
+								ptr->color = RED;
+								_left_rotate(ptr);
+								ptr = node->parent->left;
+							}
+							ptr->color = node->parent->color;
+							node->parent->color = BLACK;
+							ptr->left->color = BLACK;
+							_right_rotate(node->parent);
+							node = _header.parent;
+						}
+					}
+				}
+				node->color = BLACK;
+			}
+
+			void
+			_insert_fix(base_pointer node)
 			{
 				base_pointer ptr;
 
@@ -412,24 +584,8 @@ namespace ft
     			_header.parent->color = BLACK;
 			}
 
-			iterator
-			find(const Key& key)
-			{
-				if (root() == NULL)
-					return (end());
-				return (iterator(_find(root(), key)));
-			}
-
-			const_iterator
-			find(const Key& key) const
-			{
-				if (root() == NULL)
-					return (end());
-				return (const_iterator(_find(root(), key)));
-			}
-
 			void
-			print_key(pointer node)
+			_print_key(pointer node)
 			{
 				std::string color;
 
@@ -445,26 +601,17 @@ namespace ft
 			}
 
 			void
-			print_tree(const std::string& prefix, base_pointer node, bool is_right = true)
+			_print_tree(const std::string& prefix, base_pointer node, bool is_right = true)
 			{
 				std::cout << prefix;
 				std::cout << (is_right ? "└──" : "├──" );
-				print_key(static_cast<pointer>(node));
+				_print_key(static_cast<pointer>(node));
 				if (node == &_leaf)
 					return ;
-				print_tree(prefix + (is_right ? "\t" : "│\t"), node->left, false);
-				print_tree(prefix + (is_right ? "\t" : "│\t"), node->right, true);
+				_print_tree(prefix + (is_right ? "\t" : "│\t"), node->left, false);
+				_print_tree(prefix + (is_right ? "\t" : "│\t"), node->right, true);
 			}
 
-			void
-			print_tree(void)
-			{
-				if (root() == NULL)
-					return ;
-				print_tree("", root());
-			}
-
-		private:
 			size_t
 			_count_height(base_pointer node, size_t height = 0, size_t max_height = 0)
 			{

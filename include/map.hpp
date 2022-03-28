@@ -112,9 +112,7 @@ namespace ft
 
 			mapped_type&
 			operator[](const Key& key)
-			{
-				return (_bst.insert(ft::make_pair(key, mapped_type())).first->second);
-			}
+			{ return (_bst.insert(ft::make_pair(key, mapped_type())).first->second); }
 
 		/* 
 		**	ITERATORS
@@ -190,6 +188,10 @@ namespace ft
 					insert(*first);
 				}
 			}
+
+			void
+			erase(iterator pos)
+			{ _bst.erase(pos.base()); }
 
 			void
 			clear()

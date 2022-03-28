@@ -36,7 +36,7 @@ namespace ft
 				: _current(it.base())
 			{ }
 
-			virtual ~random_access_iterator(void)
+			~random_access_iterator(void)
 			{ }
 
 			const Iterator&

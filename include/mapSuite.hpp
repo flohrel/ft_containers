@@ -83,6 +83,12 @@ class MapTestSuite : public CxxTest::TestSuite
 			std::cout << map1["quux"] << std::endl;
 		}
 
+		void	testErase()
+		{
+			map1.erase(map1.find("quux"));
+			map1.print_tree();
+		}
+
 		// void	testDummy()
 		// {
 		// 	test.insert(std::make_pair("foo", 42));
