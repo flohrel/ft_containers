@@ -127,6 +127,13 @@ namespace ft
 			~rb_tree_iterator(void)
 			{ }
 
+			self&
+			operator=(const self& rhs)
+			{
+				_current = rhs.base();
+				return (*this);
+			}
+
 			const base_ptr&
 			base(void) const
 			{ return (_current); }
@@ -277,11 +284,11 @@ namespace ft
 
 			iterator
 			end()
-			{ return (iterator(_header.right)); }
+			{ return (iterator(&_header)); }
 
 			const iterator
 			end() const
-			{ return (const_iterator(_header.right)); }
+			{ return (const_iterator(&_header)); }
 
 			reverse_iterator
 			rbegin()

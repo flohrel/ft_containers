@@ -191,7 +191,40 @@ namespace ft
 
 			void
 			erase(iterator pos)
-			{ _bst.erase(pos.base()); }
+			{
+				if (pos == end())
+				{
+					return ;
+				}
+				if (find(pos->first) != end())
+				{
+					_bst.erase(pos.base());
+				}
+			}
+
+			void
+			erase(iterator first, iterator last)
+			{
+				iterator	tmp = first;
+
+				if (tmp == end() || (find(tmp->first) == end()))
+				{
+					return ;
+				}
+				while (tmp != end())
+				{
+					if (tmp == last)
+					{
+						while (first != last)
+						{
+							tmp = first++;
+							erase(tmp);
+						}
+						break ;
+					}
+					tmp++;
+				}
+			}
 
 			void
 			clear()

@@ -87,6 +87,12 @@ class MapTestSuite : public CxxTest::TestSuite
 		{
 			map1.erase(map1.find("quux"));
 			map1.print_tree();
+
+			map1.erase(map1.find("bar"), map1.find("buidi"));
+			map1.print_tree();
+
+			map1.erase(map1.find("truc"));
+			map1.print_tree();
 		}
 
 		// void	testDummy()
