@@ -560,9 +560,11 @@ namespace ft
 				rb_tree_header	htmp;
 
 				tmp = _leaf;
-				htmp.copy(_header);
 				_leaf = other._leaf;
-				copy(other._header);
+				other._leaf = tmp;
+
+				htmp.copy(*this);
+				copy(other);
 				other.copy(htmp);
 			}
 

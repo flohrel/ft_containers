@@ -93,11 +93,11 @@ class MapTestSuite : public CxxTest::TestSuite
 			map1.print_tree();
 		}
 
-		// void	testSwap()
-		// {
-		// 	map1.swap(map2);
-		// 	map2.print_tree();
-		// }
+		void	testSwap()
+		{
+			map1.swap(map2);
+			map2.print_tree();
+		}
 
 		// void	testDummy()
 		// {
