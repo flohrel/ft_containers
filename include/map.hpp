@@ -57,12 +57,19 @@ namespace ft
 				: _alloc(alloc), _comp(comp), _bst()
 			{ }
 
-			// template<class InputIt>
-			// map(InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator())
-			// { }
+			template<class InputIt>
+			map(InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator(),
+					typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL)
+				: _alloc(alloc), _comp(comp), _bst()
+			{
+				insert(first, last);
+			}
 
-			// map(const map& other)
-			// { }
+			map(const map& other)
+				: _alloc(other._alloc), _comp(other._comp), _bst()
+			{
+				insert(other.begin(), other.end());
+			}
 
 			~map()
 			{ }
@@ -231,6 +238,13 @@ namespace ft
 			void
 			clear()
 			{ _bst.clear(); }
+
+		/* 
+		**	MODIFIERS
+		*/
+			size_type
+			count(const Key& key) const
+			{ return (_bst.find(key) != end()); }
 
 			iterator
 			find( const Key& key )

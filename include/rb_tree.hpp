@@ -412,6 +412,10 @@ namespace ft
 			root()
 			{ return (_header.parent); }
 
+			base_pointer
+			root() const
+			{ return (_header.parent); }
+
 			iterator
 			begin()
 			{ return (iterator(_header.left)); }
@@ -594,7 +598,6 @@ namespace ft
 
 
 		private:
-
 			void
 			_node_transplant(base_pointer x, base_pointer y)
 			{
@@ -818,11 +821,27 @@ namespace ft
 				}
 			}
 
+			const rb_tree_node_base*
+			_find(base_pointer node, const Key& to_find) const
+			{
+				if (node == _leaf)
+					return (&_header);
+
+				const Key curr_key = static_cast<pointer>(node)->data.first;
+
+				if (curr_key == to_find)
+					return (node);
+				else if (_comp(to_find, curr_key) == true)
+					return (_find(node->left, to_find));
+				else
+					return (_find(node->right, to_find));
+			}
+
 			base_pointer
 			_find(base_pointer node, const Key& to_find)
 			{
 				if (node == _leaf)
-					return (static_cast<base_pointer>(&_header));
+					return (&_header);
 
 				const Key curr_key = static_cast<pointer>(node)->data.first;
 

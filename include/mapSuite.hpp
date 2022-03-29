@@ -41,7 +41,14 @@ class MapTestSuite : public CxxTest::TestSuite
 			map2.clear();
 			std::cout << std::endl;
 			map2.print_tree();
+		}
 
+		void	testConstructor2(void)
+		{
+			ft::map<std::string, int> map3(map1.begin(), map1.end());
+			map3.print_tree();
+			ft::map<std::string, int> map4(map3);
+			map4.print_tree();
 		}
 
 		void	testIterator(void)
@@ -97,6 +104,14 @@ class MapTestSuite : public CxxTest::TestSuite
 		{
 			map1.swap(map2);
 			map2.print_tree();
+		}
+
+		void	testCount()
+		{
+			std::cout << map1.count("quux") << std::endl;
+			std::cout << map2.count("quux") << std::endl;
+			std::cout << map1.count("buidi") << std::endl;
+			std::cout << map2.count("buidi") << std::endl;
 		}
 
 		// void	testDummy()
