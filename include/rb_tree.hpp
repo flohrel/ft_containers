@@ -19,7 +19,8 @@ namespace ft
 
 	struct rb_tree_node_base
 	{
-		typedef rb_tree_node_base*	base_ptr;
+		typedef rb_tree_node_base*			base_ptr;
+		typedef const rb_tree_node_base*	const_base_ptr;
 
 		rb_tree_color	color;
 		base_ptr		parent;
@@ -47,32 +48,38 @@ namespace ft
 
 	};
 
-	struct rb_tree_header : public rb_tree_node_base
+	struct rb_tree_header
 	{
 		size_t				node_count;
 
 		rb_tree_header()
-			: node_count(0)
-		{ }
+		{
+			_header.color = RED;
+			reset();
+		}
 
 		void
 		reset()
 		{
 			node_count = 0;
-			parent = NULL;
-			left = NULL;
-			right = NULL;
+			_header.parent = NULL;
+			_header.left = &_header;
+			_header.right = &_header;
 		}
 
 		void
 		copy(const rb_tree_header& x)
 		{
-			color = x.color;
-			parent = x.parent;
-			left = x.left;
-			right = x.right;
+			_header.color = x._header.color;
+			_header.parent = x._header.parent;
+			_header.left = x._header.left;
+			_header.right = x._header.right;
 			node_count = x.node_count;
 		}
+
+
+		protected:
+			rb_tree_node_base	_header;
 
 	};
 
@@ -91,6 +98,9 @@ namespace ft
 
 		rb_tree_node(value_type val, base_ptr p, base_ptr l, base_ptr r, rb_tree_color c = RED)
 		 : rb_tree_node_base(p, l, r, c), data(val)
+		{ }
+
+		~rb_tree_node()
 		{ }
 
 	};
@@ -213,47 +223,172 @@ namespace ft
 
 	};
 
+	template<typename T>
+	struct rb_tree_const_iterator
+	{
+		typedef T									value_type;
+    	typedef const T&							reference;
+    	typedef const T*							pointer;
+    	typedef ptrdiff_t							difference_type;
+		typedef bidirectional_iterator_tag			iterator_category;
+
+		typedef rb_tree_iterator<T>					iterator;
+    	typedef	rb_tree_const_iterator<T>			self;
+    	typedef rb_tree_node_base::const_base_ptr	base_ptr;
+    	typedef const rb_tree_node<T>*				link_type;
+
+		protected:
+			base_ptr	_current;
+
+		public:
+			rb_tree_const_iterator()
+				: _current()
+			{ }
+
+			rb_tree_const_iterator(base_ptr node)
+				: _current(node)
+			{ }
+
+			rb_tree_const_iterator(const iterator& it)
+				: _current(it._current)
+			{ }
+
+			~rb_tree_const_iterator(void)
+			{ }
+
+			self&
+			operator=(const self& rhs)
+			{
+				_current = rhs.base();
+				return (*this);
+			}
+
+			const base_ptr&
+			base(void) const
+			{ return (_current); }
+
+			reference
+			operator*() const
+			{ return (static_cast<link_type>(_current)->data); }
+
+			pointer
+			operator->() const
+			{ return (&static_cast<link_type>(_current)->data); }
+
+			self&
+			operator++()
+			{
+				if (_current->right->right != NULL)
+				{
+					_current = rb_minimum(_current->right);
+					return (*this);
+				}
+
+    			base_ptr ptr = _current->parent;
+
+				while ((ptr != ptr->parent) && (_current == ptr->right))
+				{
+					_current = ptr;
+    				ptr = ptr->parent;
+				}
+				if (_current->right != ptr)
+					_current = ptr;
+				return (*this);
+			}
+
+			self
+			operator++(int)
+			{
+				self tmp = *this;
+				operator++();
+				return (tmp);
+			}
+
+			self&
+			operator--()
+			{
+				if (_current->left->left != 0)
+    			{
+        			_current = rb_maximum(_current->left);
+    			}
+				else
+				{
+					base_ptr ptr = _current->parent;
+					while ((ptr != ptr->parent) && (_current == ptr->left))
+					{
+						_current = ptr;
+						ptr = ptr->parent;
+					}
+					_current = ptr;
+				}
+				return (*this);
+			}
+
+			self
+			operator--(int)
+			{
+				self tmp = *this;
+				operator--();
+				return (tmp);
+			}
+
+			bool
+			operator==(const self& it)
+    		{ return (_current == it._current); }
+
+			bool
+			operator!=(const self& it)
+    		{ return (_current != it._current); }
+
+	};
+
 	template<typename T, typename Key, typename Compare, typename Allocator = std::allocator<rb_tree_node<T> > >
-	class rb_tree
+	class rb_tree : public rb_tree_header
 	{
 		public:
 
 			typedef Allocator								allocator_type;
 			typedef T										value_type;
 			typedef Key										key_type;
-			typedef rb_tree_node<T>							Node;
 			typedef rb_tree_node_base*						base_pointer;
+			typedef rb_tree_node<T>							Node;
 			typedef Node*									pointer;
 			typedef const Node*								const_pointer;
 			typedef Node&									reference;
 			typedef const Node&								const_reference;
 			typedef size_t									size_type;
 			typedef rb_tree_iterator<value_type>			iterator;
-			typedef rb_tree_iterator<const value_type>		const_iterator;
+			typedef rb_tree_const_iterator<value_type>		const_iterator;
 			typedef ft::reverse_iterator<iterator>			reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 			rb_tree(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
 				: _alloc(alloc), _comp(comp)
 			{
-				_leaf.color = BLACK;
-				_leaf.parent = NULL;
-				_leaf.left = NULL;
-				_leaf.right = NULL;
+				_leaf = _alloc.allocate(1);
+				_alloc.construct(_leaf, Node(value_type(), NULL, NULL, NULL, BLACK));
 			}
 
 			rb_tree(const rb_tree& x)
-				: rb_tree(), _alloc(x._alloc), _comp(x._comp)
+				: _alloc(x._alloc), _comp(x._comp)
 			{
-				_header.copy(x._header);
+				reset();
+				for (const_iterator it = x.begin(); it != x.end(); it++)
+				{
+					insert(*it);
+				}
 			}
 
 			~rb_tree()
-			{ }
+			{
+				clear();
+				_alloc.destroy(_leaf);
+				_alloc.deallocate(_leaf, 1);
+			}
 
 			size_t
 			size() const
-			{ return (_header.node_count); }
+			{ return (node_count); }
 
 			size_t
 			max_size()
@@ -264,8 +399,11 @@ namespace ft
 			{
 				if (this != &rhs)
 				{
-					_header.copy(rhs._header);
-					_alloc = rhs._alloc;
+					reset();
+					for (const_iterator it = rhs.begin(); it != rhs.end(); it++)
+					{
+						insert(*it);
+					}
 				}
 				return (*this);
 			}
@@ -278,7 +416,7 @@ namespace ft
 			begin()
 			{ return (iterator(_header.left)); }
 
-			const iterator
+			const_iterator
 			begin() const
 			{ return (const_iterator(_header.left)); }
 
@@ -286,7 +424,7 @@ namespace ft
 			end()
 			{ return (iterator(&_header)); }
 
-			const iterator
+			const_iterator
 			end() const
 			{ return (const_iterator(&_header)); }
 
@@ -316,7 +454,7 @@ namespace ft
 					_clear(root);
 					_alloc.destroy(root);
 					_alloc.deallocate(root, 1);
-					_header.reset();
+					reset();
 				}
 			}
 
@@ -326,12 +464,12 @@ namespace ft
 				base_pointer	ptr1 = node, ptr2;
 				rb_tree_color	orig_color = ptr1->color;
 
-				if (node->left == &_leaf)
+				if (node->left == _leaf)
 				{
 					ptr2 = node->right;
 					_node_transplant(node, node->right);
 				}
-				else if (node->right == &_leaf)
+				else if (node->right == _leaf)
 				{
 					ptr2 = node->left;
 					_node_transplant(node, node->left);
@@ -374,13 +512,13 @@ namespace ft
 
 				if (curr_node == NULL)
 				{
-					_alloc.construct(new_node, Node(value, &_header, &_leaf, &_leaf, BLACK));
+					_alloc.construct(new_node, Node(value, &_header, _leaf, _leaf, BLACK));
 					_header.parent = new_node;
 					return (ft::make_pair(iterator(new_node), true));
 				}
 				else
 				{
-					while (curr_node != &_leaf)
+					while (curr_node != _leaf)
 					{
 						curr_key = static_cast<pointer>(curr_node)->data.first;
 						if (value.first == curr_key)
@@ -406,13 +544,26 @@ namespace ft
 					{
 						prev_node->right = new_node;
 					}
-					_alloc.construct(new_node, Node(value, prev_node, &_leaf, &_leaf));
+					_alloc.construct(new_node, Node(value, prev_node, _leaf, _leaf));
 				}
-				_header.node_count++;
+				node_count++;
 				_insert_fix(new_node);
 				_header.left = rb_minimum(_header.parent);
 				_header.right = rb_maximum(_header.parent);
 				return (ft::make_pair(iterator(new_node), true));
+			}
+
+			void
+			swap(rb_tree& other)
+			{
+				pointer			tmp;
+				rb_tree_header	htmp;
+
+				tmp = _leaf;
+				htmp.copy(_header);
+				_leaf = other._leaf;
+				copy(other._header);
+				other.copy(htmp);
 			}
 
 			iterator
@@ -600,7 +751,7 @@ namespace ft
 					color = "\033[40m";
 				else
 					color = "\033[41m";
-				if (node == &_leaf)
+				if (node == _leaf)
 					std::cout << color << "NIL";
 				else
 					std::cout << color << node->data.first;
@@ -613,7 +764,7 @@ namespace ft
 				std::cout << prefix;
 				std::cout << (is_right ? "└──" : "├──" );
 				_print_key(static_cast<pointer>(node));
-				if (node == &_leaf)
+				if (node == _leaf)
 					return ;
 				_print_tree(prefix + (is_right ? "\t" : "│\t"), node->left, false);
 				_print_tree(prefix + (is_right ? "\t" : "│\t"), node->right, true);
@@ -622,7 +773,7 @@ namespace ft
 			size_t
 			_count_height(base_pointer node, size_t height = 0, size_t max_height = 0)
 			{
-				if (node == &_leaf)
+				if (node == _leaf)
 				{
 					if (height > max_height)
 						return (height);
@@ -637,7 +788,7 @@ namespace ft
 			{
 				int count = 0;
 
-				if (node == &_leaf)
+				if (node == _leaf)
 					return (1);
 				count += _count_leaf(node->left);
 				count += _count_leaf(node->right);
@@ -649,14 +800,14 @@ namespace ft
 			{
 				pointer ptr = NULL;
 
-				if (node->left != &_leaf)
+				if (node->left != _leaf)
 				{
 					_clear(node->left);
 					ptr = static_cast<pointer>(node->left);
 					_alloc.destroy(ptr);
 					_alloc.deallocate(ptr, 1);
 				}
-				if (node->right != &_leaf)
+				if (node->right != _leaf)
 				{
 					_clear(node->right);
 					ptr = static_cast<pointer>(node->right);
@@ -668,7 +819,7 @@ namespace ft
 			base_pointer
 			_find(base_pointer node, const Key& to_find)
 			{
-				if (node == &_leaf)
+				if (node == _leaf)
 					return (static_cast<base_pointer>(&_header));
 
 				const Key curr_key = static_cast<pointer>(node)->data.first;
@@ -687,7 +838,7 @@ namespace ft
 				base_pointer ptr = node->left;
 
     			node->left = ptr->right;
-				if (ptr->right != &_leaf)
+				if (ptr->right != _leaf)
 				{
 					ptr->right->parent = node;
 				}
@@ -714,7 +865,7 @@ namespace ft
 				base_pointer ptr = node->right;
 
     			node->right = ptr->left;
-				if (ptr->left != &_leaf)
+				if (ptr->left != _leaf)
 				{
 					ptr->left->parent = node;
 				}
@@ -735,8 +886,7 @@ namespace ft
 				node->parent = ptr;
 			}
 
-			rb_tree_node_base	_leaf;
-			rb_tree_header		_header;
+			pointer				_leaf;
 			allocator_type		_alloc;
 			Compare				_comp;
 
@@ -762,6 +912,25 @@ namespace ft
 		return (node);
 	}
 	
+	const rb_tree_node_base*
+	rb_minimum(const rb_tree_node_base *node)
+	{
+		while (node->left->left != NULL)
+		{
+			node = node->left;
+		}
+		return (node);
+	}
+
+	const rb_tree_node_base*
+	rb_maximum(const rb_tree_node_base *node)
+	{
+		while (node->right->right != NULL)
+		{
+			node = node->right;
+		}
+		return (node);
+	}
 }
 
 #endif

@@ -65,17 +65,12 @@ namespace ft
 			// { }
 
 			~map()
-			{ clear(); }
+			{ }
 
 			map&
 			operator=(const map& rhs)
 			{
-				if (this != &rhs)
-				{
-					_alloc = rhs._alloc;
-					_comp = rhs._comp;
-					_bst = rhs._bst;
-				}
+				_bst = rhs._bst;
 				return (*this);
 			}
 
@@ -181,7 +176,8 @@ namespace ft
 
 			template<class InputIt>
 			void
-			insert(InputIt first, InputIt last)
+			insert(InputIt first, InputIt last,
+					typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL)
 			{
 				for (; first != last; first++)
 				{
@@ -224,6 +220,12 @@ namespace ft
 					}
 					tmp++;
 				}
+			}
+
+			void
+			swap(map& other)
+			{
+				_bst.swap(other._bst);
 			}
 
 			void

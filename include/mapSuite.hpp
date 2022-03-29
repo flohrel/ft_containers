@@ -50,10 +50,8 @@ class MapTestSuite : public CxxTest::TestSuite
 			ft::map<std::string, int>::iterator it2 = map1.end();
 
 			std::cout << it->first << std::endl;
-			std::cout << it2->first << std::endl;
 			++it;
 			std::cout << it->first << std::endl;
-			++it2;
 			++it2;
 			std::cout << it2->first << std::endl;
 			--it2;
@@ -94,6 +92,12 @@ class MapTestSuite : public CxxTest::TestSuite
 			map1.erase(map1.find("truc"));
 			map1.print_tree();
 		}
+
+		// void	testSwap()
+		// {
+		// 	map1.swap(map2);
+		// 	map2.print_tree();
+		// }
 
 		// void	testDummy()
 		// {
