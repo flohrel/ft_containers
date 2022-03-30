@@ -238,6 +238,8 @@ namespace ft
 			void
 			swap(map& other)
 			{
+				std::swap(_alloc, other._alloc);
+				std::swap(_comp, other._comp);
 				_bst.swap(other._bst);
 			}
 
