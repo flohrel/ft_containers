@@ -169,6 +169,11 @@ namespace ft
 		/* 
 		**	MODIFIERS
 		*/
+
+			void
+			clear()
+			{ _bst.clear(); }
+
 			ft::pair<iterator, bool>
 			insert(const value_type& value)
 			{
@@ -178,6 +183,7 @@ namespace ft
 			iterator
 			insert(iterator hint, const value_type& value)
 			{
+				(void)hint;
 				return (_bst.insert(value).first);
 			}
 
@@ -235,9 +241,6 @@ namespace ft
 				_bst.swap(other._bst);
 			}
 
-			void
-			clear()
-			{ _bst.clear(); }
 
 		/* 
 		**	MODIFIERS
@@ -252,7 +255,31 @@ namespace ft
 
 			const_iterator
 			find( const Key& key ) const
-			{ return (_bst.find(key)); }
+			{ return (const_iterator(_bst.find(key))); }
+
+			ft::pair<iterator,iterator>
+			equal_range(const Key& key)
+			{ return (ft::make_pair<iterator,iterator>(lower_bound(key), upper_bound(key))); }
+	
+			ft::pair<const_iterator,const_iterator>
+			equal_range(const Key& key) const
+			{ return (ft::make_pair<const_iterator,const_iterator>(lower_bound(key), upper_bound(key))); }
+
+			iterator
+			lower_bound(const Key& key)
+			{ return (_bst.lower_bound(key)); }
+
+			const_iterator
+			lower_bound(const Key& key) const
+			{ return (const_iterator(lower_bound(key))); }
+
+			iterator
+			upper_bound(const Key& key)
+			{ return (_bst.upper_bound(key)); }
+
+			const_iterator
+			upper_bound(const Key& key) const
+			{ return (const_iterator(upper_bound(key))); }
 
 			void
 			print_tree()

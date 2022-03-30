@@ -6,8 +6,6 @@
 # include "utility.hpp"
 # include <iostream>
 # include <iomanip>
-#pragma clang diagnostic ignored "-Wunused-parameter"
-
 
 namespace ft
 {
@@ -46,6 +44,46 @@ namespace ft
 		~rb_tree_node_base()
 		{ }
 
+		static base_ptr
+		rb_minimum(rb_tree_node_base *node)
+		{
+			while (node->left->left != NULL)
+			{
+				node = node->left;
+			}
+			return (node);
+		}
+		
+		static const_base_ptr
+		rb_minimum(const rb_tree_node_base *node)
+		{
+			while (node->left->left != NULL)
+			{
+				node = node->left;
+			}
+			return (node);
+		}
+
+		static base_ptr
+		rb_maximum(rb_tree_node_base *node)
+		{
+			while (node->right->right != NULL)
+			{
+				node = node->right;
+			}
+			return (node);
+		}
+
+		static const_base_ptr
+		rb_maximum(const rb_tree_node_base *node)
+		{
+			while (node->right->right != NULL)
+			{
+				node = node->right;
+			}
+			return (node);
+		}
+
 	};
 
 	struct rb_tree_header
@@ -82,12 +120,6 @@ namespace ft
 			rb_tree_node_base	_header;
 
 	};
-
-	rb_tree_node_base*
-	rb_minimum(rb_tree_node_base *node);
-
-	rb_tree_node_base*
-	rb_maximum(rb_tree_node_base *node);
 
 	template<typename T>
 	struct rb_tree_node : public rb_tree_node_base
@@ -161,7 +193,7 @@ namespace ft
 			{
 				if (_current->right->right != NULL)
 				{
-					_current = rb_minimum(_current->right);
+					_current = rb_tree_node_base::rb_minimum(_current->right);
 					return (*this);
 				}
 
@@ -190,7 +222,7 @@ namespace ft
 			{
 				if (_current->left->left != 0)
     			{
-        			_current = rb_maximum(_current->left);
+        			_current = rb_tree_node_base::rb_maximum(_current->left);
     			}
 				else
 				{
@@ -280,7 +312,7 @@ namespace ft
 			{
 				if (_current->right->right != NULL)
 				{
-					_current = rb_minimum(_current->right);
+					_current = rb_tree_node_base::rb_minimum(_current->right);
 					return (*this);
 				}
 
@@ -309,7 +341,7 @@ namespace ft
 			{
 				if (_current->left->left != 0)
     			{
-        			_current = rb_maximum(_current->left);
+        			_current = rb_tree_node_base::rb_maximum(_current->left);
     			}
 				else
 				{
@@ -350,7 +382,7 @@ namespace ft
 			typedef Allocator								allocator_type;
 			typedef T										value_type;
 			typedef Key										key_type;
-			typedef rb_tree_node_base*						base_pointer;
+			typedef rb_tree_node_base*						base_ptr;
 			typedef rb_tree_node<T>							Node;
 			typedef Node*									pointer;
 			typedef const Node*								const_pointer;
@@ -382,8 +414,7 @@ namespace ft
 			~rb_tree()
 			{
 				clear();
-				_alloc.destroy(_leaf);
-				_alloc.deallocate(_leaf, 1);
+				_delete_node(_leaf);
 			}
 
 			size_t
@@ -408,11 +439,11 @@ namespace ft
 				return (*this);
 			}
 
-			base_pointer
+			base_ptr
 			root()
 			{ return (_header.parent); }
 
-			base_pointer
+			base_ptr
 			root() const
 			{ return (_header.parent); }
 
@@ -456,16 +487,15 @@ namespace ft
 				if (root != NULL)
 				{
 					_clear(root);
-					_alloc.destroy(root);
-					_alloc.deallocate(root, 1);
+					_delete_node(root);
 					reset();
 				}
 			}
 
 			void
-			erase(base_pointer node)
+			erase(base_ptr node)
 			{
-				base_pointer	ptr1 = node, ptr2;
+				base_ptr	ptr1 = node, ptr2;
 				rb_tree_color	orig_color = ptr1->color;
 
 				if (node->left == _leaf)
@@ -480,7 +510,7 @@ namespace ft
 				}
 				else
 				{
-					ptr1 = rb_minimum(node->right);
+					ptr1 = rb_tree_node_base::rb_minimum(node->right);
 					orig_color = ptr1->color;
 					ptr2 = ptr1->right;
 					if (ptr1->parent == node)
@@ -498,8 +528,7 @@ namespace ft
 					ptr1->left->parent = ptr1;
 					ptr1->color = node->color;
 				}
-				_alloc.destroy(static_cast<pointer>(node));
-				_alloc.deallocate(static_cast<pointer>(node), 1);
+				_delete_node(static_cast<pointer>(node));
 				if (orig_color == BLACK)
 				{
 					_delete_fix(ptr2);
@@ -511,8 +540,8 @@ namespace ft
 			{
 				pointer new_node = _alloc.allocate(1);
 				key_type curr_key;
-				base_pointer curr_node = _header.parent;
-				base_pointer prev_node = NULL;
+				base_ptr curr_node = _header.parent;
+				base_ptr prev_node = NULL;
 
 				if (curr_node == NULL)
 				{
@@ -552,8 +581,8 @@ namespace ft
 				}
 				node_count++;
 				_insert_fix(new_node);
-				_header.left = rb_minimum(_header.parent);
-				_header.right = rb_maximum(_header.parent);
+				_header.left = rb_tree_node_base::rb_minimum(_header.parent);
+				_header.right = rb_tree_node_base::rb_maximum(_header.parent);
 				return (ft::make_pair(iterator(new_node), true));
 			}
 
@@ -588,6 +617,22 @@ namespace ft
 				return (const_iterator(_find(root(), key)));
 			}
 
+			iterator
+			lower_bound(const Key& key)
+			{
+				if (root() == NULL)
+					return (end());
+				return (_lower_bound(root(), key));
+			}
+
+			iterator
+			upper_bound(const Key& key)
+			{
+				if (root() == NULL)
+					return (end());
+				return (_upper_bound(root(), key));
+			}
+
 			void
 			print_tree(void)
 			{
@@ -598,8 +643,16 @@ namespace ft
 
 
 		private:
+
 			void
-			_node_transplant(base_pointer x, base_pointer y)
+			_delete_node(pointer node)
+			{
+				_alloc.destroy(node);
+				_alloc.deallocate(node, 1);
+			}
+
+			void
+			_node_transplant(base_ptr x, base_ptr y)
 			{
 				if (x->parent == NULL)
 				{
@@ -617,11 +670,11 @@ namespace ft
 			}
 
 			void
-			_delete_fix(base_pointer node)
+			_delete_fix(base_ptr node)
 			{
-				base_pointer	ptr;
+				base_ptr	ptr;
 				
-				while ((node != _header.parent) && (node->color == BLACK))
+				while ((node != root()) && (node->color == BLACK))
 				{
 					if (node == node->parent->left)
 					{
@@ -651,7 +704,7 @@ namespace ft
 							node->parent->color = BLACK;
 							ptr->right->color = BLACK;
 							_left_rotate(node->parent);
-							node = _header.parent;
+							node = root();
 						}
 					}
 					else
@@ -664,7 +717,7 @@ namespace ft
 							_right_rotate(node->parent);
 							ptr = node->parent->left;
 						}
-						if ((ptr->right->color == BLACK) && (ptr->right->color == BLACK))
+						if ((ptr->left->color == BLACK) && (ptr->right->color == BLACK))
 						{
 							ptr->color = RED;
 							node = node->parent;
@@ -682,7 +735,7 @@ namespace ft
 							node->parent->color = BLACK;
 							ptr->left->color = BLACK;
 							_right_rotate(node->parent);
-							node = _header.parent;
+							node = root();
 						}
 					}
 				}
@@ -690,9 +743,9 @@ namespace ft
 			}
 
 			void
-			_insert_fix(base_pointer node)
+			_insert_fix(base_ptr node)
 			{
-				base_pointer ptr;
+				base_ptr ptr;
 
 				while (node->parent->color == RED)
 				{
@@ -764,7 +817,7 @@ namespace ft
 			}
 
 			void
-			_print_tree(const std::string& prefix, base_pointer node, bool is_right = true)
+			_print_tree(const std::string& prefix, base_ptr node, bool is_right = true)
 			{
 				std::cout << prefix;
 				std::cout << (is_right ? "└──" : "├──" );
@@ -776,7 +829,7 @@ namespace ft
 			}
 
 			size_t
-			_count_height(base_pointer node, size_t height = 0, size_t max_height = 0)
+			_count_height(base_ptr node, size_t height = 0, size_t max_height = 0)
 			{
 				if (node == _leaf)
 				{
@@ -789,7 +842,7 @@ namespace ft
 			}
 
 			size_t
-			_count_leaf(base_pointer node)
+			_count_leaf(base_ptr node)
 			{
 				int count = 0;
 
@@ -801,7 +854,7 @@ namespace ft
 			}
 
 			void
-			_clear(base_pointer node)
+			_clear(base_ptr node)
 			{
 				pointer ptr = NULL;
 
@@ -822,7 +875,7 @@ namespace ft
 			}
 
 			const rb_tree_node_base*
-			_find(base_pointer node, const Key& to_find) const
+			_find(base_ptr node, const Key& to_find) const
 			{
 				if (node == _leaf)
 					return (&_header);
@@ -837,8 +890,8 @@ namespace ft
 					return (_find(node->right, to_find));
 			}
 
-			base_pointer
-			_find(base_pointer node, const Key& to_find)
+			base_ptr
+			_find(base_ptr node, const Key& to_find)
 			{
 				if (node == _leaf)
 					return (&_header);
@@ -851,12 +904,56 @@ namespace ft
 					return (_find(node->left, to_find));
 				else
 					return (_find(node->right, to_find));
+			}
+
+			iterator
+			_lower_bound(base_ptr node, const Key& to_find)
+			{
+				const Key curr_key = static_cast<pointer>(node)->data.first;
+
+				if (curr_key == to_find)
+					return (iterator(node));
+				else if (_comp(to_find, curr_key) == true)
+				{
+					if (node->left != _leaf)
+						return (_lower_bound(node->left, to_find));
+					else
+						return (iterator(node));
+				}
+				else
+				{
+					if (node->right != _leaf)
+						return (_lower_bound(node->right, to_find));
+					else
+						return (++iterator(node));
+				}
+			}
+
+			iterator
+			_upper_bound(base_ptr node, const Key& to_find)
+			{
+				const Key curr_key = static_cast<pointer>(node)->data.first;
+
+				if (_comp(to_find, curr_key) == true)
+				{
+					if (node->left != _leaf)
+						return (_upper_bound(node->left, to_find));
+					else
+						return (iterator(node));
+				}
+				else
+				{
+					if (node->right != _leaf)
+						return (_upper_bound(node->right, to_find));
+					else
+						return (++iterator(node));
+				}
 			}
 
 			void
-			_right_rotate(base_pointer node)
+			_right_rotate(base_ptr node)
 			{
-				base_pointer ptr = node->left;
+				base_ptr ptr = node->left;
 
     			node->left = ptr->right;
 				if (ptr->right != _leaf)
@@ -881,9 +978,9 @@ namespace ft
 			}
 
 			void
-			_left_rotate(base_pointer node)
+			_left_rotate(base_ptr node)
 			{
-				base_pointer ptr = node->right;
+				base_ptr ptr = node->right;
 
     			node->right = ptr->left;
 				if (ptr->left != _leaf)
@@ -913,45 +1010,6 @@ namespace ft
 
 	};
 
-	rb_tree_node_base*
-	rb_minimum(rb_tree_node_base *node)
-	{
-		while (node->left->left != NULL)
-		{
-			node = node->left;
-		}
-		return (node);
-	}
-
-	rb_tree_node_base*
-	rb_maximum(rb_tree_node_base *node)
-	{
-		while (node->right->right != NULL)
-		{
-			node = node->right;
-		}
-		return (node);
-	}
-	
-	const rb_tree_node_base*
-	rb_minimum(const rb_tree_node_base *node)
-	{
-		while (node->left->left != NULL)
-		{
-			node = node->left;
-		}
-		return (node);
-	}
-
-	const rb_tree_node_base*
-	rb_maximum(const rb_tree_node_base *node)
-	{
-		while (node->right->right != NULL)
-		{
-			node = node->right;
-		}
-		return (node);
-	}
 }
 
 #endif

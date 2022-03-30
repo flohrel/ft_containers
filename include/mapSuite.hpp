@@ -93,7 +93,8 @@ class MapTestSuite : public CxxTest::TestSuite
 			map1.erase(map1.find("quux"));
 			map1.print_tree();
 
-			map1.erase(map1.find("bar"), map1.find("buidi"));
+			// map1.erase(map1.find("bar"), map1.find("buidi"));'
+			map1.erase(map1.find("bar"));
 			map1.print_tree();
 
 			map1.erase(map1.find("truc"));
@@ -112,6 +113,12 @@ class MapTestSuite : public CxxTest::TestSuite
 			std::cout << map2.count("quux") << std::endl;
 			std::cout << map1.count("buidi") << std::endl;
 			std::cout << map2.count("buidi") << std::endl;
+		}
+
+		void	testBound()
+		{
+			std::cout << map2.lower_bound("test")->first << std::endl;
+			std::cout << map2.upper_bound("test")->first << std::endl;
 		}
 
 		// void	testDummy()
