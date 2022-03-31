@@ -6,11 +6,11 @@ NAME		=	runner
 
 INCLDIR		=	include
 BUILDIR		=	build
-TESTDIR		=	cxxtest
+TESTDIR		=	
 DEPDIR		:=	$(BUILDIR)/.deps
 
-TEST		=	mapSuite.hpp
-SRC			=	runner.cpp
+TEST		=	
+SRC			=	
 OBJ			=	$(SRC:%.cpp=$(BUILDIR)/%.o)
 DEP			=	$(SRC:%.cpp=$(DEPDIR)/%.d)
 
@@ -39,11 +39,6 @@ DELETE		=	\033[2K
 .PHONY:			all bonus clean fclean re verbose
 
 all:			$(NAME)
-
-$(SRC):
-				@printf "$(YELLOW)Generating $@...$(DEFAULT)"
-				@$(TESTDIR)/bin/cxxtestgen --error-printer -o $@ $(INCLDIR)/$(TEST)
-				@printf "$(DELETE)\r$(GREEN)$@ generated$(DEFAULT)\n"
 
 
 $(BUILDIR)/%.o:	$(SRC) | $(DEPDIR)
@@ -74,7 +69,7 @@ clean:
 
 fclean:			clean
 				@printf "$(YELLOW)Deleting build directory and binary...$(DEFAULT)"
-				@$(RM) $(NAME) $(SRC) $(BUILDIR)
+				@$(RM) $(NAME) $(BUILDIR)
 				@printf "$(DELETE)\r$(GREEN)Build directory and binary deleted$(DEFAULT)\n"
 
 re:				fclean

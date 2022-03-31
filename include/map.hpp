@@ -1,10 +1,10 @@
 #ifndef __MAP__H__
-#define __MAP__H__
+# define __MAP__H__
 
-#include "utility.hpp"
-#include "rb_tree.hpp"
-#include "reverse_iterator.hpp"
-#include "algorithm.hpp"
+# include "utility.hpp"
+# include "rb_tree.hpp"
+# include "reverse_iterator.hpp"
+# include "algorithm.hpp"
 
 namespace ft
 {
@@ -30,9 +30,6 @@ namespace ft
 
 			class value_compare
 			{
-				friend class map<Key, T, Compare, Allocator>;
-
-				protected:
 					key_compare comp;
 
 					value_compare()
@@ -291,9 +288,9 @@ namespace ft
 			value_comp() const
 			{ return (value_compare()); }
 
-			void
-			print_tree()
-			{ _bst.print_tree(); }
+			// void
+			// print_tree()
+			// { _bst.print_tree(); }
 			
 		private:
 			allocator_type						_alloc;
