@@ -561,6 +561,7 @@ namespace ft
 				}
 				_header.left = rb_tree_node_base::rb_minimum(_header.parent);
 				_header.right = rb_tree_node_base::rb_maximum(_header.parent);
+				node_count--;
 			}
 
 			ft::pair<iterator, bool>
@@ -577,6 +578,7 @@ namespace ft
 					_header.parent = new_node;
 					_header.left = new_node;
 					_header.right = new_node;
+					node_count++;
 					return (ft::make_pair(iterator(new_node), true));
 				}
 				else

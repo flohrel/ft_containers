@@ -496,9 +496,7 @@ namespace ft
 	template<class T, class Alloc>
 	void
 	swap(vector<T,Alloc>& lhs, vector<T,Alloc>& rhs)
-	{
-		lhs.swap(rhs);
-	}
+	{ lhs.swap(rhs); }
 
 	template <class T, class Alloc>
 	bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)

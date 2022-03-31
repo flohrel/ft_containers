@@ -119,10 +119,15 @@ class MapTestSuite : public CxxTest::TestSuite
 			std::cout << map2.upper_bound("test")->first << std::endl;
 		}
 
-		void	testCopy()
+		void	testLogical()
 		{
 			ft::map<std::string, int> map3(map1);
-			ft::map<std::string, int> map4(map2);
+			std::cout << std::endl;
+			std::cout << (map1 == map2) << std::endl;
+			std::cout << std::endl;
+			std::cout << (map1 == map3) << std::endl;
+			std::cout << std::endl;
+			std::cout << (map1 < map2) << std::endl;
 		}
 
 		// void	testDummy()
