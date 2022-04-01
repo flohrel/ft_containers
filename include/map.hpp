@@ -30,16 +30,16 @@ namespace ft
 
 			class value_compare
 			{
+				friend class map;
+
+				protected:
 					key_compare comp;
 
-					value_compare()
-						: comp(Compare())
-					{ }
-
-				public:
 					value_compare(Compare c)
 						: comp(c)
 					{ }
+
+				public:
 
 					~value_compare()
 					{ }
@@ -232,6 +232,20 @@ namespace ft
 				}
 			}
 
+			size_type
+			erase( const Key& key )
+			{
+				iterator	pos;
+
+				pos = find(key);
+				if (pos != end())
+				{
+					_bst.erase(pos.base());
+					return (1);
+				}
+				return (0);
+			}
+
 			void
 			swap(map& other)
 			{
@@ -270,7 +284,7 @@ namespace ft
 
 			const_iterator
 			lower_bound(const Key& key) const
-			{ return (const_iterator(lower_bound(key))); }
+			{ return (const_iterator(_bst.lower_bound(key))); }
 
 			iterator
 			upper_bound(const Key& key)
@@ -278,7 +292,7 @@ namespace ft
 
 			const_iterator
 			upper_bound(const Key& key) const
-			{ return (const_iterator(upper_bound(key))); }
+			{ return (_bst.upper_bound(key)); }
 
 			key_compare
 			key_comp() const
@@ -286,11 +300,11 @@ namespace ft
 	
 			value_compare
 			value_comp() const
-			{ return (value_compare()); }
+			{ return (value_compare(_comp)); }
 
-			// void
-			// print_tree()
-			// { _bst.print_tree(); }
+			void
+			print_tree()
+			{ _bst.print_tree(); }
 			
 		private:
 			allocator_type						_alloc;

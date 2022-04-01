@@ -282,7 +282,7 @@ namespace ft
 			{ }
 
 			rb_tree_const_iterator(const iterator& it)
-				: _current(it._current)
+				: _current(it.base())
 			{ }
 
 			~rb_tree_const_iterator(void)
@@ -339,14 +339,16 @@ namespace ft
 			self&
 			operator--()
 			{
-				if (_current->left->left != 0)
+				if (_current->parent->parent == _current)
+					_current = _current->right;
+				else if (_current->left->left != 0)
     			{
         			_current = rb_tree_node_base::rb_maximum(_current->left);
     			}
 				else
 				{
 					base_ptr ptr = _current->parent;
-					while ((ptr != ptr->parent) && (_current == ptr->left))
+					while (_current == ptr->left)
 					{
 						_current = ptr;
 						ptr = ptr->parent;
@@ -424,8 +426,8 @@ namespace ft
 			{ return (node_count); }
 
 			size_t
-			max_size()
-			{ return (_alloc.max()); }
+			max_size() const
+			{ return (_alloc.max_size()); }
 
 			rb_tree&
 			operator=(const rb_tree& rhs)
@@ -522,7 +524,7 @@ namespace ft
 			erase(base_ptr node)
 			{
 				base_ptr	ptr1 = node, ptr2;
-				rb_tree_color	orig_color = ptr1->color;
+				rb_tree_color	orig_color = node->color;
 
 				if (node->left == _leaf)
 				{
@@ -541,7 +543,7 @@ namespace ft
 					ptr2 = ptr1->right;
 					if (ptr1->parent == node)
 					{
-						ptr1->parent = ptr1;
+						ptr2->parent = ptr1;
 					}
 					else
 					{
@@ -666,9 +668,25 @@ namespace ft
 					return (end());
 				return (_lower_bound(_header.parent, key));
 			}
+			
+			const_iterator
+			lower_bound(const Key& key) const
+			{
+				if (_header.parent == NULL)
+					return (end());
+				return (_lower_bound(_header.parent, key));
+			}
 
 			iterator
 			upper_bound(const Key& key)
+			{
+				if (_header.parent == NULL)
+					return (end());
+				return (_upper_bound(_header.parent, key));
+			}
+
+			const_iterator
+			upper_bound(const Key& key) const
 			{
 				if (_header.parent == NULL)
 					return (end());
@@ -855,7 +873,7 @@ namespace ft
 					std::cout << color << "NIL";
 				else
 					std::cout << color << node->data.first;
-				std::cout << "\033[49m" << std::endl;
+				std::cout << "\033[49m" << ":" << node->parent << std::endl;
 			}
 
 			void
@@ -971,6 +989,29 @@ namespace ft
 				}
 			}
 
+			const_iterator
+			_lower_bound(base_ptr node, const Key& to_find) const
+			{
+				const Key curr_key = static_cast<pointer>(node)->data.first;
+
+				if (curr_key == to_find)
+					return (const_iterator(node));
+				else if (_comp(to_find, curr_key) == true)
+				{
+					if (node->left != _leaf)
+						return (_lower_bound(node->left, to_find));
+					else
+						return (const_iterator(node));
+				}
+				else
+				{
+					if (node->right != _leaf)
+						return (_lower_bound(node->right, to_find));
+					else
+						return (++const_iterator(node));
+				}
+			}
+
 			iterator
 			_upper_bound(base_ptr node, const Key& to_find)
 			{
@@ -989,6 +1030,27 @@ namespace ft
 						return (_upper_bound(node->right, to_find));
 					else
 						return (++iterator(node));
+				}
+			}
+
+			const_iterator
+			_upper_bound(base_ptr node, const Key& to_find) const
+			{
+				const Key curr_key = static_cast<pointer>(node)->data.first;
+
+				if (_comp(to_find, curr_key) == true)
+				{
+					if (node->left != _leaf)
+						return (_upper_bound(node->left, to_find));
+					else
+						return (const_iterator(node));
+				}
+				else
+				{
+					if (node->right != _leaf)
+						return (_upper_bound(node->right, to_find));
+					else
+						return (++const_iterator(node));
 				}
 			}
 
