@@ -366,7 +366,7 @@ namespace ft
 					pointer	new_start = _alloc.allocate(_capacity);
 					iterator it = _uninitialised_copy(begin(), position, iterator(new_start));
 					_alloc.construct(it.base(), val);
-					iterator new_finish = _uninitialised_copy(position, iterator(_finish), ++it);
+					iterator new_finish = _uninitialised_copy(position, iterator(_finish), it + 1);
 					_destroy(_start, _finish);
 					_start = new_start;
 					_finish = new_finish.base();
@@ -377,7 +377,7 @@ namespace ft
 					if (position != end())
 					{
 						_alloc.construct(_finish, value_type());
-						position = _backward_copy(iterator(_finish - 1), position, iterator(_finish));
+						_backward_copy(iterator(_finish - 1), position, iterator(_finish));
 						(*position) = val;
 					}
 					else
