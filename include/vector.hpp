@@ -291,7 +291,7 @@ namespace ft
 						_start = _alloc.allocate(_capacity);
 					}
 					_finish = _start + n;
-					_uninitialised_copy(first, last, _start);
+					_uninitialised_copy(first, last, iterator(_start));
 				}
 			}
 
@@ -362,18 +362,31 @@ namespace ft
 			{
 				if (size() != _capacity)
 				{
-					
+					_compute_capacity(size() + 1);
+					pointer	new_start = _alloc.allocate(_capacity);
+					iterator it = _uninitialised_copy(begin(), position, iterator(new_start));
+					_alloc.construct(it.base(), val);
+					iterator new_finish = _uninitialised_copy(position, iterator(_finish), ++it);
+					_destroy(_start, _finish);
+					_start = new_start;
+					_finish = new_finish.base();
+					return (it);
 				}
-				_alloc.construct(_finish, *(_finish - 1));
-				++_finish;
-
-				for (iterator it = _finish - 2; it > pos; --it)
+				else
 				{
-					_alloc.construct(it, *(it - 1));
-					_alloc.destroy(it - 1);
+					if (position != end())
+					{
+						_alloc.construct(_finish, value_type());
+						position = _backward_copy(iterator(_finish - 1), position, iterator(_finish));
+						(*position) = val;
+					}
+					else
+					{
+						_alloc.construct(position.base(), val);
+					}
+					_finish++;
+					return (position);
 				}
-				_alloc.construct(pos, val);
-				return (iterator(pos));
 			}
 
 			void
@@ -536,11 +549,22 @@ namespace ft
 
 			template< class InputIt, class OutputIt >
 			OutputIt
+			_backward_copy(InputIt first, InputIt last, OutputIt d_first)
+			{
+				for (; first != last; first--, d_first--)
+				{
+					(*d_first) = (*first);
+				}
+				return (d_first);
+			}
+
+			template< class InputIt, class OutputIt >
+			OutputIt
 			_uninitialised_copy(InputIt first, InputIt last, OutputIt d_first)
 			{
 				for (; first != last; first++, d_first++)
 				{
-					_alloc.construct(d_first, *first);
+					_alloc.construct(d_first.base(), *first);
 				}
 				return (d_first);
 			}
