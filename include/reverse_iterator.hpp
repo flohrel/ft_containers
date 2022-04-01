@@ -6,7 +6,7 @@
 
 namespace ft
 {
-	template<typename Iterator>
+	template< typename Iterator >
 	struct reverse_iterator
 	{
 		protected:
@@ -18,29 +18,27 @@ namespace ft
     		typedef typename traits_type::pointer				pointer;
     		typedef typename traits_type::reference				reference;
 			typedef typename traits_type::iterator_category		iterator_category;
+			typedef Iterator									iterator_type;
 
 		protected:
-			pointer		_current;
+			Iterator		_current;
 
 		public:
-			reverse_iterator(void)
+			reverse_iterator()
 			: _current()
 			{ }
 
-			reverse_iterator(value_type x)
+			explicit
+			reverse_iterator( iterator_type x )
 			: _current(x)
 			{ }
 
-			reverse_iterator(const reverse_iterator& x)
-			: _current(x._current)
-			{ }
-
-			template <typename Iter>
-			reverse_iterator(const reverse_iterator<Iter>& x)
+			template< typename T >
+			reverse_iterator(const reverse_iterator<T>& x)
 			: _current(x.base())
 			{ }
 
-			value_type
+			iterator_type
 			base(void) const 
 			{ return (_current); }
 

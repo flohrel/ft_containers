@@ -15,7 +15,7 @@ OBJ			=	$(SRC:%.cpp=$(BUILDIR)/%.o)
 DEP			=	$(SRC:%.cpp=$(DEPDIR)/%.d)
 
 CXX			=	clang++
-CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98 -g3
+CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98
 CPPFLAGS	:=	-I./$(INCLDIR) -I./$(TESTDIR)
 DEPFLAGS	=	-MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
 RM			=	/bin/rm -rf

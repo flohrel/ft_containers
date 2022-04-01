@@ -69,7 +69,7 @@ namespace ft
 					typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL)
 				: _alloc(alloc), _capacity(2)
 			{
-				_compute_capacity(distance(first, last));
+				_compute_capacity(ft::distance(first, last));
 				_start = _alloc.allocate(_capacity);
 				_finish = _start;
 				for (; first != last; first++, _finish++)
@@ -270,43 +270,50 @@ namespace ft
 		/* 
 		**	MODIFIERS
 		*/
-
 			template <class InputIterator>
 			void
 			assign(InputIterator first, InputIterator last,
 					typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL)
 			{
-				size_type	size = distance(first, last);
+				size_type	n = ft::distance(first, last);
 
-				if (size > _capacity)
+				if (n < size())
 				{
-					reserve(size);
+					_erase_at_end(_copy(first, last, _start));
 				}
-
-				pointer	ptr = _start;
-
-				for (; first != last; first++, ptr++)
+				else
 				{
-					_alloc.destroy(ptr);
-					_alloc.construct(ptr, *first);
+					if (n > _capacity)
+					{
+						_destroy(_start, _finish);
+						_alloc.deallocate(_start, _capacity);
+						_compute_capacity(n);
+						_start = _alloc.allocate(_capacity);
+					}
+					_finish = _start + n;
+					_uninitialised_copy(first, last, _start);
 				}
 			}
 
 			void
 			assign(size_type n, const value_type& val)
 			{
-				if (n > _capacity)
+				if (n < size())
 				{
-					reserve(n);
+					_erase_at_end(_start + n);
 				}
-
-				pointer	ptr = _start;
-
-				for (; ptr != _finish; ptr++)
+				else
 				{
-					_alloc.destroy(ptr);
-					_alloc.construct(ptr, val);
+					if (n > _capacity)
+					{
+						_destroy(_start, _finish);
+						_alloc.deallocate(_start, _capacity);
+						_compute_capacity(n);
+						_start = _alloc.allocate(_capacity);
+					}
+					_finish = _start + n;
 				}
+				_fill(_start, _finish, val);
 			}
 
 			void
@@ -322,45 +329,45 @@ namespace ft
 			iterator
 			erase(iterator pos)
 			{
-				iterator	last = end();
-
-				_finish = &(*pos);
-				for (; pos != last; pos++)
+				if ((pos + 1) != end())
 				{
-					_alloc.destroy(&(*pos));
+					for (iterator it = pos + 1; it != end(); it++)
+					{
+						*(it - 1) = *it;
+					}
 				}
-				return (end());
+				--_finish;
+				_alloc.destroy(_finish);
+				return (pos);
 			}
 
 			iterator 
 			erase(iterator first, iterator last)
 			{
-				if (first == last)
+				iterator dest = first;
+
+				if (last != end())
 				{
-					return (last);
+					for (; last != end(); dest++, last++)
+					{
+						(*dest) = (*last);
+					}
 				}
-				_finish = &(*first);
-				for (; first != last; first++)
-				{
-					_alloc.destroy(&(*first));
-				}
-				return (end());
+				_erase_at_end(dest.base());
+				return (first);
 			}
 
 			iterator
 			insert(iterator position, const value_type& val)
 			{
-				size_type	index = position - begin();
-
-				if (size() == _capacity)
+				if (size() != _capacity)
 				{
-					reserve(size() + 1);
+					
 				}
+				_alloc.construct(_finish, *(_finish - 1));
 				++_finish;
 
-				pointer		pos = _start + index;
-
-				for (pointer it = _finish; it > pos; --it)
+				for (iterator it = _finish - 2; it > pos; --it)
 				{
 					_alloc.construct(it, *(it - 1));
 					_alloc.destroy(it - 1);
@@ -402,7 +409,7 @@ namespace ft
 			insert(iterator position, InputIterator first, InputIterator last,
 					typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL)
 			{
-				size_type	n = distance(first, last);
+				size_type	n = ft::distance(first, last);
 				size_type	new_size = size() + n;
 				size_type	index = position - begin();
 
@@ -489,6 +496,53 @@ namespace ft
 						_capacity *= 2;
 					}
 				}
+			}
+
+			void
+			_erase_at_end(pointer pos)
+			{
+				_destroy(pos, _finish);
+				_finish = pos;
+			}
+
+			void
+			_destroy(pointer first, pointer last)
+			{
+				for (; first != last; first++)
+				{
+					_alloc.destroy(first);
+				}
+			}
+
+			void
+			_fill(pointer first, pointer last, const value_type& val)
+			{
+				for (; first != last; first++)
+				{
+					_alloc.construct(first, val);
+				}
+			}
+
+			template< class InputIt, class OutputIt >
+			OutputIt
+			_copy(InputIt first, InputIt last, OutputIt d_first)
+			{
+				for (; first != last; first++, d_first++)
+				{
+					(*d_first) = (*first);
+				}
+				return (d_first);
+			}
+
+			template< class InputIt, class OutputIt >
+			OutputIt
+			_uninitialised_copy(InputIt first, InputIt last, OutputIt d_first)
+			{
+				for (; first != last; first++, d_first++)
+				{
+					_alloc.construct(d_first, *first);
+				}
+				return (d_first);
 			}
 
 	};

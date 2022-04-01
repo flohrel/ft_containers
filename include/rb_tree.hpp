@@ -144,7 +144,7 @@ namespace ft
     	typedef T&								reference;
     	typedef T*								pointer;
     	typedef ptrdiff_t						difference_type;
-		typedef bidirectional_iterator_tag		iterator_category;
+		typedef std::bidirectional_iterator_tag	iterator_category;
 
     	typedef	rb_tree_iterator<T>				self;
     	typedef rb_tree_node_base::base_ptr		base_ptr;
@@ -262,7 +262,7 @@ namespace ft
     	typedef const T&							reference;
     	typedef const T*							pointer;
     	typedef ptrdiff_t							difference_type;
-		typedef bidirectional_iterator_tag			iterator_category;
+		typedef std::bidirectional_iterator_tag		iterator_category;
 
 		typedef rb_tree_iterator<T>					iterator;
     	typedef	rb_tree_const_iterator<T>			self;

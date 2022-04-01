@@ -16,7 +16,7 @@ namespace ft
     		typedef typename traits_type::difference_type		difference_type;
     		typedef typename traits_type::pointer				pointer;
     		typedef typename traits_type::reference				reference;
-			typedef random_access_iterator_tag					iterator_category;
+			typedef std::random_access_iterator_tag				iterator_category;
 
 		protected:
 			Iterator	_current;
@@ -156,7 +156,7 @@ namespace ft
 	 */
 	template<typename InputIterator>
     typename iterator_traits<InputIterator>::difference_type
-	_distance(InputIterator first, InputIterator last, input_iterator_tag)
+	_distance(InputIterator first, InputIterator last, std::input_iterator_tag)
     {
 		typename iterator_traits<InputIterator>::difference_type	n = 0;
 
@@ -172,7 +172,7 @@ namespace ft
 	 */
 	template<typename RandomAccessIterator>
     typename iterator_traits<RandomAccessIterator>::difference_type
-	_distance(RandomAccessIterator first, RandomAccessIterator last, random_access_iterator_tag)
+	_distance(RandomAccessIterator first, RandomAccessIterator last, std::random_access_iterator_tag)
     { return (last.base() - first.base()); }
 
 	/**
