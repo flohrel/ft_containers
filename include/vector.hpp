@@ -174,10 +174,7 @@ namespace ft
 				}
 				else
 				{
-					if (n > _capacity)
-					{
-						reserve(n);
-					}
+					reserve(n);
 					n -= size();
 					while (n--)
 					{
@@ -192,7 +189,7 @@ namespace ft
 			{
 				size_type	old_capacity = _capacity;
 
-				if (n > old_capacity)
+				if (n >= old_capacity)
 				{
 					_compute_capacity(n);
 					pointer	new_start = _alloc.allocate(_capacity);
@@ -444,12 +441,7 @@ namespace ft
 			void
 			push_back(const value_type& val)
 			{
-				if (size() == _capacity)
-				{
-					reserve(size() + 1);
-				}
-				_alloc.construct(_finish, val);
-				++_finish;
+				resize(size() + 1, val);
 			}
 
 			void
