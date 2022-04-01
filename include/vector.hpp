@@ -168,17 +168,9 @@ namespace ft
 			void
 			resize(size_type n, value_type val = value_type())
 			{
-				pointer	ptr;
-
 				if (n < size())
 				{
-					ptr = _start + n;
-					while (ptr != _finish)
-					{
-						_alloc.destroy(ptr);
-						++ptr;
-					}
-					_finish = _start + n;
+					_erase_at_end(_start + n);
 				}
 				else
 				{
@@ -186,7 +178,7 @@ namespace ft
 					{
 						reserve(n);
 					}
-					_finish = _start + n;
+					n -= size();
 					while (n--)
 					{
 						_alloc.construct(_finish, val);
