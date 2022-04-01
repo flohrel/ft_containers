@@ -34,7 +34,7 @@ namespace ft
 			alloc_type		_alloc;
 			pointer			_start;
 			pointer			_finish;
-			size_type		_capacity;
+			pointer			_end_of_storage;
 
 
 		public:
@@ -42,22 +42,25 @@ namespace ft
 			 * @brief default constructor
 			 */
 			explicit vector(const alloc_type& alloc = alloc_type())
-				: _alloc(alloc), _start(), _finish(), _capacity(2)
-			{ }
+				: _alloc(alloc), _start(), _finish(), _end_of_storage()
+			{
+				_start = _alloc.allocate(0);
+				_end_of_storage = _start;
+				_finish = _start;
+			}
 
 			/**
 			 * @brief fill constructor
 			 */
 			explicit vector(size_type n, const value_type& val = value_type(), const alloc_type& alloc = alloc_type())
-				: _alloc(alloc), _capacity(2)
+				: _alloc(alloc)
 			{
-				_compute_capacity(n);
-				_start = _alloc.allocate(_capacity);
-				_finish = _start;
-				for (; n > 0; n--, _finish++)
-				{
-					_alloc.construct(_finish, val);
-				}
+				size_t	len = _check_init_length(n);
+
+				_start = _alloc.allocate(len);
+				_end_of_storage = _start + len;
+				_finish = _start + n;
+				_fill(_start, _finish, val);
 			}
 
 			/**
@@ -67,30 +70,27 @@ namespace ft
 			template <class InputIterator>
 			vector(InputIterator first, InputIterator last, const alloc_type& alloc = alloc_type(),
 					typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL)
-				: _alloc(alloc), _capacity(2)
+				: _alloc(alloc)
 			{
-				_compute_capacity(ft::distance(first, last));
-				_start = _alloc.allocate(_capacity);
-				_finish = _start;
-				for (; first != last; first++, _finish++)
-				{
-					_alloc.construct(_finish, *first);
-				}
+				size_t	len = _check_init_length(ft::distance(first, last));
+
+				_start = _alloc.allocate(len);
+				_end_of_storage = _start + len;
+				_finish = _uninitialised_copy(first, last, _start);
+
 			}
 
 			/**
 			 * @brief copy constructor
 			 */
 			vector(const vector& x)
-				: _alloc(x._alloc), _capacity(2)
+				: _alloc(x._alloc)
 			{
-				_compute_capacity(x.size());
-				_start = _alloc.allocate(_capacity);
-				_finish = _start;
-				for (const_iterator it = x.begin(); it != x.end(); it++, _finish++)
-				{
-					*_finish = *it;
-				}
+				size_t	len = _check_init_length(x.size());
+
+				_start = _alloc.allocate(len);
+				_end_of_storage = _start + len;
+				_finish = _uninitialised_copy(x.begin(), x.end(), _start);
 			}
 
 			/**
@@ -99,7 +99,7 @@ namespace ft
 			~vector()
 			{
 				clear();
-				_alloc.deallocate(_start, _capacity);
+				_alloc.deallocate(_start, capacity());
 			}
 			
 			vector&
@@ -187,12 +187,10 @@ namespace ft
 			void
 			reserve(size_type n)
 			{
-				size_type	old_capacity = _capacity;
-
-				if (n >= old_capacity)
+				if (n >= capacity())
 				{
-					_compute_capacity(n);
-					pointer	new_start = _alloc.allocate(_capacity);
+					size_t	len = _check_length(n, "vector::reserve");
+					pointer	new_start = _alloc.allocate(len);
 					pointer new_finish = new_start;
 
 					for (pointer p = _start; p != _finish; p++, new_finish++)
@@ -200,15 +198,16 @@ namespace ft
 						_alloc.construct(new_finish, *p);
 						_alloc.destroy(p);
 					}
-					_alloc.deallocate(_start, old_capacity);
+					_alloc.deallocate(_start, capacity());
 					_start = new_start;
 					_finish = new_finish;
+					_end_of_storage = _start + len;
 				}
 			}
 
 			size_type
 			capacity() const
-			{ return (_capacity); }
+			{ return (_end_of_storage - _start); }
 
 			bool
 			empty() const
@@ -272,15 +271,16 @@ namespace ft
 				}
 				else
 				{
-					if (n > _capacity)
+					if (n > capacity())
 					{
+						int len = _check_length(n, "vector::assign");
 						_destroy(_start, _finish);
-						_alloc.deallocate(_start, _capacity);
-						_compute_capacity(n);
-						_start = _alloc.allocate(_capacity);
+						_alloc.deallocate(_start, capacity());
+						_start = _alloc.allocate(len);
+						_end_of_storage = _start + len;
 					}
 					_finish = _start + n;
-					_uninitialised_copy(first, last, iterator(_start));
+					_uninitialised_copy(first, last, _start);
 				}
 			}
 
@@ -293,12 +293,13 @@ namespace ft
 				}
 				else
 				{
-					if (n > _capacity)
+					if (n > capacity())
 					{
 						_destroy(_start, _finish);
-						_alloc.deallocate(_start, _capacity);
-						_compute_capacity(n);
-						_start = _alloc.allocate(_capacity);
+						_alloc.deallocate(_start, capacity());
+						int len = _check_length(n, "vector::assign");
+						_start = _alloc.allocate(len);
+						_end_of_storage = _start + len;
 					}
 					_finish = _start + n;
 				}
@@ -349,17 +350,20 @@ namespace ft
 			iterator
 			insert(iterator position, const value_type& val)
 			{
-				if (size() != _capacity)
+				size_t	new_size = size() + 1;
+
+				if (new_size >= capacity())
 				{
-					_compute_capacity(size() + 1);
-					pointer	new_start = _alloc.allocate(_capacity);
-					iterator it = _uninitialised_copy(begin(), position, iterator(new_start));
-					_alloc.construct(it.base(), val);
-					iterator new_finish = _uninitialised_copy(position, iterator(_finish), it + 1);
+					size_t len = _check_length(new_size, "vector::insert");
+					pointer	new_start = _alloc.allocate(len);
+					_end_of_storage = _start + len;
+					pointer ptr = _uninitialised_copy(begin(), position, new_start);
+					_alloc.construct(ptr, val);
+					pointer new_finish = _uninitialised_copy(position, iterator(_finish), ptr + 1);
 					_destroy(_start, _finish);
 					_start = new_start;
-					_finish = new_finish.base();
-					return (it);
+					_finish = new_finish;
+					return (iterator(ptr));
 				}
 				else
 				{
@@ -371,7 +375,7 @@ namespace ft
 					}
 					else
 					{
-						_alloc.construct(position.base(), val);
+						_alloc.construct(_finish, val);
 					}
 					_finish++;
 					return (position);
@@ -384,7 +388,7 @@ namespace ft
 				size_type	new_size = size() + n;
 				size_type	index = position - begin();
 
-				if (capacity() < new_size)
+				if (new_size >= capacity())
 				{
 					reserve(new_size);
 				}
@@ -415,7 +419,7 @@ namespace ft
 				size_type	new_size = size() + n;
 				size_type	index = position - begin();
 
-				if (capacity() < new_size)
+				if (new_size >= capacity())
 				{
 					reserve(new_size);
 				}
@@ -460,7 +464,7 @@ namespace ft
 				std::swap(_alloc, x._alloc);
 				std::swap(_start, x._start);
 				std::swap(_finish, x._finish);
-				std::swap(_capacity, x._capacity);
+				std::swap(_end_of_storage, x._end_of_storage);
 			}
 
 
@@ -475,24 +479,25 @@ namespace ft
 				}
 			}
 
-			void
-			_compute_capacity(size_type n)
+			size_t
+			_check_init_length(size_type n)
 			{
 				if (n > max_size())
 				{
-					throw (std::length_error("vector::reserve"));
+					throw ("cannot create std::vector larger than max_size()");
 				}
-				else if (n > (max_size() / 2))
+				return (n);
+			}
+
+			size_t
+			_check_length(size_type n, const char* error_msg)
+			{
+				if (n > max_size() - size())
 				{
-					_capacity = max_size();
+					throw (std::length_error(error_msg));
 				}
-				else
-				{
-					while (_capacity < n)
-					{
-						_capacity *= 2;
-					}
-				}
+				size_t len = size() + std::max(size(), n);
+				return ((len < size()) || (len > max_size()) ? max_size() : len);
 			}
 
 			void
@@ -535,7 +540,7 @@ namespace ft
 			OutputIt
 			_backward_copy(InputIt first, InputIt last, OutputIt d_first)
 			{
-				for (; first != last; first--, d_first--)
+				for (; d_first != last; first--, d_first--)
 				{
 					(*d_first) = (*first);
 				}
@@ -548,7 +553,7 @@ namespace ft
 			{
 				for (; first != last; first++, d_first++)
 				{
-					_alloc.construct(d_first.base(), *first);
+					_alloc.construct(d_first, *first);
 				}
 				return (d_first);
 			}
