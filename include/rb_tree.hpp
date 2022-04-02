@@ -194,18 +194,19 @@ namespace ft
 				if (_current->right->right != NULL)
 				{
 					_current = rb_tree_node_base::rb_minimum(_current->right);
-					return (*this);
 				}
-
-    			base_ptr ptr = _current->parent;
-
-				while (_current == ptr->right)
+				else
 				{
-					_current = ptr;
-    				ptr = ptr->parent;
+					base_ptr ptr = _current->parent;
+
+					while (_current == ptr->right)
+					{
+						_current = ptr;
+						ptr = ptr->parent;
+					}
+					if (_current->right != ptr)
+						_current = ptr;
 				}
-				if (_current->right != ptr)
-					_current = ptr;
 				return (*this);
 			}
 
@@ -220,13 +221,18 @@ namespace ft
 			rb_tree_iterator&
 			operator--()
 			{
-				if (_current->left->left != 0)
+				if (_current->parent->parent == _current)
+				{
+					_current = _current->right;
+				}
+				else if (_current->left->left != NULL)
     			{
         			_current = rb_tree_node_base::rb_maximum(_current->left);
     			}
 				else
 				{
 					base_ptr ptr = _current->parent;
+
 					while (_current == ptr->left)
 					{
 						_current = ptr;
@@ -313,18 +319,19 @@ namespace ft
 				if (_current->right->right != NULL)
 				{
 					_current = rb_tree_node_base::rb_minimum(_current->right);
-					return (*this);
 				}
-
-    			base_ptr ptr = _current->parent;
-
-				while ((ptr != ptr->parent) && (_current == ptr->right))
+				else
 				{
-					_current = ptr;
-    				ptr = ptr->parent;
+					base_ptr ptr = _current->parent;
+
+					while (_current == ptr->right)
+					{
+						_current = ptr;
+						ptr = ptr->parent;
+					}
+					if (_current->right != ptr)
+						_current = ptr;
 				}
-				if (_current->right != ptr)
-					_current = ptr;
 				return (*this);
 			}
 
@@ -341,7 +348,7 @@ namespace ft
 			{
 				if (_current->parent->parent == _current)
 					_current = _current->right;
-				else if (_current->left->left != 0)
+				else if (_current->left->left != NULL)
     			{
         			_current = rb_tree_node_base::rb_maximum(_current->left);
     			}
@@ -444,27 +451,35 @@ namespace ft
 			}
 
 			base_ptr&
-			_root()
+			root()
 			{ return (_header.parent); }
 
 			const_base_ptr
-			_root() const
+			root() const
 			{ return (_header.parent); }
 
 			base_ptr&
-      		_leftmost()
+			leaf()
+			{ return (_leaf); }
+
+			const_base_ptr
+			leaf() const
+			{ return (_leaf); }
+
+			base_ptr&
+      		leftmost()
 		    { return (_header.left); }
 
 			const_base_ptr
-      		_leftmost() const
+      		leftmost() const
 		    { return (_header.left); }
 			
 			base_ptr&
-      		_rightmost()
+      		rightmost()
 		    { return (_header.right); }
 
 			const_base_ptr
-      		_rightmost() const
+      		rightmost() const
 		    { return (_header.right); }
 
 			base_ptr
@@ -623,21 +638,21 @@ namespace ft
 			void
 			swap(rb_tree& other)
 			{
-    			if (_root() == NULL)
+    			if (root() == NULL)
 				{
-					if (other._root() != NULL)
+					if (other.root() != NULL)
 						copy(other);
 				}
-    			else if (other._root() == NULL)
+    			else if (other.root() == NULL)
 					other.copy(*this);
     			else
 				{
-					std::swap(_root(), other._root());
-					std::swap(_leftmost(), other._leftmost());
-					std::swap(_rightmost(), other._rightmost());
+					std::swap(root(), other.root());
+					std::swap(leftmost(), other.leftmost());
+					std::swap(rightmost(), other.rightmost());
 
-					_root()->parent = _end();
-					other._root()->parent = other._end();
+					root()->parent = _end();
+					other.root()->parent = other._end();
 					std::swap(node_count, other.node_count);
 				}
 				std::swap(_leaf, other._leaf);
