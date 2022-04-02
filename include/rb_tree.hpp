@@ -221,7 +221,7 @@ namespace ft
 			rb_tree_iterator&
 			operator--()
 			{
-				if (_current->parent->parent == _current)
+				if ((_current->color == RED) && (_current->parent->parent == _current))
 				{
 					_current = _current->right;
 				}
@@ -346,8 +346,10 @@ namespace ft
 			self&
 			operator--()
 			{
-				if (_current->parent->parent == _current)
+				if ((_current->color == RED) && (_current->parent->parent == _current))
+				{
 					_current = _current->right;
+				}
 				else if (_current->left->left != NULL)
     			{
         			_current = rb_tree_node_base::rb_maximum(_current->left);
@@ -459,14 +461,6 @@ namespace ft
 			{ return (_header.parent); }
 
 			base_ptr&
-			leaf()
-			{ return (_leaf); }
-
-			const_base_ptr
-			leaf() const
-			{ return (_leaf); }
-
-			base_ptr&
       		leftmost()
 		    { return (_header.left); }
 
@@ -576,8 +570,8 @@ namespace ft
 				{
 					_delete_fix(ptr2);
 				}
-				_header.left = rb_tree_node_base::rb_minimum(_header.parent);
-				_header.right = rb_tree_node_base::rb_maximum(_header.parent);
+				leftmost() = rb_tree_node_base::rb_minimum(_header.parent);
+				rightmost() = rb_tree_node_base::rb_maximum(_header.parent);
 				node_count--;
 			}
 
@@ -630,8 +624,8 @@ namespace ft
 				}
 				node_count++;
 				_insert_fix(new_node);
-				_header.left = rb_tree_node_base::rb_minimum(_header.parent);
-				_header.right = rb_tree_node_base::rb_maximum(_header.parent);
+				leftmost() = rb_tree_node_base::rb_minimum(_header.parent);
+				rightmost() = rb_tree_node_base::rb_maximum(_header.parent);
 				return (ft::make_pair(iterator(new_node), true));
 			}
 
@@ -822,17 +816,19 @@ namespace ft
 			{
 				base_ptr ptr;
 
-				while (node->parent->color == RED)
+				while ((node != _header.parent) && (node->parent->color == RED))
 				{
-    				if (node->parent == node->parent->parent->right)
+					base_ptr xpp = node->parent->parent;
+
+    				if (node->parent == xpp->right)
 					{
-						ptr = node->parent->parent->left;
-						if (ptr->color == RED)
+						ptr = xpp->left;
+						if (ptr && ptr->color == RED)
 						{
 							ptr->color = BLACK;
 							node->parent->color = BLACK;
-							node->parent->parent->color = RED;
-							node = node->parent->parent;
+							xpp->color = RED;
+							node = xpp;
 						}
 						else
 						{
@@ -842,20 +838,20 @@ namespace ft
 								_right_rotate(node);
 							}
 							node->parent->color = BLACK;
-							node->parent->parent->color = RED;
-							_left_rotate(node->parent->parent);
+							xpp->color = RED;
+							_left_rotate(xpp);
 						}
 					}
 					else
 					{
-        				ptr = node->parent->parent->right;
+        				ptr = xpp->right;
 
-        				if (ptr->color == RED)
+        				if (ptr && ptr->color == RED)
 						{
         					ptr->color = BLACK;
         					node->parent->color = BLACK;
-							node->parent->parent->color = RED;
-							node = node->parent->parent;
+							xpp->color = RED;
+							node = xpp;
 						}
 						else
 						{
@@ -865,8 +861,8 @@ namespace ft
 								_left_rotate(node);
 							}
 							node->parent->color = BLACK;
-							node->parent->parent->color = RED;
-							_right_rotate(node->parent->parent);
+							xpp->color = RED;
+							_right_rotate(xpp);
 						}
     				}
     				if (node == _header.parent)
@@ -887,8 +883,11 @@ namespace ft
 				if (node == _leaf)
 					std::cout << color << "NIL";
 				else
+				{
 					std::cout << color << node->data.first;
-				std::cout << "\033[49m" << ":" << node->parent << std::endl;
+					std::cout << "\033[44m" << node << "\033[45m" << node->parent;
+				}
+				std::cout << "\033[49m" << std::endl;
 			}
 
 			void
@@ -1128,6 +1127,7 @@ namespace ft
 			Compare				_comp;
 
 	};
+
 
 }
 

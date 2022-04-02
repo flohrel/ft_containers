@@ -212,23 +212,18 @@ namespace ft
 			erase(iterator first, iterator last)
 			{
 				iterator	tmp = first;
-
-				if (tmp == end() || (find(tmp->first) == end()))
+				
+				if ((first == begin()) && (last == end()))
 				{
-					return ;
+					clear();
 				}
-				while (tmp != end())
+				else
 				{
-					if (tmp == last)
+					while (first != last)
 					{
-						while (first != last)
-						{
-							tmp = first++;
-							erase(tmp);
-						}
-						break ;
+						tmp = first++;
+						erase(tmp);
 					}
-					tmp++;
 				}
 			}
 
