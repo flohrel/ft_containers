@@ -22,9 +22,9 @@ namespace ft
 			typedef const value_type&																					const_reference;
 			typedef typename Allocator::pointer																			pointer;
 			typedef typename Allocator::const_pointer																	const_pointer;
-			typedef typename ft::rb_tree<value_type, key_type, identity<value_type>, Compare>::iterator					iterator;
+			typedef typename ft::rb_tree<value_type, key_type, identity<value_type>, Compare>::const_iterator			iterator;
 			typedef typename ft::rb_tree<value_type, key_type, identity<value_type>, Compare>::const_iterator			const_iterator;
-			typedef typename ft::rb_tree<value_type, key_type, identity<value_type>, Compare>::reverse_iterator			reverse_iterator;
+			typedef typename ft::rb_tree<value_type, key_type, identity<value_type>, Compare>::const_reverse_iterator	reverse_iterator;
 			typedef typename ft::rb_tree<value_type, key_type, identity<value_type>, Compare>::const_reverse_iterator	const_reverse_iterator;
 
 			explicit set(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
@@ -147,7 +147,7 @@ namespace ft
 				{
 					return ;
 				}
-				if (find(pos->first) != end())
+				if (find(*pos) != end())
 				{
 					_bst.erase(pos.base());
 				}
@@ -224,7 +224,7 @@ namespace ft
 
 			const_iterator
 			lower_bound(const Key& key) const
-			{ return (const_iterator(_bst.lower_bound(key))); }
+			{ return (_bst.lower_bound(key)); }
 
 			iterator
 			upper_bound(const Key& key)

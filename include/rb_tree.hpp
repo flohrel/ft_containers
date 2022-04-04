@@ -135,6 +135,14 @@ namespace ft
 		~rb_tree_node()
 		{ }
 
+		T*
+		val()
+		{ return (&data); }
+
+		const T*
+		val() const
+		{ return (&data); }
+
 	};
 
 	template<typename T>
@@ -148,7 +156,7 @@ namespace ft
 
     	typedef	rb_tree_iterator<T>				self;
     	typedef rb_tree_node_base::base_ptr		base_ptr;
-    	typedef const rb_tree_node<T>*			link_type;
+    	typedef rb_tree_node<T>*				link_type;
 
 		protected:
 			base_ptr	_current;
@@ -182,11 +190,11 @@ namespace ft
 
 			reference
 			operator*() const
-			{ return (static_cast<link_type>(_current)->data); }
+			{ return (*static_cast<link_type>(_current)->val()); }
 
 			pointer
 			operator->() const
-			{ return (&static_cast<link_type>(_current)->data); }
+			{ return (static_cast<link_type>(_current)->val()); }
 
 			rb_tree_iterator&
 			operator++()
@@ -273,7 +281,7 @@ namespace ft
 		typedef rb_tree_iterator<T>					iterator;
     	typedef	rb_tree_const_iterator<T>			self;
     	typedef rb_tree_node_base::const_base_ptr	base_ptr;
-    	typedef rb_tree_node<T>*					link_type;
+    	typedef const rb_tree_node<T>*				link_type;
 
 		protected:
 			base_ptr	_current;
@@ -307,11 +315,11 @@ namespace ft
 
 			reference
 			operator*() const
-			{ return (static_cast<link_type>(_current)->data); }
+			{ return (*static_cast<link_type>(_current)->val()); }
 
 			pointer
 			operator->() const
-			{ return (&static_cast<link_type>(_current)->data); }
+			{ return (static_cast<link_type>(_current)->val()); }
 
 			self&
 			operator++()
@@ -540,7 +548,11 @@ namespace ft
 			}
 
 			void
-			erase(base_ptr node)
+			erase(const_base_ptr node)
+			{ _erase(const_cast<base_ptr>(node)); }
+
+			void
+			_erase(base_ptr node)
 			{
 				base_ptr	ptr1 = node, ptr2;
 				rb_tree_color	orig_color = node->color;
@@ -976,7 +988,7 @@ namespace ft
 				if (node == _leaf)
 					return (&_header);
 
-				if (!_comp(key(node), to_find) && !_comp(key(node), to_find))
+				if (!_comp(key(node), to_find) && !_comp(to_find, key(node)))
 					return (node);
 				else if (_comp(to_find, key(node)) == true)
 					return (_find(node->left, to_find));
@@ -987,11 +999,9 @@ namespace ft
 			iterator
 			_lower_bound(base_ptr node, const Key& to_find)
 			{
-				const Key curr_key = static_cast<pointer>(node)->data.first;
-
-				if (curr_key == to_find)
+				if (!_comp(key(node), to_find) && !_comp(to_find, key(node)))
 					return (iterator(node));
-				else if (_comp(to_find, curr_key) == true)
+				else if (_comp(to_find, key(node)))
 				{
 					if (node->left != _leaf)
 						return (_lower_bound(node->left, to_find));
@@ -1010,11 +1020,9 @@ namespace ft
 			const_iterator
 			_lower_bound(base_ptr node, const Key& to_find) const
 			{
-				const Key curr_key = static_cast<pointer>(node)->data.first;
-
-				if (curr_key == to_find)
-					return (const_iterator(node));
-				else if (_comp(to_find, curr_key) == true)
+				if (!_comp(key(node), to_find) && !_comp(to_find, key(node)))
+					return (iterator(node));
+				else if (_comp(to_find, key(node)))
 				{
 					if (node->left != _leaf)
 						return (_lower_bound(node->left, to_find));
@@ -1033,9 +1041,7 @@ namespace ft
 			iterator
 			_upper_bound(base_ptr node, const Key& to_find)
 			{
-				const Key curr_key = static_cast<pointer>(node)->data.first;
-
-				if (_comp(to_find, curr_key) == true)
+				if (_comp(to_find, key(node)))
 				{
 					if (node->left != _leaf)
 						return (_upper_bound(node->left, to_find));
@@ -1054,9 +1060,7 @@ namespace ft
 			const_iterator
 			_upper_bound(base_ptr node, const Key& to_find) const
 			{
-				const Key curr_key = static_cast<pointer>(node)->data.first;
-
-				if (_comp(to_find, curr_key) == true)
+				if (_comp(to_find, key(node)))
 				{
 					if (node->left != _leaf)
 						return (_upper_bound(node->left, to_find));
