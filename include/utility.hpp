@@ -6,6 +6,32 @@
 
 namespace ft
 {
+	template<typename Pair>
+    struct select_first
+    {
+		typename Pair::first_type&
+		operator()(Pair& x) const
+		{ return (x.first); }
+
+		const typename Pair::first_type&
+		operator()(const Pair& x) const
+		{ return (x.first); }
+
+	};
+
+	template<typename T>
+    struct identity
+    {
+      T&
+      operator()(T& x) const
+      { return (x); }
+
+      const T&
+      operator()(const T& x) const
+      { return (x); }
+
+    };
+
 	template <typename T1, typename T2>
 	struct pair
 	{

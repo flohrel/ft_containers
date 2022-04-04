@@ -385,7 +385,7 @@ namespace ft
 
 	};
 
-	template<typename T, typename Key, typename Compare, typename Allocator = std::allocator<rb_tree_node<T> > >
+	template<typename T, typename Key, typename KeyOfValue, typename KeyCompare, typename Allocator = std::allocator<rb_tree_node<T> > >
 	class rb_tree : public rb_tree_header
 	{
 		public:
@@ -395,6 +395,8 @@ namespace ft
 			typedef Key										key_type;
 			typedef rb_tree_node_base*						base_ptr;
 			typedef const rb_tree_node_base*				const_base_ptr;
+			typedef rb_tree_node<T>* 						link_type;
+    		typedef const rb_tree_node<T>*					const_link_type;
 			typedef rb_tree_node<T>							Node;
 			typedef Node*									pointer;
 			typedef const Node*								const_pointer;
@@ -406,7 +408,7 @@ namespace ft
 			typedef ft::reverse_iterator<iterator>			reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
-			rb_tree(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
+			rb_tree(const KeyCompare& comp = KeyCompare(), const Allocator& alloc = Allocator())
 				: _alloc(alloc), _comp(comp)
 			{
 				_leaf = _alloc.allocate(1);
@@ -483,6 +485,14 @@ namespace ft
       		const_base_ptr
       		_end() const
       		{ return (&_header); }
+
+			static const Key&
+			key(link_type x)
+			{ return (KeyOfValue()(x->data)); }
+
+			static const Key&
+			key(base_ptr x)
+			{ return (key(static_cast<link_type>(x))); }
 
 			iterator
 			begin()
@@ -578,10 +588,9 @@ namespace ft
 			ft::pair<iterator, bool>
 			insert(const value_type& value)
 			{
-				pointer new_node = _alloc.allocate(1);
-				key_type curr_key;
-				base_ptr curr_node = _header.parent;
-				base_ptr prev_node = NULL;
+				pointer		new_node = _alloc.allocate(1);
+				base_ptr	curr_node = _header.parent;
+				base_ptr	prev_node = NULL;
 
 				if (curr_node == NULL)
 				{
@@ -596,14 +605,13 @@ namespace ft
 				{
 					while (curr_node != _leaf)
 					{
-						curr_key = static_cast<pointer>(curr_node)->data.first;
-						if (value.first == curr_key)
+						if (!_comp(KeyOfValue()(value), key(curr_node)) && !_comp(key(curr_node), KeyOfValue()(value)))
 						{
 							_alloc.deallocate(new_node, 1);
 							return (ft::make_pair(iterator(curr_node), false));
 						}
 						prev_node = curr_node;
-						if (_comp(value.first, curr_key) == true)
+						if (_comp(KeyOfValue()(value), key(curr_node)))
 						{
 							curr_node = curr_node->left;
 						}
@@ -612,7 +620,7 @@ namespace ft
 							curr_node = curr_node->right;
 						}
 					}
-					if (_comp(value.first, static_cast<pointer>(prev_node)->data.first) == true)
+					if (_comp(KeyOfValue()(value), key(prev_node)))
 					{
 						prev_node->left = new_node;
 					}
@@ -655,7 +663,7 @@ namespace ft
 			}
 
 			iterator
-			find(const Key& key)
+			find(const key_type& key)
 			{
 				if (_header.parent == NULL)
 					return (end());
@@ -663,7 +671,7 @@ namespace ft
 			}
 
 			const_iterator
-			find(const Key& key) const
+			find(const key_type& key) const
 			{
 				if (_header.parent == NULL)
 					return (end());
@@ -872,7 +880,7 @@ namespace ft
 			}
 
 			void
-			_print_key(pointer node)
+			_print_key(base_ptr node)
 			{
 				std::string color;
 
@@ -884,7 +892,7 @@ namespace ft
 					std::cout << color << "NIL";
 				else
 				{
-					std::cout << color << node->data.first;
+					std::cout << color << KeyOfValue()(node);
 					std::cout << "\033[44m" << node << "\033[45m" << node->parent;
 				}
 				std::cout << "\033[49m" << std::endl;
@@ -895,7 +903,7 @@ namespace ft
 			{
 				std::cout << prefix;
 				std::cout << (is_right ? "└──" : "├──" );
-				_print_key(static_cast<pointer>(node));
+				_print_key(node);
 				if (node == _leaf)
 					return ;
 				_print_tree(prefix + (is_right ? "\t" : "│\t"), node->left, false);
@@ -948,33 +956,29 @@ namespace ft
 				}
 			}
 
-			const rb_tree_node_base*
-			_find(base_ptr node, const Key& to_find) const
+			base_ptr
+			_find(base_ptr node, const key_type& to_find)
 			{
 				if (node == _leaf)
 					return (&_header);
 
-				const Key curr_key = static_cast<pointer>(node)->data.first;
-
-				if (curr_key == to_find)
+				if (!_comp(key(node), to_find) && !_comp(key(node), to_find))
 					return (node);
-				else if (_comp(to_find, curr_key) == true)
+				else if (_comp(to_find, key(node)) == true)
 					return (_find(node->left, to_find));
 				else
 					return (_find(node->right, to_find));
 			}
 
-			base_ptr
-			_find(base_ptr node, const Key& to_find)
+			const_base_ptr
+			_find(base_ptr node, const key_type& to_find) const
 			{
 				if (node == _leaf)
 					return (&_header);
 
-				const Key curr_key = static_cast<pointer>(node)->data.first;
-
-				if (curr_key == to_find)
+				if (!_comp(key(node), to_find) && !_comp(key(node), to_find))
 					return (node);
-				else if (_comp(to_find, curr_key) == true)
+				else if (_comp(to_find, key(node)) == true)
 					return (_find(node->left, to_find));
 				else
 					return (_find(node->right, to_find));
@@ -1124,7 +1128,7 @@ namespace ft
 
 			pointer				_leaf;
 			allocator_type		_alloc;
-			Compare				_comp;
+			KeyCompare			_comp;
 
 	};
 
