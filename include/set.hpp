@@ -5,28 +5,27 @@
 # include "rb_tree.hpp"
 # include "reverse_iterator.hpp"
 # include "algorithm.hpp"
-
 namespace ft
 {
 	template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
 	class set
 	{
 		public:
-			typedef Key																			key_type;
-			typedef Key																			value_type;
-			typedef std::size_t																	size_type;
-			typedef std::ptrdiff_t																difference_type;
-			typedef Compare																		key_compare;
-			typedef Compare																		value_compare;
-			typedef Allocator																	allocator_type;
-			typedef value_type&																	reference;
-			typedef const value_type&															const_reference;
-			typedef typename Allocator::pointer													pointer;
-			typedef typename Allocator::const_pointer											const_pointer;
-			typedef typename ft::rb_tree<value_type, key_type, Compare>::iterator				iterator;
-			typedef typename ft::rb_tree<value_type, key_type, Compare>::const_iterator			const_iterator;
-			typedef typename ft::rb_tree<value_type, key_type, Compare>::reverse_iterator		reverse_iterator;
-			typedef typename ft::rb_tree<value_type, key_type, Compare>::const_reverse_iterator	const_reverse_iterator;
+			typedef Key																									key_type;
+			typedef Key																									value_type;
+			typedef std::size_t																							size_type;
+			typedef std::ptrdiff_t																						difference_type;
+			typedef Compare																								key_compare;
+			typedef Compare																								value_compare;
+			typedef Allocator																							allocator_type;
+			typedef value_type&																							reference;
+			typedef const value_type&																					const_reference;
+			typedef typename Allocator::pointer																			pointer;
+			typedef typename Allocator::const_pointer																	const_pointer;
+			typedef typename ft::rb_tree<value_type, key_type, identity<value_type>, Compare>::iterator					iterator;
+			typedef typename ft::rb_tree<value_type, key_type, identity<value_type>, Compare>::const_iterator			const_iterator;
+			typedef typename ft::rb_tree<value_type, key_type, identity<value_type>, Compare>::reverse_iterator			reverse_iterator;
+			typedef typename ft::rb_tree<value_type, key_type, identity<value_type>, Compare>::const_reverse_iterator	const_reverse_iterator;
 
 			explicit set(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
 				: _alloc(alloc), _comp(comp), _bst()
@@ -243,9 +242,9 @@ namespace ft
 			value_comp() const
 			{ return (_comp); }
 
-			void
-			print_tree()
-			{ _bst.print_tree(); }
+			// void
+			// print_tree()
+			// { _bst.print_tree(); }
 
 		private:
 			allocator_type													_alloc;

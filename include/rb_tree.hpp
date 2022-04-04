@@ -148,7 +148,7 @@ namespace ft
 
     	typedef	rb_tree_iterator<T>				self;
     	typedef rb_tree_node_base::base_ptr		base_ptr;
-    	typedef rb_tree_node<T>*				link_type;
+    	typedef const rb_tree_node<T>*			link_type;
 
 		protected:
 			base_ptr	_current;
@@ -273,7 +273,7 @@ namespace ft
 		typedef rb_tree_iterator<T>					iterator;
     	typedef	rb_tree_const_iterator<T>			self;
     	typedef rb_tree_node_base::const_base_ptr	base_ptr;
-    	typedef const rb_tree_node<T>*				link_type;
+    	typedef rb_tree_node<T>*					link_type;
 
 		protected:
 			base_ptr	_current;
@@ -487,12 +487,12 @@ namespace ft
       		{ return (&_header); }
 
 			static const Key&
-			key(link_type x)
+			key(const_link_type x)
 			{ return (KeyOfValue()(x->data)); }
 
 			static const Key&
-			key(base_ptr x)
-			{ return (key(static_cast<link_type>(x))); }
+			key(const_base_ptr x)
+			{ return (key(static_cast<const_link_type>(x))); }
 
 			iterator
 			begin()
@@ -962,7 +962,7 @@ namespace ft
 				if (node == _leaf)
 					return (&_header);
 
-				if (!_comp(key(node), to_find) && !_comp(key(node), to_find))
+				if (!_comp(key(node), to_find) && !_comp(to_find, key(node)))
 					return (node);
 				else if (_comp(to_find, key(node)) == true)
 					return (_find(node->left, to_find));
