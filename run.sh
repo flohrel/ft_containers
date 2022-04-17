@@ -1,8 +1,8 @@
 #!/bin/bash
 
 Namespace=('FT' 'STD')
-FT_LOG="logs/FT_test"
-STD_LOG="logs/STD_test"
+FT_LOG="log/FT_test"
+STD_LOG="log/STD_test"
 
 compile()
 {
@@ -26,16 +26,40 @@ execute()
 	./${TESTER} &> logs/${1}_test
 }
 
-mkdir -p logs
-if [[ ! -d "./logs" ]]; then
+tester()
+{
+	compile ${i}
+	execute ${i}
+	make -C tester fclean &>> logs/${i}_make
+}
+
+if [[ "$#" -gt 1 ]]; then
+	printf "Usage: ./run.sh [NAMESPACE]"
+	exit 1
+fi
+
+mkdir -p log
+if [[ ! -d "./log" ]]; then
 	printf "Error: cannot create log folder."
 	exit 1
 fi
 
+if [[ "$#" -eq 1 ]]; then
+	case ${1} in
+		FT | STD)
+			tester ${1}
+			;;
+
+		*)
+			printf "Argument is either FT or STD"
+			exit 1
+			;;
+	esac
+	exit 0
+fi
+
 for i in ${Namespace[@]}; do
-	compile ${i}
-	execute ${i}
-	make -C tester fclean &>> logs/${i}_make
+	tester ${i}
 done
 
 if [[ -e ${FT_LOG} && -e ${STD_LOG} ]]; then
