@@ -11,8 +11,8 @@ namespace ft
 {
 	enum	rb_tree_color
 	{
-		RED,
-		BLACK
+		RB_RED,
+		RB_BLACK
 	};
 
 	struct rb_tree_node_base
@@ -26,10 +26,10 @@ namespace ft
 		base_ptr		right;
 
 		rb_tree_node_base()
-			: color(RED), parent(NULL), left(NULL), right(NULL)
+			: color(RB_RED), parent(NULL), left(NULL), right(NULL)
 		{ }
 
-		rb_tree_node_base(base_ptr p, base_ptr l, base_ptr r, rb_tree_color c = RED)
+		rb_tree_node_base(base_ptr p, base_ptr l, base_ptr r, rb_tree_color c = RB_RED)
 			: color(c), parent(p), left(l), right(r) 
 		{ }
 
@@ -92,7 +92,7 @@ namespace ft
 
 		rb_tree_header()
 		{
-			_header.color = RED;
+			_header.color = RB_RED;
 			reset();
 		}
 
@@ -128,7 +128,7 @@ namespace ft
 
 		value_type	data;
 
-		rb_tree_node(value_type val, base_ptr p, base_ptr l, base_ptr r, rb_tree_color c = RED)
+		rb_tree_node(value_type val, base_ptr p, base_ptr l, base_ptr r, rb_tree_color c = RB_RED)
 		 : rb_tree_node_base(p, l, r, c), data(val)
 		{ }
 
@@ -229,7 +229,7 @@ namespace ft
 			rb_tree_iterator&
 			operator--()
 			{
-				if ((_current->color == RED) && (_current->parent->parent == _current))
+				if ((_current->color == RB_RED) && (_current->parent->parent == _current))
 				{
 					_current = _current->right;
 				}
@@ -354,7 +354,7 @@ namespace ft
 			self&
 			operator--()
 			{
-				if ((_current->color == RED) && (_current->parent->parent == _current))
+				if ((_current->color == RB_RED) && (_current->parent->parent == _current))
 				{
 					_current = _current->right;
 				}
@@ -420,14 +420,14 @@ namespace ft
 				: _alloc(alloc), _comp(comp)
 			{
 				_leaf = _alloc.allocate(1);
-				_alloc.construct(_leaf, Node(value_type(), NULL, NULL, NULL, BLACK));
+				_alloc.construct(_leaf, Node(value_type(), NULL, NULL, NULL, RB_BLACK));
 			}
 
 			rb_tree(const rb_tree& x)
 				: _alloc(x._alloc), _comp(x._comp)
 			{
 				_leaf = _alloc.allocate(1);
-				_alloc.construct(_leaf, Node(value_type(), NULL, NULL, NULL, BLACK));
+				_alloc.construct(_leaf, Node(value_type(), NULL, NULL, NULL, RB_BLACK));
 				for (const_iterator it = x.begin(); it != x.end(); it++)
 				{
 					insert(*it);
@@ -588,7 +588,7 @@ namespace ft
 					ptr1->color = node->color;
 				}
 				_delete_node(static_cast<pointer>(node));
-				if (orig_color == BLACK)
+				if (orig_color == RB_BLACK)
 				{
 					_delete_fix(ptr2);
 				}
@@ -606,7 +606,7 @@ namespace ft
 
 				if (curr_node == NULL)
 				{
-					_alloc.construct(new_node, Node(value, &_header, _leaf, _leaf, BLACK));
+					_alloc.construct(new_node, Node(value, &_header, _leaf, _leaf, RB_BLACK));
 					_header.parent = new_node;
 					_header.left = new_node;
 					_header.right = new_node;
@@ -763,35 +763,35 @@ namespace ft
 			{
 				base_ptr	ptr;
 				
-				while ((node != _header.parent) && (node->color == BLACK))
+				while ((node != _header.parent) && (node->color == RB_BLACK))
 				{
 					if (node == node->parent->left)
 					{
     					ptr = node->parent->right;
-						if (ptr->color == RED)
+						if (ptr->color == RB_RED)
 						{
-							ptr->color = BLACK;
-							node->parent->color = RED;
+							ptr->color = RB_BLACK;
+							node->parent->color = RB_RED;
         					_left_rotate(node->parent);
 							ptr = node->parent->right;
 						}
-						if ((ptr->left->color == BLACK) && (ptr->right->color == BLACK))
+						if ((ptr->left->color == RB_BLACK) && (ptr->right->color == RB_BLACK))
 						{
-							ptr->color = RED;
+							ptr->color = RB_RED;
 							node = node->parent;
 						}
 						else
 						{
-							if (ptr->right->color == BLACK)
+							if (ptr->right->color == RB_BLACK)
 							{
-								ptr->left->color = BLACK;
-								ptr->color = RED;
+								ptr->left->color = RB_BLACK;
+								ptr->color = RB_RED;
 								_right_rotate(ptr);
 								ptr = node->parent->right;
 							}
 							ptr->color = node->parent->color;
-							node->parent->color = BLACK;
-							ptr->right->color = BLACK;
+							node->parent->color = RB_BLACK;
+							ptr->right->color = RB_BLACK;
 							_left_rotate(node->parent);
 							node = _header.parent;
 						}
@@ -799,36 +799,36 @@ namespace ft
 					else
 					{
 						ptr = node->parent->left;
-						if (ptr->color == RED)
+						if (ptr->color == RB_RED)
 						{
-							ptr->color = BLACK;
-							node->parent->color = RED;
+							ptr->color = RB_BLACK;
+							node->parent->color = RB_RED;
 							_right_rotate(node->parent);
 							ptr = node->parent->left;
 						}
-						if ((ptr->left->color == BLACK) && (ptr->right->color == BLACK))
+						if ((ptr->left->color == RB_BLACK) && (ptr->right->color == RB_BLACK))
 						{
-							ptr->color = RED;
+							ptr->color = RB_RED;
 							node = node->parent;
 						}
 						else
 						{
-							if (ptr->left->color == BLACK)
+							if (ptr->left->color == RB_BLACK)
 							{
-								ptr->right->color = BLACK;
-								ptr->color = RED;
+								ptr->right->color = RB_BLACK;
+								ptr->color = RB_RED;
 								_left_rotate(ptr);
 								ptr = node->parent->left;
 							}
 							ptr->color = node->parent->color;
-							node->parent->color = BLACK;
-							ptr->left->color = BLACK;
+							node->parent->color = RB_BLACK;
+							ptr->left->color = RB_BLACK;
 							_right_rotate(node->parent);
 							node = _header.parent;
 						}
 					}
 				}
-				node->color = BLACK;
+				node->color = RB_BLACK;
 			}
 
 			void
@@ -836,18 +836,18 @@ namespace ft
 			{
 				base_ptr ptr;
 
-				while ((node != _header.parent) && (node->parent->color == RED))
+				while ((node != _header.parent) && (node->parent->color == RB_RED))
 				{
 					base_ptr xpp = node->parent->parent;
 
     				if (node->parent == xpp->right)
 					{
 						ptr = xpp->left;
-						if (ptr && ptr->color == RED)
+						if (ptr && ptr->color == RB_RED)
 						{
-							ptr->color = BLACK;
-							node->parent->color = BLACK;
-							xpp->color = RED;
+							ptr->color = RB_BLACK;
+							node->parent->color = RB_BLACK;
+							xpp->color = RB_RED;
 							node = xpp;
 						}
 						else
@@ -857,8 +857,8 @@ namespace ft
 								node = node->parent;
 								_right_rotate(node);
 							}
-							node->parent->color = BLACK;
-							xpp->color = RED;
+							node->parent->color = RB_BLACK;
+							xpp->color = RB_RED;
 							_left_rotate(xpp);
 						}
 					}
@@ -866,11 +866,11 @@ namespace ft
 					{
         				ptr = xpp->right;
 
-        				if (ptr && ptr->color == RED)
+        				if (ptr && ptr->color == RB_RED)
 						{
-        					ptr->color = BLACK;
-        					node->parent->color = BLACK;
-							xpp->color = RED;
+        					ptr->color = RB_BLACK;
+        					node->parent->color = RB_BLACK;
+							xpp->color = RB_RED;
 							node = xpp;
 						}
 						else
@@ -880,15 +880,15 @@ namespace ft
 								node = node->parent;
 								_left_rotate(node);
 							}
-							node->parent->color = BLACK;
-							xpp->color = RED;
+							node->parent->color = RB_BLACK;
+							xpp->color = RB_RED;
 							_right_rotate(xpp);
 						}
     				}
     				if (node == _header.parent)
         				break;
 				}
-    			_header.parent->color = BLACK;
+    			_header.parent->color = RB_BLACK;
 			}
 
 			void
@@ -896,7 +896,7 @@ namespace ft
 			{
 				std::string color;
 
-				if (node->color == BLACK)
+				if (node->color == RB_BLACK)
 					color = "\033[40m";
 				else
 					color = "\033[41m";

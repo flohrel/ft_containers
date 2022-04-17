@@ -3,8 +3,17 @@
 
 # include "libunitcpp.hpp"
 
-# ifndef NAMESPACE
-#  define NAMESPACE ft
+# ifdef STD
+#  include <map>
+#  include <stack>
+#  include <vector>
+#  include <set>
+   namespace ft = std;
+# else
+#  include "map.hpp"
+#  include "stack.hpp"
+#  include "vector.hpp"
+#  include "set.hpp"
 # endif
 
 void	vector_suite( void );

@@ -1,7 +1,6 @@
 #include "header.hpp"
-#include "vector.hpp"
 
-typedef NAMESPACE::vector<int>	vector;
+typedef ft::vector<int>	vector;
 
 void	ctor( void )
 {

@@ -2,7 +2,7 @@
 ## Variables ##
 ###############
 
-NAME		=	runner
+NAME		=	tester
 
 VPATH		=	src libunitcpp/src
 LIBDIR		=	libunitcpp
@@ -18,10 +18,18 @@ DEP			=	$(SRC:%.cpp=$(DEPDIR)/%.d)
 CXX			=	c++
 CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98
 CPPFLAGS	=	$(addprefix -I, $(INCLDIR))
+LDFLAGS		=	-Llibunitcpp -lunitcpp
 DEPFLAGS	=	-MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
 
 RM			=	/bin/rm -rf
 UNAME		:=	$(shell uname -s)
+
+NAMESPACE	=	
+ifeq ($(NAMESPACE),STD)
+	DEFINE	=	-DSTD=1
+else
+	DEFINE	=	-DSTD=0
+endif
 
 # FG COLORS
 DEFAULT		=	\033[0m
@@ -55,11 +63,11 @@ all:			lib header $(NAME)
 $(BUILDIR)/%.o:	%.cpp | $(DEPDIR)
 				@printf "$(YELLOW)Compiling $@ and generating/checking make dependency file...$(DEFAULT)\n"
 				@$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
-				@printf "$(DELPREV)%-25s%*s$(GREEN)$(CHECK)$(DEFAULT)\n" $@ $(shell printf $(NAME) | wc -c)
+				@printf "$(DELPREV)%-25s%*s$(GREEN)$(CHECK)$(DEFAULT)\n" $@ $(shell printf "$(NAMESPACE)_$@" | wc -c)
 
 $(NAME):		$(OBJ)
 				@printf "$(YELLOW)Linking source files and generating $@ binary...\n$(DEFAULT)"
-				@$(CXX) $(CXXFLAGS) -o $@ $(CPPFLAGS) $^ -Llibunitcpp -lunitcpp
+				@$(CXX) $(CXXFLAGS) -o $(NAMESPACE)_$@ $(CPPFLAGS) $^ $(LDFLAGS)
 				@printf "$(DELPREV)$(GREEN)Binary generated$(DEFAULT)\n"
 
 $(DEPDIR):
@@ -82,8 +90,9 @@ clean:
 
 fclean:			clean
 				@printf "$(YELLOW)Deleting build directory and library...$(DEFAULT)\n"
-				@$(RM) $(NAME) $(BUILDIR)
-				@printf "$(DELPREV)Build directory and binary deleted\n"
+				@$(RM) $(BUILDIR)
+				@$(shell rm *_tester)
+				@printf "$(DELPREV)Build directory and binaries deleted\n"
 				@make -C $(LIBDIR) fclean
 
 re:				fclean

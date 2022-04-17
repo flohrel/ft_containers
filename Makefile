@@ -2,25 +2,12 @@
 ## Variables ##
 ###############
 
-NAME		=	runner
+NAME		=	ft_containers
 
-INCLDIR		=	include
-BUILDIR		=	build
 TESTDIR		=	tester
-DEPDIR		:=	$(BUILDIR)/.deps
+LOGDIR		=	log
 
-TEST		=	vector_suite.cpp
-SRC			=	main.cpp
-OBJ			=	$(SRC:%.cpp=$(BUILDIR)/%.o)
-DEP			=	$(SRC:%.cpp=$(DEPDIR)/%.d)
-
-CXX			=	c++
-CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98
-CPPFLAGS	:=	-I./$(INCLDIR) -I./$(TESTDIR)
-DEPFLAGS	=	-MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
-RM			=	/bin/rm -rf
-UNAME		:=	$(shell uname -s)
-
+# FG COLORS
 DEFAULT		=	\033[0m
 BLACK		=	\033[1;30m
 RED			=	\033[1;31m
@@ -30,46 +17,33 @@ BLUE		=	\033[1;34m
 MAGENTA 	=	\033[1;35m
 CYAN 		=	\033[1;36m
 WHITE 		=	\033[1;107m
+
+# TERMCAPS
+UP			=	\033[1A
 DELETE		=	\033[2K
+DELPREV		=	$(UP)$(DELETE)\r
+
+# EMOJI
+CHECK		=	\xE2\x9C\x94
+CROSS		=	\xE2\x9D\x8C
+
 
 ###########
 ## Rules ##
 ###########
 
-.PHONY:			all bonus clean fclean re verbose
-
-all:			$(NAME)
-
-$(BUILDIR)/%.o:	$(SRC) | $(DEPDIR)
-				@printf "$(YELLOW)Compiling $@ and generating/checking make dependency file...$(DEFAULT)"
-				@$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
-				@printf "$(DELETE)\r$(GREEN)$@ compiled$(DEFAULT)\n"
-
-$(NAME):		$(OBJ)
-				@printf "$(YELLOW)Linking source files and generating $@ binary...$(DEFAULT)"
-				@$(CXX) $(CXXFLAGS) -o $@ $(CPPFLAGS) $<
-				@printf "$(DELETE)\r$(GREEN)$@ binary generated$(DEFAULT)\n"
-
-$(DEPDIR):
-				@printf "$(YELLOW)Creating $@ folder...$(DEFAULT)"
-				@mkdir -p $@
-				@printf "$(DELETE)\r$(GREEN)$@ created$(DEFAULT)\n"
-$(DEP):
--include $(wildcard $(DEP))
-
-bonus:
-				@make all
+all:			./run.sh
 
 clean:
-				@printf "$(YELLOW)Deleting object and dependency files...$(DEFAULT)"
+				@printf "$(YELLOW)Deleting log files...$(DEFAULT)\n"
 				@$(RM) $(OBJ)
-				@printf "$(DELETE)\r$(GREEN)Build files deleted$(DEFAULT)\n"
-
+				@printf "$(DELPREV)Log files deleted\n"
 
 fclean:			clean
-				@printf "$(YELLOW)Deleting build directory and binary...$(DEFAULT)"
-				@$(RM) $(NAME) $(BUILDIR)
-				@printf "$(DELETE)\r$(GREEN)Build directory and binary deleted$(DEFAULT)\n"
+				@printf "$(YELLOW)Deleting log directory...$(DEFAULT)\n"
+				@$(RM) $(LOGDIR)
+				@printf "$(DELPREV)Log directory deleted\n"
+				@make -C $(TESTDIR) fclean
 
 re:				fclean
 				@make -s all
