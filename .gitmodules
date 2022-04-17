@@ -1,0 +1,3 @@
+[submodule "tester/libunitcpp"]
+	path = tester/libunitcpp
+	url = git@github.com:flohrel/libunitcpp.git
