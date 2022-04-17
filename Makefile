@@ -6,15 +6,15 @@ NAME		=	runner
 
 INCLDIR		=	include
 BUILDIR		=	build
-TESTDIR		=	
+TESTDIR		=	tester
 DEPDIR		:=	$(BUILDIR)/.deps
 
-TEST		=	
-SRC			=	
+TEST		=	vector_suite.cpp
+SRC			=	main.cpp
 OBJ			=	$(SRC:%.cpp=$(BUILDIR)/%.o)
 DEP			=	$(SRC:%.cpp=$(DEPDIR)/%.d)
 
-CXX			=	clang++
+CXX			=	c++
 CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98
 CPPFLAGS	:=	-I./$(INCLDIR) -I./$(TESTDIR)
 DEPFLAGS	=	-MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
@@ -39,7 +39,6 @@ DELETE		=	\033[2K
 .PHONY:			all bonus clean fclean re verbose
 
 all:			$(NAME)
-
 
 $(BUILDIR)/%.o:	$(SRC) | $(DEPDIR)
 				@printf "$(YELLOW)Compiling $@ and generating/checking make dependency file...$(DEFAULT)"

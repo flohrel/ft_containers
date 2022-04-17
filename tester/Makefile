@@ -4,23 +4,21 @@
 
 NAME		=	runner
 
-VPATH		=	src
+VPATH		=	src libunitcpp/src
 LIBDIR		=	libunitcpp
-INCLDIR		:=	$(addsuffix /include,$(LIBDIR) . ..)
+INCLDIR		=	$(addsuffix /include,.. ./libunitcpp .)
 BUILDIR		=	build
 DEPDIR		=	$(BUILDIR)/.deps
 
 SRC			=	main.cpp \
 				vector_suite.cpp
-LIB			=	unitcpp
 OBJ			=	$(SRC:%.cpp=$(BUILDIR)/%.o)
 DEP			=	$(SRC:%.cpp=$(DEPDIR)/%.d)
 
 CXX			=	c++
 CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98
-CPPFLAGS	:=	$(addprefix -I,$(INCLDIR))
+CPPFLAGS	=	$(addprefix -I, $(INCLDIR))
 DEPFLAGS	=	-MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
-LFLAGS		:=	$(addprefix -L,$(LIBDIR)) $(addprefix -l,$(LIB))
 
 RM			=	/bin/rm -rf
 UNAME		:=	$(shell uname -s)
@@ -50,18 +48,18 @@ CROSS		=	\xE2\x9D\x8C
 ## Rules ##
 ###########
 
-.PHONY:			all bonus clean fclean re verbose
+.PHONY:			all bonus clean fclean header lib re verbose
 
 all:			lib header $(NAME)
 
-$(BUILDIR)/%.o:	$(SRC) | $(DEPDIR)
+$(BUILDIR)/%.o:	%.cpp | $(DEPDIR)
 				@printf "$(YELLOW)Compiling $@ and generating/checking make dependency file...$(DEFAULT)\n"
 				@$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 				@printf "$(DELPREV)%-25s%*s$(GREEN)$(CHECK)$(DEFAULT)\n" $@ $(shell printf $(NAME) | wc -c)
 
 $(NAME):		$(OBJ)
-				@printf "$(YELLOW)Linking source files and generating $@ binary...\n"
-				@$(CXX) $(CXXFLAGS) -o $@ $(CPPFLAGS) $< $(LFLAGS)
+				@printf "$(YELLOW)Linking source files and generating $@ binary...\n$(DEFAULT)"
+				@$(CXX) $(CXXFLAGS) -o $@ $(CPPFLAGS) $^ -Llibunitcpp -lunitcpp
 				@printf "$(DELPREV)$(GREEN)Binary generated$(DEFAULT)\n"
 
 $(DEPDIR):
@@ -72,7 +70,7 @@ $(DEP):
 -include $(wildcard $(DEP))
 
 lib:
-				@make -C $(LIBDIR)
+				@make -C libunitcpp
 
 header:
 				@printf "**********%3$1s$(BLUE)$(NAME)$(DEFAULT)%3$1s**********\n" ""
