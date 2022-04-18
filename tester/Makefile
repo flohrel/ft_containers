@@ -24,7 +24,7 @@ DEPFLAGS	=	-MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
 RM			=	/bin/rm -rf
 UNAME		:=	$(shell uname -s)
 
-NAMESPACE	=	
+NAMESPACE	=	STD
 ifeq ($(NAMESPACE),STD)
 	DEFINE	=	-DSTD=1
 else
@@ -48,8 +48,8 @@ DELETE		=	\033[2K
 DELPREV		=	$(UP)$(DELETE)\r
 
 # EMOJI
-CHECK		=	\xE2\x9C\x94
-CROSS		=	\xE2\x9D\x8C
+CHECK		=	\0xE2\0x9C\0x94
+CROSS		=	\0xE2\0x9D\0x8C
 
 
 ###########

@@ -2,10 +2,11 @@
 ## Variables ##
 ###############
 
-NAME		=	ft_containers
-
+INCLUDE		=	# MUST be set to the folder with your container files
 TESTDIR		=	tester
 LOGDIR		=	log
+
+RM			=	/bin/rm -rf
 
 # FG COLORS
 DEFAULT		=	\033[0m
@@ -32,7 +33,7 @@ CROSS		=	\xE2\x9D\x8C
 ## Rules ##
 ###########
 
-all:			./run.sh
+all:			run
 
 clean:
 				@printf "$(YELLOW)Deleting log files...$(DEFAULT)\n"
@@ -44,6 +45,13 @@ fclean:			clean
 				@$(RM) $(LOGDIR)
 				@printf "$(DELPREV)Log directory deleted\n"
 				@make -C $(TESTDIR) fclean
+
+run:
+ifeq ($(strip $(INCLUDE)),)
+	$(error Set the INCLUDE variable before running (eg. make INCLUDE='../include'))
+endif
+				@INCLUDE=$(INCLUDE)
+				@./run.sh
 
 re:				fclean
 				@make -s all

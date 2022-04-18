@@ -1,14 +1,13 @@
 #!/bin/bash
 
-Namespace=('FT' 'STD')
-FT_LOG="log/FT_test"
-STD_LOG="log/STD_test"
+Namespaces=('FT' 'STD')
+LOGDIR='log'
 
 compile()
 {
-	make -C tester NAMESPACE=${1} &> logs/${1}_make
+	make -C tester NAMESPACE=${1} &> ${LOGFILE}_make
 	if [[ "$?" -ne 0 ]]; then
-		printf "Error: compilation failed. See logs/${1}_make for more details."
+		printf "Error: compilation failed. See log/${LOGFILE}_make for more details."
 		exit 1
 	fi
 }
@@ -23,15 +22,21 @@ execute()
 	elif [[ ! -x ${TESTER} ]]; then
 		chmod +x ${TESTER}
 	fi
-	./${TESTER} &> logs/${1}_test
+	./${TESTER} &> ${LOGFILE}_test
 }
 
 tester()
 {
-	compile ${i}
-	execute ${i}
-	make -C tester fclean &>> logs/${i}_make
+	LOGFILE="${LOGDIR}/${1,,}"
+	compile ${1}
+	execute ${1}
+	make -C tester fclean &>> ${LOGFILE}_make
 }
+
+if [[ ! ${INCLUDE} ]]; then
+	printf "Error: INCLUDE variable not set."
+	exit 1
+fi
 
 if [[ "$#" -gt 1 ]]; then
 	printf "Usage: ./run.sh [NAMESPACE]"
@@ -58,10 +63,6 @@ if [[ "$#" -eq 1 ]]; then
 	exit 0
 fi
 
-for i in ${Namespace[@]}; do
+for i in ${Namespaces[@]}; do
 	tester ${i}
 done
-
-if [[ -e ${FT_LOG} && -e ${STD_LOG} ]]; then
-	diff -y ${FT_LOG} ${STD_LOG}
-fi
