@@ -50,8 +50,7 @@ run:
 ifeq ($(strip $(INCLUDE)),)
 	$(error Set the INCLUDE variable before running (eg. make INCLUDE='../include'))
 endif
-				@INCLUDE=$(INCLUDE)
-				@./run.sh
+				@./run.sh $(INCLUDE)
 
 re:				fclean
 				@make -s all

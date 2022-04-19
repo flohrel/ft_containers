@@ -5,16 +5,17 @@ LOGDIR='log'
 
 compile()
 {
-	make -C tester NAMESPACE=${1} &> ${LOGFILE}_make
+	INCLUDE_PARENT_DIR=`dirname ${INCLUDE}`
+	make -C tester INCLUDE=../${INCLUDE_PARENT_DIR} NAMESPACE=${1} &> ${LOGFILE}_make
 	if [[ "$?" -ne 0 ]]; then
-		printf "Error: compilation failed. See log/${LOGFILE}_make for more details."
+		printf "Error: compilation failed. See ${LOGFILE}_make for more details."
 		exit 1
 	fi
 }
 
 execute()
 {
-	TESTER="tester/${1}_tester"
+	TESTER="tester/tester"
 
 	if [[ ! -e ${TESTER} ]]; then
 		printf "Error: binary not found."
@@ -33,13 +34,8 @@ tester()
 	make -C tester fclean &>> ${LOGFILE}_make
 }
 
-if [[ ! ${INCLUDE} ]]; then
-	printf "Error: INCLUDE variable not set."
-	exit 1
-fi
-
-if [[ "$#" -gt 1 ]]; then
-	printf "Usage: ./run.sh [NAMESPACE]"
+if [[ "$#" -lt 1 || "$#" -gt 2 ]]; then
+	printf "Usage: ./run.sh INCLUDE [NAMESPACE]"
 	exit 1
 fi
 
@@ -49,20 +45,25 @@ if [[ ! -d "./log" ]]; then
 	exit 1
 fi
 
-if [[ "$#" -eq 1 ]]; then
-	case ${1} in
-		FT | STD)
-			tester ${1}
-			;;
+if [[ ! -d "${1}" ]]; then
+	printf "Error: \"${1}\" is not a directory."
+	exit 1
+fi
 
+if [[ "$#" -eq 2 ]]; then
+	case ${2} in
+		FT | STD)
+			tester ${2}
+			;;
 		*)
-			printf "Argument is either FT or STD"
+			printf "Namespace argument is either FT or STD"
 			exit 1
 			;;
 	esac
-	exit 0
+else
+	for i in ${Namespaces[@]}; do
+		tester ${i}
+	done
 fi
 
-for i in ${Namespaces[@]}; do
-	tester ${i}
-done
+exit 0
