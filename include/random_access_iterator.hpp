@@ -170,9 +170,9 @@ namespace ft
 	/**
 	 * @brief ft::distance specialization for random access iterators
 	 */
-	template<typename RandomAccessIterator>
-    typename iterator_traits<RandomAccessIterator>::difference_type
-	_distance(RandomAccessIterator first, RandomAccessIterator last, std::random_access_iterator_tag)
+	template<typename Iterator>
+	typename iterator_traits<Iterator>::difference_type
+	_distance(const random_access_iterator<Iterator>& first, const random_access_iterator<Iterator>& last, std::random_access_iterator_tag)
     { return (last.base() - first.base()); }
 
 	/**

@@ -91,6 +91,7 @@ namespace ft
 		size_t				node_count;
 
 		rb_tree_header()
+			: node_count(0)
 		{
 			_header.color = RB_RED;
 			reset();
@@ -541,7 +542,8 @@ namespace ft
 
 				if (root != NULL)
 				{
-					_clear(root);
+					if (size() > 1)
+						_clear(root);
 					_delete_node(root);
 					reset();
 				}
@@ -549,7 +551,17 @@ namespace ft
 
 			void
 			erase(const_base_ptr node)
-			{ _erase(const_cast<base_ptr>(node)); }
+			{
+				if (!node_count)
+					return ;
+				if (node_count == 1)
+				{
+					_delete_node(static_cast<pointer>(_header.parent));
+					reset();
+				}
+				else
+					_erase(const_cast<base_ptr>(node));
+			}
 
 			void
 			_erase(base_ptr node)
@@ -904,7 +916,7 @@ namespace ft
 					std::cout << color << "NIL";
 				else
 				{
-					std::cout << color << KeyOfValue()(node);
+					std::cout << color << key(node);
 					std::cout << "\033[44m" << node << "\033[45m" << node->parent;
 				}
 				std::cout << "\033[49m" << std::endl;

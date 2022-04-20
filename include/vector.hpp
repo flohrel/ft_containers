@@ -9,6 +9,7 @@
 # include "type_traits.hpp"
 # include "algorithm.hpp"
 # include "utility.hpp"
+#include <iostream>
 
 namespace ft
 {
@@ -311,8 +312,8 @@ namespace ft
 			{
 				while (_finish != _start)
 				{
-					_alloc.destroy(_finish);
 					--_finish;
+					_alloc.destroy(_finish);
 				}
 			}
 
@@ -356,13 +357,14 @@ namespace ft
 				{
 					size_t len = _check_length(new_size, "vector::insert");
 					pointer	new_start = _alloc.allocate(len);
-					_end_of_storage = _start + len;
 					pointer ptr = _uninitialised_copy(begin(), position, new_start);
 					_alloc.construct(ptr, val);
 					pointer new_finish = _uninitialised_copy(position, iterator(_finish), ptr + 1);
 					_destroy(_start, _finish);
+					_alloc.deallocate(_start, capacity());
 					_start = new_start;
 					_finish = new_finish;
+					_end_of_storage = _start + len;
 					return (iterator(ptr));
 				}
 				else
@@ -426,19 +428,19 @@ namespace ft
 				_finish += n;
 
 				pointer		pos = _start + index;
-				pointer		it = _finish;
+				pointer		ptr = _finish;
 
-				while (it > (pos + n))
+				while (ptr > (pos + n))
 				{
-					--it;
-					_alloc.construct(it, *(it - n));
+					--ptr;
+					_alloc.construct(ptr, *(ptr - n));
 				}
 				while (last != first)
 				{
-					it--;
+					ptr--;
 					last--;
-					_alloc.destroy(it);
-					_alloc.construct(it, *last);
+					_alloc.destroy(ptr);
+					_alloc.construct(ptr, *last);
 				}
 			}
 
