@@ -61,7 +61,7 @@ namespace ft
 				_start = _alloc.allocate(len);
 				_end_of_storage = _start + len;
 				_finish = _start + n;
-				_fill(_start, _finish, val);
+				_uninitialised_fill(_start, _finish, val);
 			}
 
 			/**
@@ -281,8 +281,8 @@ namespace ft
 						_end_of_storage = _start + len;
 					}
 					_finish = _start + n;
-					_uninitialised_copy(first, last, _start);
 				}
+				_uninitialised_copy(first, last, _start);
 			}
 
 			void
@@ -304,7 +304,7 @@ namespace ft
 					}
 					_finish = _start + n;
 				}
-				_fill(_start, _finish, val);
+				_uninitialised_fill(_start, _finish, val);
 			}
 
 			void
@@ -353,7 +353,7 @@ namespace ft
 			{
 				size_t	new_size = size() + 1;
 
-				if (new_size >= capacity())
+				if (new_size > capacity())
 				{
 					size_t len = _check_length(new_size, "vector::insert");
 					pointer	new_start = _alloc.allocate(len);
@@ -387,28 +387,41 @@ namespace ft
 			void
 			insert(iterator position, size_type n, const value_type& val)
 			{
-				size_type	new_size = size() + n;
-				size_type	index = position - begin();
-
-				if (new_size >= capacity())
+				if (n != 0)
 				{
-					reserve(new_size);
-				}
-				_finish += n;
+					size_t	new_size = size() + n;
 
-				pointer		pos = _start + index;
-				pointer		it = _finish;
-
-				while (it > (pos + n))
-				{
-					--it;
-					_alloc.construct(it, *(it - n));
-				}
-				while (it > pos)
-				{
-					it--;
-					_alloc.destroy(it);
-					_alloc.construct(it, val);
+					if (new_size > capacity())
+					{
+						size_t	len = _check_length(new_size, "vector::insert");
+						pointer	new_start = _alloc.allocate(len);
+						pointer	new_finish = _uninitialised_copy(iterator(_start), position, new_start);
+						new_finish = _uninitialised_fill(new_finish, new_finish + n, val);
+						new_finish = _uninitialised_copy(position, iterator(_finish), new_finish);
+						_destroy(_start, _finish);
+						_alloc.deallocate(_start, capacity());
+						_start = new_start;
+						_finish = new_finish;
+						_end_of_storage = _start + len;
+					}
+					else
+					{
+						const size_type	elems_after = end() - position;
+						pointer			old_finish(_finish);
+						
+						if (elems_after > n)
+						{
+							_finish = _uninitialised_copy(_finish - n, _finish, _finish);
+							_backward_copy(iterator(old_finish - n), position, old_finish);
+							_fill(position, position + n, val);
+						}
+						else
+						{
+							_finish = _uninitialised_fill(_finish, _finish + (n - elems_after), val);
+							_finish = _uninitialised_copy(position, iterator(old_finish), _finish);
+							_fill(position, iterator(old_finish), val);
+						}
+					}
 				}
 			}
 
@@ -417,30 +430,43 @@ namespace ft
 			insert(iterator position, InputIterator first, InputIterator last,
 					typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL)
 			{
-				size_type	n = ft::distance(first, last);
-				size_type	new_size = size() + n;
-				size_type	index = position - begin();
-
-				if (new_size >= capacity())
+				if (first != last)
 				{
-					reserve(new_size);
-				}
-				_finish += n;
+					size_t	n = ft::distance(first, last);
+					size_t	new_size = size() + n;
 
-				pointer		pos = _start + index;
-				pointer		ptr = _finish;
-
-				while (ptr > (pos + n))
-				{
-					--ptr;
-					_alloc.construct(ptr, *(ptr - n));
-				}
-				while (last != first)
-				{
-					ptr--;
-					last--;
-					_alloc.destroy(ptr);
-					_alloc.construct(ptr, *last);
+					if (new_size > capacity())
+					{
+						size_t	len = _check_length(new_size, "vector::insert");
+						pointer	new_start = _alloc.allocate(len);
+						pointer	new_finish = _uninitialised_copy(iterator(_start), position, new_start);
+						new_finish = _uninitialised_copy(first, last, new_finish);
+						new_finish = _uninitialised_copy(position, iterator(_finish), new_finish);
+						_destroy(_start, _finish);
+						_alloc.deallocate(_start, capacity());
+						_start = new_start;
+						_finish = new_finish;
+						_end_of_storage = _start + len;
+					}
+					else
+					{
+						const size_type	elems_after = end() - position;
+						pointer			old_finish(_finish);
+						
+						if (elems_after > n)
+						{
+							_finish = _uninitialised_copy(_finish - n, _finish, _finish);
+							_backward_copy(iterator(old_finish - n), position, old_finish);
+							_copy(first, last, position);
+						}
+						else
+						{
+							_uninitialised_copy(first + elems_after, last, _finish);
+							_finish += (n - elems_after);
+							_finish = _uninitialised_copy(position, iterator(old_finish), _finish);
+							_copy(first, first + elems_after, position);
+						}
+					}
 				}
 			}
 
@@ -518,13 +544,24 @@ namespace ft
 				}
 			}
 
-			void
-			_fill(pointer first, pointer last, const value_type& val)
+			iterator
+			_fill(iterator first, iterator last, const value_type& val)
+			{
+				for (; first != last; first++)
+				{
+					(*first) = val;
+				}
+				return (first);
+			}
+
+			pointer
+			_uninitialised_fill(pointer first, pointer last, const value_type& val)
 			{
 				for (; first != last; first++)
 				{
 					_alloc.construct(first, val);
 				}
+				return (first);
 			}
 
 			template< class InputIt, class OutputIt >
@@ -542,9 +579,9 @@ namespace ft
 			OutputIt
 			_backward_copy(InputIt first, InputIt last, OutputIt d_first)
 			{
-				for (; d_first != last; first--, d_first--)
+				while (first != last)
 				{
-					(*d_first) = (*first);
+					*(--d_first) = *(--first);
 				}
 				return (d_first);
 			}
