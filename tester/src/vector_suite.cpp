@@ -295,34 +295,34 @@ void	insertion( void )
 	RandomArray<int>	array(65536);
 	for (int i = 0; i < 42; i++)
 	{
-		v.insert(v.begin() + i * 8, array.begin() + i * 32, array.begin() + i * 64);
+		v.insert(v.begin(), array.begin() + (i * 4), array.begin() + (i * 8));
 		v.push_back(*(array.end() - i * 16));
-		vref.insert(vref.begin() + i * 8, array.begin() + i * 32, array.begin() + i * 64);
+		vref.insert(vref.begin(), array.begin() + (i * 4), array.begin() + (i * 8));
 		vref.push_back(*(array.end() - i * 16));
 	}
 	v.resize(v.size() / 2);
 	vref.resize(vref.size() / 2);
 	assert( v == vref );
 
-	for (int i = 0; i < 42; i++)
+	for (int i = 1; i < 16; i++)
 	{
-		v.insert(v.end() - i * 8, array.end() - i * 64, array.end() - i * 32);
+		v.insert(v.end(), array.begin() + i, array.begin() + (i * 16));
 		v.push_back(*(array.begin() + i * 16));
-		vref.insert(vref.end() - i * 8, array.end() - i * 64, array.end() - i * 32);
+		vref.insert(vref.end(), array.begin() + i, array.begin() + (i * 16));
 		vref.push_back(*(array.begin() + i * 16));
 	}
 	assert( v == vref );
 
-	for (int i = 0; i < 1024; i++)
+	for (int i = 0; i < 42; i++)
 	{
 		v.pop_back();
-		v.erase(v.begin() + 2 * i);
-		v.insert(v.begin(), array.begin(), array.end() - i * 32);
-		v.erase(v.end() - i * 4, v.end());
+		v.erase(v.begin() + (2 * i));
+		v.insert(v.begin() + (2 * i), array.begin(), array.end() - (i * 32));
+		v.erase(v.end() - (i * 4), v.end());
 		vref.pop_back();
-		vref.erase(vref.begin() + 2 * i);
-		vref.insert(vref.begin(), array.begin(), array.end() - i * 32);
-		vref.erase(vref.end() - i * 4, vref.end());
+		vref.erase(vref.begin() + (2 * i));
+		vref.insert(vref.begin() + (2 * i), array.begin(), array.end() - (i * 32));
+		vref.erase(vref.end() - (i * 4), vref.end());
 	}
 	v.resize(v.size() * 2);
 	vref.resize(vref.size() * 2);
