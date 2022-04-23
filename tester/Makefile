@@ -49,8 +49,8 @@ DELETE		=	\033[2K
 DELPREV		=	$(UP)$(DELETE)\r
 
 # EMOJI
-CHECK		=	\0xE2\0x9C\0x94
-CROSS		=	\0xE2\0x9D\0x8C
+CHECK		=	\xE2\x9C\x94
+CROSS		=	\xE2\x9D\x8C
 
 
 ###########

@@ -21,6 +21,6 @@ jobs:
         python-version: '3.7'
         architecture: 'x64'
     - name: make
-      run: make
+      run: make INCLUDE='include'
     - name: run
       run: ./runner

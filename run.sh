@@ -59,7 +59,7 @@ execute()
 
 	printf "%-30s" "Executing..."
 
-	./${TESTER} &> ${LOGFILE}
+	./${TESTER} &>> ${LOGFILE}
 
 	RETURN_VALUE=$(($RETURN_VALUE+$?))
 
@@ -121,8 +121,8 @@ else
 	done
 fi
 
-if [[ "$RETURN_VALUE" -eq 0 ]]; then
-	for n in `grep 'Total elapsed time' log/*_test | grep -Eo "[+-]?([0-9]*[.])?[0-9]+"` ; do			# Get total execution time of each binary
+if [[ "${RETURN_VALUE}" -eq 0 ]]; then
+	for n in $(grep 'Total elapsed time' ${LOGDIR}/*.out | grep -Eo "[+-]?([0-9]*[.])?[0-9]+") ; do		# Get total execution time of each binary
 		NB+=("$n")																						# and put them in a list
 	done
 	QUOTIENT=$(echo "scale=1 ; ${NB[0]} / ${NB[1]}" | bc)												# get the quotient of (ft_exec_time / std_exec_time)
