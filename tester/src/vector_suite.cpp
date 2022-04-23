@@ -1,6 +1,9 @@
 #include "header.hpp"
 #include "vector_utils.hpp"
 
+namespace unit_test
+{
+
 namespace
 {
 
@@ -127,10 +130,10 @@ void	at( void )
 	}
 	try
 	{
-		v.at(42) = 1337;
+		v.at(43) = 1337;
 		assert( false );
 	}
-	catch(const std::out_of_range& e)
+	catch (const std::out_of_range& e)
 	{
 		assert( true );
 	}
@@ -189,24 +192,167 @@ void	data( void )
 	}
 }
 
+void	iterators( void )
+{
+	vector_ft	v(42, 42);
+	vector_std	vref(42, 42);
+
+	for (int i = 41; i != 0; i--)
+	{
+		v[i] *= i;
+		vref[i] *= i;
+	}
+
+	vector_ft::iterator it = v.begin();
+	vector_ft::const_iterator cit = v.begin();
+	vector_ft::reverse_iterator rit = v.rbegin();
+	vector_ft::const_reverse_iterator crit = v.rbegin();
+	vector_ft::iterator eit = v.end();
+	vector_ft::reverse_iterator reit = v.rend();
+	vector_std::iterator it_ref = vref.begin();
+	vector_std::const_iterator cit_ref = vref.begin();
+	vector_std::reverse_iterator rit_ref = vref.rbegin();
+	vector_std::const_reverse_iterator crit_ref = vref.rbegin();
+	vector_std::iterator eit_ref = vref.end();
+	vector_std::reverse_iterator reit_ref = vref.rend();
+
+	assert( (*cit) == (*cit_ref) );
+	assert( (*crit) == (*crit_ref) );
+	while (it != v.end())
+	{
+		assert( (*it) == (*(it_ref++)) );
+		assert( (*it++) == (*(--reit_ref)) );
+		assert( (*rit) == (*rit_ref++) );
+		assert( (*rit++) == (*(--eit_ref)) );
+	}
+}
+
+void	size( void )
+{
+	vector_ft	v;
+
+	assert( v.empty() == true );
+
+	v = vector_ft(666, 666);
+	assert( v.size() == 666 );
+	assert( v.empty() == false );
+
+	vector_std					vref;
+	vector_ft::allocator_type	alloc = v.get_allocator();
+	vector_std::allocator_type	alloc_ref = vref.get_allocator();
+
+	assert( alloc.max_size() == alloc_ref.max_size() );
+
+	size_t old_capacity = v.capacity();
+	v.reserve(1337);
+	assert( v.capacity() > old_capacity );
+	assert( v.size() == 666 );
+
+	try
+	{
+		v.reserve(v.max_size());
+		assert( false );
+	}
+	catch (const std::length_error& e)
+	{
+		assert( true );
+	}
+	catch (...)
+	{
+		assert( false );
+	}
+}
+
+void	clear( void )
+{
+	vector_ft	v(666, 666);
+
+	size_t old_capacity = v.capacity();
+	v.clear();
+	assert( v.capacity() == old_capacity );
+	assert( v.empty() == true );
+}
+
+void	insertion( void )
+{
+	vector_ft	v;
+	vector_std	vref;
+
+	v.insert(v.begin(), 1337);
+	vref.insert(vref.begin(), 1337);
+	assert( v == vref );
+
+	size_t count = v.capacity() - v.size();
+	v.insert(v.begin(), count, 42);
+	vref.insert(vref.begin(), count, 42);
+	assert( v == vref );
+
+	count = v.capacity() - v.size();
+	v.insert(v.begin(), count, 666);
+	vref.insert(vref.begin(), count, 666);
+	assert( v == vref );
+
+	RandomArray<int>	array(65536);
+	for (int i = 0; i < 42; i++)
+	{
+		v.insert(v.begin() + i * 8, array.begin() + i * 32, array.begin() + i * 64);
+		v.push_back(*(array.end() - i * 16));
+		vref.insert(vref.begin() + i * 8, array.begin() + i * 32, array.begin() + i * 64);
+		vref.push_back(*(array.end() - i * 16));
+	}
+	v.resize(v.size() / 2);
+	vref.resize(vref.size() / 2);
+	assert( v == vref );
+
+	for (int i = 0; i < 42; i++)
+	{
+		v.insert(v.end() - i * 8, array.end() - i * 64, array.end() - i * 32);
+		v.push_back(*(array.begin() + i * 16));
+		vref.insert(vref.end() - i * 8, array.end() - i * 64, array.end() - i * 32);
+		vref.push_back(*(array.begin() + i * 16));
+	}
+	assert( v == vref );
+
+	for (int i = 0; i < 1024; i++)
+	{
+		v.pop_back();
+		v.erase(v.begin() + 2 * i);
+		v.insert(v.begin(), array.begin(), array.end() - i * 32);
+		v.erase(v.end() - i * 4, v.end());
+		vref.pop_back();
+		vref.erase(vref.begin() + 2 * i);
+		vref.insert(vref.begin(), array.begin(), array.end() - i * 32);
+		vref.erase(vref.end() - i * 4, vref.end());
+	}
+	v.resize(v.size() * 2);
+	vref.resize(vref.size() * 2);
+	assert( v == vref );
+}
+
 }
 
 void	vector_suite( void )
 {
-	unit_test::TestSuite	suite("Vector suite");
+	TestSuite	suite("Vector suite");
 
-	suite.push_back(unit_test::TestCase("Default ctor", default_ctor));
-	suite.push_back(unit_test::TestCase("Fill ctor", fill_ctor));
-	suite.push_back(unit_test::TestCase("Range ctor", range_ctor));
-	suite.push_back(unit_test::TestCase("Copy ctor", copy_ctor));
-	suite.push_back(unit_test::TestCase("Operator=", equal_op));
-	suite.push_back(unit_test::TestCase("Logical operators", logical_op));
-	suite.push_back(unit_test::TestCase("Assign", assign));
-	suite.push_back(unit_test::TestCase("At", at));
-	suite.push_back(unit_test::TestCase("Operator[]", at_op));
-	suite.push_back(unit_test::TestCase("Front", front));
-	suite.push_back(unit_test::TestCase("Back", back));
-	suite.push_back(unit_test::TestCase("Data", data));
+	suite.push_back(TestCase("Default ctor", default_ctor));
+	suite.push_back(TestCase("Fill ctor", fill_ctor));
+	suite.push_back(TestCase("Range ctor", range_ctor));
+	suite.push_back(TestCase("Copy ctor", copy_ctor));
+	suite.push_back(TestCase("Operator=", equal_op));
+	suite.push_back(TestCase("Logical operators", logical_op));
+	suite.push_back(TestCase("Assign", assign));
+	suite.push_back(TestCase("At", at));
+	suite.push_back(TestCase("Operator[]", at_op));
+	suite.push_back(TestCase("Front", front));
+	suite.push_back(TestCase("Back", back));
+	suite.push_back(TestCase("Data", data));
+	suite.push_back(TestCase("Iterators", iterators));
+	suite.push_back(TestCase("Size", size));
+	suite.push_back(TestCase("Clear", clear));
+	suite.push_back(TestCase("Insertion", insertion));
 
-	unit_test::MasterSuite::instance().push_back(suite);
+	MasterSuite::instance().push_back(suite);
+}
+
 }

@@ -18,7 +18,7 @@ namespace ft
 	{
 		public:
 			typedef T											value_type;
-			typedef Allocator 									alloc_type;
+			typedef Allocator 									allocator_type;
 			typedef std::size_t									size_type;
 			typedef std::ptrdiff_t								difference_type;
 			typedef typename Allocator::pointer					pointer;
@@ -32,7 +32,7 @@ namespace ft
 
 
 		private:
-			alloc_type		_alloc;
+			allocator_type	_alloc;
 			pointer			_start;
 			pointer			_finish;
 			pointer			_end_of_storage;
@@ -42,7 +42,7 @@ namespace ft
 			/**
 			 * @brief default constructor
 			 */
-			explicit vector(const alloc_type& alloc = alloc_type())
+			explicit vector(const allocator_type& alloc = allocator_type())
 				: _alloc(alloc), _start(), _finish(), _end_of_storage()
 			{
 				_start = _alloc.allocate(0);
@@ -53,7 +53,7 @@ namespace ft
 			/**
 			 * @brief fill constructor
 			 */
-			explicit vector(size_type n, const value_type& val = value_type(), const alloc_type& alloc = alloc_type())
+			explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
 				: _alloc(alloc)
 			{
 				size_t	len = _check_init_length(n);
@@ -69,7 +69,7 @@ namespace ft
 			 * uses enable_if to avoid using it when we need a fill constructor
 			 */
 			template <class InputIterator>
-			vector(InputIterator first, InputIterator last, const alloc_type& alloc = alloc_type(),
+			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
 					typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL)
 				: _alloc(alloc)
 			{
@@ -113,9 +113,9 @@ namespace ft
 				return (*this);
 			}
 
-			alloc_type
+			allocator_type
 			get_allocator() const
-			{ return (alloc_type(_alloc)); }
+			{ return (allocator_type(_alloc)); }
 
 
 		/* 

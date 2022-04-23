@@ -4,7 +4,7 @@ int	main( void )
 {
 	unit_test::TestRunner	runner;
 
-	vector_suite();
+	unit_test::vector_suite();
 	// stack_suite();
 	// map_suite();
 	// set_suite();

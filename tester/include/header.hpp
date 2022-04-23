@@ -16,6 +16,11 @@
 #  include "set.hpp"
 # endif
 
+namespace unit_test
+{
+
 void	vector_suite( void );
+
+}
 
 #endif
