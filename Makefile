@@ -36,7 +36,7 @@ CROSS		=	\xE2\x9D\x8C
 all:			run
 
 clean:
-				@printf "$(YELLOW)Deleting log files...$(DEFAULT)\n"
+				@printf "$(YELLOW)Deleting build files...$(DEFAULT)\n"
 				@$(RM) $(OBJ)
 				@printf "$(DELPREV)Log files deleted\n"
 
