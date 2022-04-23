@@ -256,6 +256,14 @@ namespace ft
 			back() const
 			{ return (*(_finish - 1)); }
 
+			T*
+			data()
+			{ return (_start); }
+
+			const T*
+			data() const
+			{ return (_start); }
+
 		/* 
 		**	MODIFIERS
 		*/
