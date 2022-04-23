@@ -126,7 +126,7 @@ if [[ "${RETURN_VALUE}" -eq 0 ]]; then
 		NB+=("$n")																						# and put them in a list
 	done
 	QUOTIENT=$(echo "scale=1 ; ${NB[0]} / ${NB[1]}" | bc)												# get the quotient of (ft_exec_time / std_exec_time)
-	printf "FT containers are "
+	printf "FT namespace is "
 	if [[ $(echo "${QUOTIENT} > 1" | bc | grep 1) ]]; then												# if quotient > 1
 		if [[ $(echo "${QUOTIENT} > 20" | bc | grep 1) ]]; then											#	&& quotient > 20
 			RETURN_VALUE=1																				# then test failed
@@ -135,7 +135,7 @@ if [[ "${RETURN_VALUE}" -eq 0 ]]; then
 	else
 		printf "%s times faster" `echo "scale=1; 1 / ${QUOTIENT}" | bc`
 	fi
-	printf " than STD ones\n"
+	printf " than STD\n"
 fi
 
 exit ${RETURN_VALUE}

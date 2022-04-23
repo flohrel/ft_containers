@@ -22,5 +22,3 @@ jobs:
         architecture: 'x64'
     - name: make
       run: make INCLUDE='include'
-    - name: run
-      run: ./runner
