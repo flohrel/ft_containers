@@ -1,8 +1,9 @@
 #ifndef __VECTOR_UTILS__H__
 # define __VECTOR_UTILS__H__
 
-#include <vector>
-#include "vector.hpp"
+# include <vector>
+# include "vector.hpp"
+# include "utils/RandomArray.hpp"
 
 template< typename T, typename U >
 bool operator==(const T& lhs, const U& rhs)
