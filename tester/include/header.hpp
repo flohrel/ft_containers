@@ -18,9 +18,10 @@
 
 namespace unit_test {
 namespace vector_suite {
-
 void	suite_registrar( void );
-
+}
+namespace map_suite {
+void	suite_registrar( void );
 }
 }
 

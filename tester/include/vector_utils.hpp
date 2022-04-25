@@ -7,8 +7,9 @@
 # include <vector>
 # include <cassert>
 
-// Some operator overload to compare ft::<container> to std::<container>
-
+/**
+ * @brief Comparison operator overload
+ */
 namespace unit_test {
 
 namespace vector_suite {

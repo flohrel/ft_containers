@@ -1,6 +1,11 @@
 #ifndef __MAP_UTILS__H__
 # define __MAP_UTILS__H__
 
+# include "libunitcpp.hpp"
+# include "map.hpp"
+# include <map>
+# include <cassert>
+
 namespace unit_test {
 
 namespace map_suite {
