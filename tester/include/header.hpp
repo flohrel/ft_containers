@@ -16,11 +16,12 @@
 #  include "set.hpp"
 # endif
 
-namespace unit_test
-{
+namespace unit_test {
+namespace vector_suite {
 
-void	vector_suite( void );
+void	suite_registrar( void );
 
+}
 }
 
 #endif

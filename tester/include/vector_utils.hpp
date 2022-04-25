@@ -1,10 +1,19 @@
 #ifndef __VECTOR_UTILS__H__
 # define __VECTOR_UTILS__H__
 
-# include <vector>
-# include "vector.hpp"
+# include "libunitcpp.hpp"
 # include "utils/RandomArray.hpp"
+# include "vector.hpp"
+# include <vector>
+# include <cassert>
 
+// Some operator overload to compare ft::<container> to std::<container>
+
+namespace unit_test {
+
+namespace vector_suite {
+
+/* Equality for containers with direct value comparison (vector / stack) */
 template< typename T, typename U >
 bool operator==(const T& lhs, const U& rhs)
 {
@@ -13,9 +22,8 @@ bool operator==(const T& lhs, const U& rhs)
 		return (false);
 	}
 
-	typename T::const_iterator	first1 = lhs.begin();
+	typename T::const_iterator	first1 = lhs.begin(), last1 = lhs.end();
 	typename U::const_iterator	first2 = rhs.begin();
-	typename T::const_iterator	last1 = lhs.end();
 
 	for (; first1 != last1; first1++, first2++)
 	{
@@ -46,5 +54,8 @@ bool operator>(const T& lhs, const U& rhs)
 template< typename T, typename U >
 bool operator>=(const T& lhs, const U& rhs)
 { return (!(lhs < rhs)); }
+
+}	// namespace vector_suite
+}	// namespace unit_test
 
 #endif

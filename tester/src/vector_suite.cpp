@@ -1,11 +1,8 @@
-#include "header.hpp"
 #include "vector_utils.hpp"
 
-namespace unit_test
-{
+namespace unit_test { 
 
-namespace
-{
+namespace vector_suite {
 
 typedef std::vector<int>	vector_std;
 typedef ft::vector<int>		vector_ft;
@@ -329,11 +326,11 @@ void	insertion( void )
 	assert( v == vref );
 }
 
-}
-
-void	vector_suite( void )
+void	suite_registrar( void )
 {
 	TestSuite	suite("Vector suite");
+
+	using namespace vector_suite;
 
 	suite.push_back(TestCase("Default ctor", default_ctor));
 	suite.push_back(TestCase("Fill ctor", fill_ctor));
@@ -355,4 +352,5 @@ void	vector_suite( void )
 	MasterSuite::instance().push_back(suite);
 }
 
-}
+}	// namespace vector_suite
+}	// namespace unit_test
