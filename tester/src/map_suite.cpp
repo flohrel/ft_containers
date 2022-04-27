@@ -4,8 +4,15 @@ namespace unit_test {
 
 namespace map_suite {
 
+typedef std::map<std::string, int>		map_std;
+typedef ft::map<std::string, int>		map_ft;
+
 void	default_ctor( void )
 {
+	map_ft	m;
+	map_std	mref;
+
+	assert(m == mref);
 }
 
 void	range_ctor( void )

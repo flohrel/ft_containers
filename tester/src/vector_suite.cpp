@@ -4,8 +4,9 @@ namespace unit_test {
 
 namespace vector_suite {
 
-typedef std::vector<int>	vector_std;
-typedef ft::vector<int>		vector_ft;
+typedef std::vector<int>			vector_std;
+typedef ft::vector<int>				vector_ft;
+typedef std::vector<Random<int> >	vector_rand;
 
 void	default_ctor( void )
 {
@@ -289,7 +290,7 @@ void	insertion( void )
 	vref.insert(vref.begin(), count, 666);
 	assert( v == vref );
 
-	RandomArray<int>	array(65536);
+	vector_rand	array(65536);
 	for (int i = 0; i < 42; i++)
 	{
 		v.insert(v.begin(), array.begin() + (i * 4), array.begin() + (i * 8));

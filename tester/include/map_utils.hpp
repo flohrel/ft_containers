@@ -16,14 +16,13 @@ class value_compare
 {
 	protected:
 		Compare comp;
-		value_compare(Compare c) : comp(c) { }
 
 	public:
+		value_compare(Compare c) : comp(c) { }
 		~value_compare() { }
 
 		template <typename T, typename U >
-		bool operator()( typename T::value_type const& x,
-						typename U::value_type const& y ) const
+		bool operator()( T const& x, U const& y ) const
 		{ return (comp(x.first, y.first)); }
 };
 
@@ -35,10 +34,10 @@ bool operator==(const T& lhs, const U& rhs)
 		return (false);
 	}
 
-	typedef typename T::value_compare	compare_type;
+	typedef typename T::key_compare		compare_type;
 
-	compare_type c = static_cast<compare_type>(rhs.value_comp());		//	Check at compile time that both containers share the same Compare function
-	value_compare<compare_type>	comp(c);								//	Initialisation of comparison functor
+	compare_type c = static_cast<compare_type>(rhs.key_comp());				//	Check at compile time that both containers share the same Compare function
+	value_compare<compare_type>	comp(c);									//	Initialisation of comparison functor
 	
 	typename T::const_iterator	first1 = lhs.begin(), last1 = lhs.end();
 	typename U::const_iterator	first2 = rhs.begin();

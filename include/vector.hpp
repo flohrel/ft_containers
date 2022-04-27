@@ -9,7 +9,7 @@
 # include "type_traits.hpp"
 # include "algorithm.hpp"
 # include "utility.hpp"
-#include <iostream>
+# include <iostream>
 
 namespace ft
 {
