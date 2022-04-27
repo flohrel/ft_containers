@@ -52,6 +52,26 @@ bool operator==(const T& lhs, const U& rhs)
 	return (true);
 }
 
+template< typename T, typename U >
+bool operator!=(const T& lhs, const U& rhs)
+{ return (!(lhs == rhs)); }
+
+template< typename T, typename U >
+bool operator<(const T& lhs, const U& rhs)
+{ return (std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
+
+template< typename T, typename U >
+bool operator<=(const T& lhs, const U& rhs)
+{ return (!(rhs < lhs)); }
+
+template< typename T, typename U >
+bool operator>(const T& lhs, const U& rhs)
+{ return (rhs < lhs); }
+
+template< typename T, typename U >
+bool operator>=(const T& lhs, const U& rhs)
+{ return (!(lhs < rhs)); }
+
 }	// namespace map_suite
 }	// namespace unit_test
 

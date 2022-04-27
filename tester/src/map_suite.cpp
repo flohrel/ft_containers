@@ -4,9 +4,10 @@ namespace unit_test {
 
 namespace map_suite {
 
-typedef std::map<std::string, int>								map_std;
-typedef ft::map<std::string, int>								map_ft;
-typedef	MapGenerator< StringGenerator, RandomGenerator<int> >	map_rand;
+typedef std::map<std::string, int>										map_std;
+typedef ft::map<std::string, int>										map_ft;
+typedef	MapGenerator< StringGenerator, RandomGenerator<int> >			mstd_rand;
+typedef	MapGenerator< StringGenerator, RandomGenerator<int>, map_ft >	mft_rand;
 
 void	default_ctor( void )
 {
@@ -18,8 +19,8 @@ void	default_ctor( void )
 
 void	range_ctor( void )
 {
-	map_rand	rmap(1024);
-	map_std		minit = static_cast<std::map< std::string, int > >(rmap);
+	mstd_rand	rmap(1024);
+	map_std		minit = rmap();
 
 	map_ft	m(minit.begin(), minit.end());
 	map_std	mref(minit.begin(), minit.end());
@@ -29,14 +30,69 @@ void	range_ctor( void )
 
 void	copy_ctor( void )
 {
+	mstd_rand	rmap(1024);
+	map_std		init_std = rmap();
+	map_ft		init_ft(init_std.begin(), init_std.end());
+
+	map_ft	m(init_ft);
+	map_std	mref(init_std);
+
+	assert(m == mref);
 }
 
 void	equal_op( void )
 {
+	mstd_rand	rmap(1024);
+	map_std		init_std = rmap();
+	map_ft		init_ft(init_std.begin(), init_std.end());
+
+	map_ft	m = init_ft;
+	map_std	mref = init_std;
+
+	assert(m == mref);
 }
 
 void	logical_op( void )
 {
+	{
+		map_ft	m;
+		map_ft	mref;
+
+		assert( m == mref );
+		assert( m <= mref );
+		assert( m >= mref );
+		assert( !(m != mref) );
+		assert( !(m < mref) );
+		assert( !(m > mref) );
+	}
+	{
+		mft_rand	rmap(1024);
+		map_ft		minit = rmap();
+
+		map_ft		m(minit.begin(), minit.end());
+		map_ft		mref(minit.begin(), minit.end());
+
+		assert( m == mref );
+		assert( m <= mref );
+		assert( m >= mref );
+		assert( !(m != mref) );
+		assert( !(m < mref) );
+		assert( !(m > mref) );
+	}
+	{
+		mft_rand	rmap(1024);
+		map_ft		minit = rmap();
+
+		map_ft		m;
+		map_ft		mref(minit.begin(), minit.end());
+
+		assert( m != mref );
+		assert( m < mref );
+		assert( mref > m );
+		assert( !(m == mref) );
+		assert( !(mref <= m) );
+		assert( !(m >= mref) );
+	}
 }
 
 void	at( void )

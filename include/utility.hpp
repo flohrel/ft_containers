@@ -47,7 +47,7 @@ namespace ft
 			{ }
 
 			template<class U, class V>
-			pair( ft::pair<U, V> const& pr)
+			pair( pair<U, V> const& pr)
 				: first(pr.first), second(pr.second)
 			{ }
 

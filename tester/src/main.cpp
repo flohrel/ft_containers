@@ -6,7 +6,7 @@ int	main( void )
 
 	unit_test::vector_suite::suite_registrar();
 	unit_test::map_suite::suite_registrar();
-	// map_suite();
+	// stack_suite();
 	// set_suite();
 
 	runner.run_all();
