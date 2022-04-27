@@ -2,8 +2,8 @@
 # define __VECTOR_UTILS__H__
 
 # include "libunitcpp.hpp"
-# include "utils/random.hpp"
 # include "vector.hpp"
+# include <vector>
 # include <cassert>
 
 /**

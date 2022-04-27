@@ -4,8 +4,9 @@ namespace unit_test {
 
 namespace map_suite {
 
-typedef std::map<std::string, int>		map_std;
-typedef ft::map<std::string, int>		map_ft;
+typedef std::map<std::string, int>								map_std;
+typedef ft::map<std::string, int>								map_ft;
+typedef	MapGenerator< StringGenerator, RandomGenerator<int> >	map_rand;
 
 void	default_ctor( void )
 {
@@ -17,6 +18,13 @@ void	default_ctor( void )
 
 void	range_ctor( void )
 {
+	map_rand	rmap(1024);
+	map_std		minit = static_cast<std::map< std::string, int > >(rmap);
+
+	map_ft	m(minit.begin(), minit.end());
+	map_std	mref(minit.begin(), minit.end());
+
+	assert(m == mref);
 }
 
 void	copy_ctor( void )

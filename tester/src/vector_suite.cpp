@@ -4,9 +4,9 @@ namespace unit_test {
 
 namespace vector_suite {
 
-typedef std::vector<int>			vector_std;
-typedef ft::vector<int>				vector_ft;
-typedef std::vector<Random<int> >	vector_rand;
+typedef std::vector<int>					vector_std;
+typedef ft::vector<int>						vector_ft;
+typedef std::vector<RandomGenerator<int> >	vector_rand;
 
 void	default_ctor( void )
 {

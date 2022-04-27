@@ -47,8 +47,13 @@ namespace ft
 			{ }
 
 			template<class U, class V>
-			pair(const pair<U, V>& pr)
+			pair( ft::pair<U, V> const& pr)
 				: first(pr.first), second(pr.second)
+			{ }
+
+			template<class U, class V>
+			pair( std::pair<U, V> const& pair )
+			: first(pair.first), second(pair.second)
 			{ }
 
 			pair(const first_type& a, const second_type& b)
