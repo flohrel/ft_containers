@@ -34,9 +34,8 @@ header()
 
 compile()
 {
-	INCLUDE_PARENT_DIR=`dirname ${INCLUDE}`
 	printf "%-30s" "Compiling..."
-	make -C tester INCLUDE="../${INCLUDE_PARENT_DIR}" NAMESPACE="$1" &> ${LOGFILE}
+	make -sC tester INCLUDE="../${INCLUDE}" NAMESPACE="$1" &> ${LOGFILE}
 	if [[ "$?" -ne 0 ]]; then
 		printf "${RED}${CROSS}${DEFAULT}\n"
 		printf "Error: compilation failed. See ${LOGFILE} for more details.\n"

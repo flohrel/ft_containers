@@ -6,8 +6,8 @@ NAME		=	tester
 
 VPATH		=	src libunitcpp/src
 LIBDIR		=	libunitcpp
-INCLUDE		=
-INCLDIR		=	$(addsuffix /include,$(INCLUDE) ./libunitcpp .)
+INCLUDE		=	# MUST be set to your headers' directory path before running (eg. "../include")
+INCLDIR		=	$(addsuffix /include,$(LIBDIR) .) $(INCLUDE)
 BUILDIR		=	build
 DEPDIR		=	$(BUILDIR)/.deps
 
@@ -53,19 +53,37 @@ DELPREV		=	$(UP)$(DELETE)\r
 CHECK		=	\xE2\x9C\x94
 CROSS		=	\xE2\x9D\x8C
 
+# DISPLAY
+HEAD_SIZE	=	32
+NAME_SIZE	=	$(shell NAME='$(NAME)'; printf "$${#NAME}")
+PAD_WIDTH	=	$(shell printf "$$((($(HEAD_SIZE) - $(NAME_SIZE)) / 2))")
+PAD_PREC	=	$(shell printf "$$(($(PAD_WIDTH) / 2))")
+PAD_CHAR	=	\*
+PAD_STR		=	$(shell printf '$(PAD_CHAR)%.0s' {1..$(PAD_WIDTH)})
+LEFT_PAD	=	$(shell printf '%-*.*s' $(PAD_WIDTH) $(PAD_PREC) $(PAD_STR))
+RIGHT_PAD	=	$(shell printf '%*.*s' $(PAD_WIDTH) $$(($(PAD_PREC) - $(NAME_SIZE) % 2)) $(PAD_STR))
+BODY_WIDTH	=	$(shell printf "$$(($(HEAD_SIZE) - 1))")
+
 
 ###########
 ## Rules ##
 ###########
 
+
 .PHONY:			all bonus clean fclean header lib re verbose
 
 all:			lib header $(NAME)
 
+ifeq (,$(strip $(findstring clean, $(MAKECMDGOALS))))		# if the command call is not a cleaning rule
+ifeq (,$(strip $(INCLUDE)))									# if INCLUDE variable hasn't been set
+  	$(error Set the INCLUDE variable before running (eg. make 'INCLUDE=../include'))	# abort
+endif
+endif
+
 $(BUILDIR)/%.o:	%.cpp | $(DEPDIR)
 				@printf "$(YELLOW)Compiling $@ and generating/checking make dependency file...$(DEFAULT)\n"
 				@$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
-				@printf "$(DELPREV)%-25s%*s$(GREEN)$(CHECK)$(DEFAULT)\n" $@ $(shell printf "$(NAME)" | wc -c)
+				@printf '$(DELPREV)%-*s$(GREEN)$(CHECK)$(DEFAULT)\n' $(BODY_WIDTH) $(notdir $@)
 
 $(NAME):		$(OBJ)
 				@printf "$(YELLOW)Linking source files and generating $@ binary...\n$(DEFAULT)"
@@ -80,10 +98,10 @@ $(DEP):
 -include $(wildcard $(DEP))
 
 lib:
-				@make -C libunitcpp
+				@$(MAKE) -sC libunitcpp
 
 header:
-				@printf "**********%3$1s$(BLUE)$(NAME)$(DEFAULT)%3$1s**********\n" ""
+				@printf '$(LEFT_PAD)$(BLUE)$(NAME)$(DEFAULT)$(RIGHT_PAD)\n'
 
 clean:
 				@printf "$(YELLOW)Deleting object and dependency files...$(DEFAULT)\n"
@@ -93,8 +111,8 @@ clean:
 fclean:			clean
 				@printf "$(YELLOW)Deleting build directory and library...$(DEFAULT)\n"
 				@$(RM) $(BUILDIR) $(NAME)
-				@printf "$(DELPREV)Build directory and binaries deleted\n"
-				@make -C $(LIBDIR) fclean
+				@printf "$(DELPREV)Build directory and binary deleted\n"
+				@$(MAKE) -sC $(LIBDIR) fclean
 
 re:				fclean
-				@make -s all
+				@$(MAKE) -s all

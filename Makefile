@@ -2,7 +2,7 @@
 ## Variables ##
 ###############
 
-INCLUDE		=	# MUST be set to the folder with your container files
+INCLUDE		=	include
 TESTDIR		=	tester
 LOGDIR		=	log
 
@@ -44,12 +44,9 @@ fclean:			clean
 				@printf "$(YELLOW)Deleting log directory...$(DEFAULT)\n"
 				@$(RM) $(LOGDIR)
 				@printf "$(DELPREV)Log directory deleted\n"
-				@make -C $(TESTDIR) fclean
+				@make -sC $(TESTDIR) fclean
 
 run:
-ifeq ($(strip $(INCLUDE)),)
-	$(error Set the INCLUDE variable before running (eg. make INCLUDE='../include'))
-endif
 				@./run.sh $(INCLUDE)
 
 re:				fclean
