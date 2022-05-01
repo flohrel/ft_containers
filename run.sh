@@ -14,7 +14,7 @@ WHITE='\033[1;107m'
 # TERMCAPS
 UP='\033[1A'
 DELETE='\033[2K'
-DELPREV='$(UP)$(DELETE)\r'
+DELPREV="${UP}${DELETE}\r"
 
 # EMOJI
 CHECK='\xE2\x9C\x94'
@@ -27,14 +27,26 @@ RETURN_VALUE=0
 
 header()
 {
-	PADDING_SIZE1=$((10 - ${#1}))
-	PADDING_SIZE2=$((15 - ${#1} % 2))
-	printf "%-15.*s${BLUE}%s${DEFAULT}%*.*s\n" "${PADDING_SIZE1}" "**********" "${1}" "${PADDING_SIZE2}" "${PADDING_SIZE1}" "**********"
+	set -o noglob			# disable globbing to prevent PAD_CHAR from expanding
+
+	HEAD_SIZE=32
+	NAME_SIZE=${#1}
+	PAD_WIDTH=$(((${HEAD_SIZE} - ${NAME_SIZE}) / 2))
+	PAD_PREC=$((${PAD_WIDTH} / 2))
+	PAD_CHAR='*'
+	PAD_STR=`eval printf "${PAD_CHAR}%.0s" {1..${PAD_WIDTH}}`
+	LEFT_PAD=`printf '%-*.*s' ${PAD_WIDTH} ${PAD_PREC} ${PAD_STR}`
+	RIGHT_PAD=`printf '%*.*s' $((${PAD_WIDTH} + ${NAME_SIZE} % 2)) ${PAD_PREC} ${PAD_STR}`
+	BODY_WIDTH=$((${HEAD_SIZE} - 1))
+	
+	printf "${LEFT_PAD}${BLUE}${1}${DEFAULT}${RIGHT_PAD}\n"
+
+	set +o noglob			# restore globbing
 }
 
 compile()
 {
-	printf "%-30s" "Compiling..."
+	printf "%-*s" ${BODY_WIDTH} "Compiling..."
 	make -sC tester INCLUDE="../${INCLUDE}" NAMESPACE="$1" &> ${LOGFILE}
 	if [[ "$?" -ne 0 ]]; then
 		printf "${RED}${CROSS}${DEFAULT}\n"
@@ -56,7 +68,7 @@ execute()
 		chmod +x ${TESTER}
 	fi
 
-	printf "%-30s" "Executing..."
+	printf "%-*s" ${BODY_WIDTH} "Executing..."
 
 	./${TESTER} &>> ${LOGFILE}
 

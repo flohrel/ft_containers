@@ -61,7 +61,7 @@ PAD_PREC	=	$(shell printf "$$(($(PAD_WIDTH) / 2))")
 PAD_CHAR	=	\*
 PAD_STR		=	$(shell printf '$(PAD_CHAR)%.0s' {1..$(PAD_WIDTH)})
 LEFT_PAD	=	$(shell printf '%-*.*s' $(PAD_WIDTH) $(PAD_PREC) $(PAD_STR))
-RIGHT_PAD	=	$(shell printf '%*.*s' $(PAD_WIDTH) $$(($(PAD_PREC) - $(NAME_SIZE) % 2)) $(PAD_STR))
+RIGHT_PAD	=	$(shell printf '%*.*s' $$(($(PAD_WIDTH) + $(NAME_SIZE) % 2)) $(PAD_PREC) $(PAD_STR))
 BODY_WIDTH	=	$(shell printf "$$(($(HEAD_SIZE) - 1))")
 
 
