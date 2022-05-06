@@ -11,9 +11,7 @@ INCLDIR		=	$(addsuffix /include,$(LIBDIR) .) $(INCLUDE)
 BUILDIR		=	build
 DEPDIR		=	$(BUILDIR)/.deps
 
-SRC			=	main.cpp \
-				vector_suite.cpp \
-				map_suite.cpp
+SRC			=	test_suite.cpp
 OBJ			=	$(SRC:%.cpp=$(BUILDIR)/%.o)
 DEP			=	$(SRC:%.cpp=$(DEPDIR)/%.d)
 
