@@ -1,15 +1,81 @@
-# include "map_utils.hpp"
+# include "map.hpp"
+# include <map>
 
-namespace unit_test { 
+# include "libunitcpp.hpp"
 
-namespace map_suite {
+TEST_SUITE(map_suite)
+
+using namespace std;
+using namespace unit_test;
+
+/* Equality for containers using a comparison functor */
+template< typename Compare >
+class value_compare
+{
+	protected:
+		Compare comp;
+
+	public:
+		value_compare(Compare c) : comp(c) { }
+		~value_compare() { }
+
+		template <typename T, typename U >
+		bool operator()( T const& x, U const& y ) const
+		{ return (comp(x.first, y.first)); }
+};
+
+template< typename T, typename U >
+bool operator==(const T& lhs, const U& rhs)
+{
+	if (lhs.size() != rhs.size())
+	{
+		return (false);
+	}
+
+	typedef typename T::key_compare		compare_type;
+
+	compare_type c = static_cast<compare_type>(rhs.key_comp());				//	Check at compile time that both containers share the same Compare function
+	value_compare<compare_type>	comp(c);									//	Initialisation of comparison functor
+	
+	typename T::const_iterator	first1 = lhs.begin(), last1 = lhs.end();
+	typename U::const_iterator	first2 = rhs.begin();
+
+	for (; first1 != last1; first1++, first2++)
+	{
+		if (comp(*first1, *first2) || comp(*first2, *first1))
+		{
+			return (false);
+		}
+	}
+	return (true);
+}
+
+template< typename T, typename U >
+bool operator!=(const T& lhs, const U& rhs)
+{ return (!(lhs == rhs)); }
+
+template< typename T, typename U >
+bool operator<(const T& lhs, const U& rhs)
+{ return (std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
+
+template< typename T, typename U >
+bool operator<=(const T& lhs, const U& rhs)
+{ return (!(rhs < lhs)); }
+
+template< typename T, typename U >
+bool operator>(const T& lhs, const U& rhs)
+{ return (rhs < lhs); }
+
+template< typename T, typename U >
+bool operator>=(const T& lhs, const U& rhs)
+{ return (!(lhs < rhs)); }
 
 typedef std::map<std::string, int>										map_std;
 typedef ft::map<std::string, int>										map_ft;
 typedef	MapGenerator< StringGenerator, RandomGenerator<int> >			mstd_rand;
 typedef	MapGenerator< StringGenerator, RandomGenerator<int>, map_ft >	mft_rand;
 
-void	default_ctor( void )
+TEST_CASE(default_ctor)
 {
 	map_ft	m;
 	map_std	mref;
@@ -17,7 +83,7 @@ void	default_ctor( void )
 	assert(m == mref);
 }
 
-void	range_ctor( void )
+TEST_CASE(range_ctor)
 {
 	mstd_rand	rmap(1024);
 	map_std		minit = rmap();
@@ -28,7 +94,7 @@ void	range_ctor( void )
 	assert(m == mref);
 }
 
-void	copy_ctor( void )
+TEST_CASE(copy_ctor)
 {
 	mstd_rand	rmap(1024);
 	map_std		init_std = rmap();
@@ -40,7 +106,7 @@ void	copy_ctor( void )
 	assert(m == mref);
 }
 
-void	equal_op( void )
+TEST_CASE(equal_op)
 {
 	mstd_rand	rmap(1024);
 	map_std		init_std = rmap();
@@ -52,7 +118,7 @@ void	equal_op( void )
 	assert(m == mref);
 }
 
-void	logical_op( void )
+TEST_CASE(logical_op)
 {
 	{
 		map_ft	m;
@@ -95,73 +161,48 @@ void	logical_op( void )
 	}
 }
 
-void	at( void )
+TEST_CASE(at)
 {
 }
 
-void	at_op( void )
+TEST_CASE(at_op)
 {
 }
 
-void	iterators( void )
+TEST_CASE(iterators)
 {
 }
 
-void	size( void )
+TEST_CASE(size)
 {
 }
 
-void	clear( void )
+TEST_CASE(clear)
 {
 }
 
-void	insertion( void )
+TEST_CASE(insertion)
 {
 }
 
-void	swap( void )
+TEST_CASE(swap)
 {
 }
 
-void	count( void )
+TEST_CASE(count)
 {
 }
 
-void	find( void )
+TEST_CASE(find)
 {
 }
 
-void	equal_range( void )
+TEST_CASE(equal_range)
 {
 }
 
-void	bounds( void )
+TEST_CASE(bounds)
 {
 }
 
-void	suite_registrar( void )
-{
-	TestSuite	suite("Map suite");
-
-	suite.push_back(TestCase("Default ctor", default_ctor));
-	suite.push_back(TestCase("Range ctor", range_ctor));
-	suite.push_back(TestCase("Copy ctor", copy_ctor));
-	suite.push_back(TestCase("Operator=", equal_op));
-	suite.push_back(TestCase("Logical operators", logical_op));
-	suite.push_back(TestCase("At", at));
-	suite.push_back(TestCase("Operator[]", at_op));
-	suite.push_back(TestCase("Iterators", iterators));
-	suite.push_back(TestCase("Size", size));
-	suite.push_back(TestCase("Clear", clear));
-	suite.push_back(TestCase("Insertion", insertion));
-	suite.push_back(TestCase("Swap", swap));
-	suite.push_back(TestCase("Count", count));
-	suite.push_back(TestCase("Find", find));
-	suite.push_back(TestCase("Equal range", equal_range));
-	suite.push_back(TestCase("Lower/upper bound", bounds));
-
-	MasterSuite::instance().push_back(suite);
-}
-
-}	// namespace map_suite
-}	// namespace unit_test
+TEST_SUITE_END()

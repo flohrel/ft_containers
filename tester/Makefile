@@ -2,7 +2,7 @@
 ## Variables ##
 ###############
 
-NAME		=	tester
+NAME		=	test runner
 
 VPATH		=	src libunitcpp/src
 LIBDIR		=	libunitcpp
@@ -11,14 +11,12 @@ INCLDIR		=	$(addsuffix /include,$(LIBDIR) .) $(INCLUDE)
 BUILDIR		=	build
 DEPDIR		=	$(BUILDIR)/.deps
 
-SRC			=	main.cpp \
-				vector_suite.cpp \
-				map_suite.cpp
+SRC			=	vector_suite.cpp
 OBJ			=	$(SRC:%.cpp=$(BUILDIR)/%.o)
 DEP			=	$(SRC:%.cpp=$(DEPDIR)/%.d)
 
 CXX			=	c++
-CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98
+CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98 -g3
 CPPFLAGS	=	$(addprefix -I, $(INCLDIR))
 LDFLAGS		=	-Llibunitcpp -lunitcpp
 DEPFLAGS	=	-MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
@@ -84,13 +82,13 @@ $(BUILDIR)/%.o:	%.cpp | $(DEPDIR)
 				@printf "$(YELLOW)Compiling $@ and generating/checking make dependency file...$(DEFAULT)\n"
 				@$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 				@printf '$(DELPREV)%-*s$(GREEN)$(CHECK)$(DEFAULT)\n' $(BODY_WIDTH) $(notdir $@)
-
-$(NAME):		$(OBJ)
 				@printf "$(YELLOW)Linking source files and generating $@ binary...\n$(DEFAULT)"
-				@$(CXX) $(CXXFLAGS) -o $@ $(CPPFLAGS) $^ $(LDFLAGS)
+				@$(CXX) $(CXXFLAGS) -o run_$(basename $(notdir $@)) $(CPPFLAGS) $^ $(LDFLAGS)
 				@printf "$(DELPREV)$(GREEN)Binary generated$(DEFAULT)\n"
 
-$(DEPDIR):
+$(NAME):		$(OBJ)
+
+$(DEPDIR): 
 				@printf "$(YELLOW)Creating $@ folder...$(DEFAULT)\n"
 				@mkdir -p $@
 				@printf "$(DELPREV)"
@@ -110,7 +108,7 @@ clean:
 
 fclean:			clean
 				@printf "$(YELLOW)Deleting build directory and library...$(DEFAULT)\n"
-				@$(RM) $(BUILDIR) $(NAME)
+				@$(RM) $(BUILDIR) $(wildcard run_*)
 				@printf "$(DELPREV)Build directory and binary deleted\n"
 				@$(MAKE) -sC $(LIBDIR) fclean
 

@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/flohrel/code/ft_containers'
+./run.sh include
+make: Leaving directory '/home/flohrel/code/ft_containers'
+ 

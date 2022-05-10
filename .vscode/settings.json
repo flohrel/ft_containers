@@ -52,6 +52,27 @@
 		"set": "cpp",
 		"functional": "cpp",
 		"numeric": "cpp",
-		"fstream": "cpp"
+		"fstream": "cpp",
+		"*.ipp": "cpp",
+		"cstring": "cpp",
+		"strstream": "cpp",
+		"bitset": "cpp",
+		"chrono": "cpp",
+		"complex": "cpp",
+		"condition_variable": "cpp",
+		"ratio": "cpp",
+		"mutex": "cpp",
+		"numbers": "cpp",
+		"semaphore": "cpp",
+		"shared_mutex": "cpp",
+		"span": "cpp",
+		"stop_token": "cpp",
+		"thread": "cpp",
+		"cfenv": "cpp",
+		"cinttypes": "cpp",
+		"typeindex": "cpp",
+		"valarray": "cpp",
+		"variant": "cpp",
+		"cassert": "cpp"
 	}
 }
