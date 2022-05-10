@@ -163,22 +163,88 @@ TEST_CASE(logical_op)
 
 TEST_CASE(at)
 {
+	map_ft		ft_map;
+	
+	ft_map.insert(ft::make_pair("foo", 42));
+
+	assert( ft_map.at("foo") == 42 );
+	try
+	{
+		ft_map.at("bar");
+		assert( false );
+	}
+	catch (std::exception const& e)
+	{
+		assert( true );
+	}
+	catch (...)
+	{
+		assert( false );
+	}
 }
 
 TEST_CASE(at_op)
 {
+	map_ft		ft_map;
+	
+	ft_map.insert(ft::make_pair("foo", 42));
+	assert( ft_map["foo"] == 42 );
+
+	ft_map["foo"] = 0;
+	assert( ft_map["foo"] == 0 );
 }
 
 TEST_CASE(iterators)
 {
+	map_ft	m;
+	map_std	mref;
+
+	m.insert(ft::make_pair("foo", 0));
+	mref.insert(std::make_pair("foo", 0));
+	m.insert(ft::make_pair("bar", 42));
+	mref.insert(std::make_pair("bar", 42));
+	m.insert(ft::make_pair("baz", 666));
+	mref.insert(std::make_pair("baz", 666));
+
+	map_ft::iterator it = m.begin();
+	map_ft::const_iterator cit = m.begin();
+	map_ft::reverse_iterator rit = m.rbegin();
+	map_ft::const_reverse_iterator crit = m.rbegin();
+	map_ft::iterator eit = m.end();
+	map_ft::reverse_iterator reit = m.rend();
+	map_std::iterator it_ref = mref.begin();
+	map_std::const_iterator cit_ref = mref.begin();
+	map_std::reverse_iterator rit_ref = mref.rbegin();
+	map_std::const_reverse_iterator crit_ref = mref.rbegin();
+	map_std::iterator eit_ref = mref.end();
+	map_std::reverse_iterator reit_ref = mref.rend();
+
+	assert( (cit->second) == (cit_ref->second) );
+	assert( (crit->second) == (crit_ref->second) );
+	while (it != m.end())
+	{
+		assert( (it->second) == ((it_ref++)->second) );
+		assert( (it++)->second == ((--reit_ref)->second) );
+		assert( (rit)->second == (rit_ref++)->second );
+		assert( (rit++)->second == ((--eit_ref)->second) );
+	}
 }
 
 TEST_CASE(size)
 {
+	mft_rand	rand(1024);
+	map_ft		m = rand();
+
+	assert( m.size() == 1024 );
 }
 
 TEST_CASE(clear)
 {
+	mft_rand	rand(1024);
+	map_ft		m = rand();
+
+	m.clear();
+	assert( m.empty() );
 }
 
 TEST_CASE(insertion)
