@@ -1,0 +1,373 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.3
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2020 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Tue May 10 03:01:21 2022
+
+# Variables
+
+# environment
+GDK_BACKEND = x11
+# environment
+LC_ALL = C
+# environment
+ 
+NO_AT_BRIDGE = 1
+# makefile (from 'Makefile', line 6)
+TESTDIR = tester
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-7b1eff15-731e-49f4-8291-69a850a38cb5.sock
+# environment
+LC_NAME = fr_FR.UTF-8
+# environment
+LC_NUMERIC = fr_FR.UTF-8
+# environment
+VSCODE_CWD = /home/flohrel
+# environment
+LC_ADDRESS = fr_FR.UTF-8
+# default
+MAKE_COMMAND := make
+# environment
+GTK3_MODULES = xapp-gtk3-module:xapp-gtk3-module
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# default
+.VARIABLES := 
+# environment
+PWD = /home/flohrel/code/ft_containers
+# makefile (from 'Makefile', line 12)
+DEFAULT = \033[0m
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+MAIL = /var/spool/mail/flohrel
+# environment
+XDG_DATA_DIRS = /usr/local/share:/usr/share
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+VSCODE_LOG_STACK = false
+# automatic
+%F = $(notdir $%)
+# environment
+VSCODE_CODE_CACHE_PATH = /home/flohrel/.config/Code/CachedData/57fd6d0195bb9b9d1b49f6da5db789060795de47
+# environment
+XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session0
+# environment
+LANG = C
+# environment
+XAUTHORITY = /home/flohrel/.Xauthority
+# default
+.LOADED := 
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# makefile (from 'Makefile', line 19)
+CYAN = \033[1;36m
+# makefile
+MAKEFLAGS = pqrR
+# makefile (from 'Makefile', line 17)
+BLUE = \033[1;34m
+# makefile
+CURDIR := /home/flohrel/code/ft_containers
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+MFLAGS = -pqrR
+# environment
+SSH_AUTH_SOCK = /tmp/ssh-XXXXXXnXegX0/agent.557
+# default
+.SHELLFLAGS := -c
+# environment
+XDG_CONFIG_DIRS = /etc/xdg
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+XDG_SESSION_DESKTOP = xfce
+# makefile (from 'Makefile', line 1)
+MAKEFILE_LIST := Makefile
+# automatic
+@F = $(notdir $@)
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+VSCODE_PID = 4750
+# environment
+XDG_SESSION_TYPE = x11
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# makefile (from 'Makefile', line 29)
+CROSS = \xE2\x9D\x8C
+# environment
+SESSION_MANAGER = local/flohrel-standardpcq35ich92009:@/tmp/.ICE-unix/476,unix/flohrel-standardpcq35ich92009:/tmp/.ICE-unix/476
+# automatic
+*F = $(notdir $*)
+# environment
+QT_QPA_PLATFORMTHEME = qt5ct
+# environment
+CHROME_DESKTOP = code-url-handler.desktop
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
+# makefile (from 'Makefile', line 28)
+CHECK = \xE2\x9C\x94
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
+# makefile (from 'Makefile', line 5)
+INCLUDE = include
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# makefile
+SHELL = /bin/sh
+# default
+MAKECMDGOALS := all
+# environment
+SHLVL = 1
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# makefile (from 'Makefile', line 23)
+UP = \033[1A
+# environment
+PATH = /usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
+# default
+MAKEFILES := 
+# environment
+LC_MONETARY = fr_FR.UTF-8
+# environment
+MOTD_SHOWN = pam
+# automatic
+^F = $(notdir $^)
+# makefile (from 'Makefile', line 16)
+YELLOW = \033[1;33m
+# environment
+LC_TIME = fr_FR.UTF-8
+# makefile (from 'Makefile', line 18)
+MAGENTA = \033[1;35m
+# environment
+VSCODE_LOG_NATIVE = false
+# makefile (from 'Makefile', line 15)
+GREEN = \033[1;32m
+# environment
+LC_TELEPHONE = fr_FR.UTF-8
+# automatic
+?F = $(notdir $?)
+# environment
+XDG_SEAT = seat0
+# environment
+XDG_CURRENT_DESKTOP = XFCE
+# automatic
++F = $(notdir $+)
+# environment
+XDG_SEAT_PATH = /org/freedesktop/DisplayManager/Seat0
+# environment
+DESKTOP_SESSION = xfce
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = XFCE
+# makefile (from 'Makefile', line 13)
+BLACK = \033[1;30m
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+BROWSER = firefox
+# environment
+LOGNAME = flohrel
+# makefile (from 'Makefile', line 7)
+LOGDIR = log
+# environment
+XDG_VTNR = 7
+# makefile
+.DEFAULT_GOAL := all
+# makefile (from 'Makefile', line 9)
+RM = /bin/rm -rf
+# makefile (from 'Makefile', line 14)
+RED = \033[1;31m
+# environment
+EDITOR = nano
+# environment
+DISPLAY = :0.0
+# environment
+GTK_MODULES = canberra-gtk-module:canberra-gtk-module
+# environment
+USER = flohrel
+# default
+MAKE_VERSION := 4.3
+# environment
+LC_MEASUREMENT = fr_FR.UTF-8
+# environment
+SSH_AGENT_PID = 558
+# environment
+_ = /usr/bin/make
+# environment
+LC_PAPER = fr_FR.UTF-8
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# environment
+XDG_SESSION_CLASS = user
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /home/flohrel
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+VSCODE_IPC_HOOK = /run/user/1000/vscode-1da58115-1.67.0-main.sock
+# environment
+XDG_SESSION_ID = 1
+# environment
+PANEL_GDK_CORE_DEVICE_EVENTS = 0
+# default
+.RECIPEPREFIX := 
+# automatic
+<F = $(notdir $<)
+# default
+SUFFIXES := 
+# environment
+VSCODE_CLI = 1
+# environment
+ELECTRON_NO_ATTACH_CONSOLE = 1
+# makefile (from 'Makefile', line 24)
+DELETE = \033[2K
+# environment
+XDG_GREETER_DATA_DIR = /var/lib/lightdm-data/flohrel
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink guile load
+# environment
+XDG_MENU_PREFIX = xfce-
+# makefile (from 'Makefile', line 25)
+DELPREV = $(UP)$(DELETE)\r
+# makefile (from 'Makefile', line 20)
+WHITE = \033[1;107m
+# environment
+GDMSESSION = xfce
+# environment
+LC_IDENTIFICATION = fr_FR.UTF-8
+# variable set hash-table stats:
+# Load=121/1024=12%, Rehash=0, Collisions=7/155=5%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 65025, inode 4071850): 12 files, no impossibilities.
+
+# 12 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-01 06:04:04.978553917
+#  File has been updated.
+#  Successfully updated.
+
+clean:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 39):
+				@printf "$(YELLOW)Deleting build files...$(DEFAULT)\n"
+				@$(RM) $(OBJ)
+				@printf "$(DELPREV)Log files deleted\n"
+
+re: fclean
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 53):
+				@make -s all
+
+ 
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+all: run
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/4=0%
+
+fclean: clean
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 44):
+				@printf "$(YELLOW)Deleting log directory...$(DEFAULT)\n"
+				@$(RM) $(LOGDIR)
+				@printf "$(DELPREV)Log directory deleted\n"
+				@make -sC $(TESTDIR) fclean
+
+run:
+#  Implicit rule search has not been done.
+#  Implicit/static pattern stem: ''
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := run
+# automatic
+# * := 
+# automatic
+# < := 
+# automatic
+# + := 
+# automatic
+# % := 
+# automatic
+# ^ := 
+# automatic
+# ? := 
+# automatic
+# | := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/12=8%
+#  recipe to execute (from 'Makefile', line 50):
+				@./run.sh $(INCLUDE)
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# files hash-table stats:
+# Load=8/1024=1%, Rehash=0, Collisions=0/24=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 21 / storage = 159 B / avg = 7 B
+# current buf: size = 8162 B / used = 159 B / count = 21 / avg = 7 B
+
+# strcache performance: lookups = 35 / hit rate = 40%
+# hash-table stats:
+# Load=21/8192=0%, Rehash=0, Collisions=0/35=0%
+# Finished Make data base on Tue May 10 03:01:21 2022
+
+ 

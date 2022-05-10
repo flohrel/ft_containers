@@ -1,14 +1,59 @@
-#include "vector_utils.hpp"
+# include "vector.hpp"
+# include <vector>
 
-namespace unit_test { 
+# include "libunitcpp.hpp"
 
-namespace vector_suite {
+TEST_SUITE(vector_suite)
+
+using namespace std;
+using namespace unit_test;
+
+/* Equality for containers with direct value comparison (vector / stack) */
+template< typename T, typename U >
+bool operator==(const T& lhs, const U& rhs)
+{
+	if (lhs.size() != rhs.size())
+	{
+		return (false);
+	}
+
+	typename T::const_iterator	first1 = lhs.begin(), last1 = lhs.end();
+	typename U::const_iterator	first2 = rhs.begin();
+
+	for (; first1 != last1; first1++, first2++)
+	{
+		if (!(*first1 == *first2))
+		{
+			return (false);
+		}
+	}
+	return (true);
+}
+
+template< typename T, typename U >
+bool operator!=(const T& lhs, const U& rhs)
+{ return (!(lhs == rhs)); }
+
+template< typename T, typename U >
+bool operator<(const T& lhs, const U& rhs)
+{ return (std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
+
+template< typename T, typename U >
+bool operator<=(const T& lhs, const U& rhs)
+{ return (!(rhs < lhs)); }
+
+template< typename T, typename U >
+bool operator>(const T& lhs, const U& rhs)
+{ return (rhs < lhs); }
+
+template< typename T, typename U >
+bool operator>=(const T& lhs, const U& rhs)
+{ return (!(lhs < rhs)); }
 
 typedef std::vector<int>					vector_std;
 typedef ft::vector<int>						vector_ft;
-typedef std::vector<RandomGenerator<int> >	vector_rand;
 
-void	default_ctor( void )
+TEST_CASE(default_ctor)
 {
 	vector_ft	v;
 	vector_std	vref;
@@ -16,7 +61,7 @@ void	default_ctor( void )
 	assert( v == vref );
 }
 
-void	fill_ctor( void )
+TEST_CASE(fill_ctor)
 {
 	vector_ft	v(42, 42);
 	vector_std	vref(42, 42);
@@ -24,7 +69,7 @@ void	fill_ctor( void )
 	assert( v == vref );
 }
 
-void	range_ctor( void )
+TEST_CASE(range_ctor)
 {
 	vector_ft	v_init(42, 42);
 	vector_ft	v(v_init.begin(), v_init.end());
@@ -33,7 +78,7 @@ void	range_ctor( void )
 	assert( v == vref );
 }
 
-void	copy_ctor( void )
+TEST_CASE(copy_ctor)
 {
 	vector_ft	v_init(42, 42);
 	vector_ft	v(v_init);
@@ -43,7 +88,7 @@ void	copy_ctor( void )
 	assert( v == vref );
 }
 
-void	equal_op( void )
+TEST_CASE(equal_op)
 {
 	vector_ft	v_init(42, 42);
 	vector_ft	v;
@@ -53,7 +98,7 @@ void	equal_op( void )
 	assert( v == vref );
 }
 
-void	logical_op( void )
+TEST_CASE(logical_op)
 {
 	{
 		vector_ft	v;
@@ -90,7 +135,7 @@ void	logical_op( void )
 	}
 }
 
-void	assign( void )
+TEST_CASE(assign)
 {
 	vector_ft	v;
 	vector_std	vref;
@@ -114,7 +159,7 @@ void	assign( void )
 	assert( v.size() == vref.size() );
 }
 
-void	at( void )
+TEST_CASE(at)
 {
 	vector_ft	v(42, 42);
 	vector_std	vref(42, 42);
@@ -141,7 +186,7 @@ void	at( void )
 	}
 }
 
-void	at_op( void )
+TEST_CASE(at_op)
 {
 	vector_ft	v(42, 42);
 	vector_std	vref(42, 42);
@@ -155,7 +200,7 @@ void	at_op( void )
 	}
 }
 
-void	front( void )
+TEST_CASE(front)
 {
 	vector_ft	v(42, 42);
 	vector_std	vref(42, 42);
@@ -166,7 +211,7 @@ void	front( void )
 	assert( v[0] == vref[0] );
 }
 
-void	back( void )
+TEST_CASE(back)
 {
 	vector_ft	v(42, 42);
 	vector_std	vref(42, 42);
@@ -176,7 +221,7 @@ void	back( void )
 	assert( v[41] == vref[41] );
 }
 
-void	data( void )
+TEST_CASE(data)
 {
 	vector_ft	v(42, 42);
 	vector_std	vref(42, 42);
@@ -190,7 +235,7 @@ void	data( void )
 	}
 }
 
-void	iterators( void )
+TEST_CASE(iterators)
 {
 	vector_ft	v(42, 42);
 	vector_std	vref(42, 42);
@@ -225,7 +270,7 @@ void	iterators( void )
 	}
 }
 
-void	size( void )
+TEST_CASE(size)
 {
 	vector_ft	v;
 
@@ -261,7 +306,7 @@ void	size( void )
 	}
 }
 
-void	clear( void )
+TEST_CASE(clear)
 {
 	vector_ft	v(666, 666);
 
@@ -271,7 +316,7 @@ void	clear( void )
 	assert( v.empty() == true );
 }
 
-void	insertion( void )
+TEST_CASE(insertion)
 {
 	vector_ft	v;
 	vector_std	vref;
@@ -290,8 +335,8 @@ void	insertion( void )
 	vref.insert(vref.begin(), count, 666);
 	assert( v == vref );
 
-	vector_rand	array(65536);
-	for (int i = 0; i < 42; i++)
+	vector_std	array(65536, RandomGenerator<int>());
+	for (int i = 1; i < 16; i++)
 	{
 		v.insert(v.begin(), array.begin() + (i * 4), array.begin() + (i * 8));
 		v.push_back(*(array.end() - i * 16));
@@ -311,7 +356,7 @@ void	insertion( void )
 	}
 	assert( v == vref );
 
-	for (int i = 0; i < 42; i++)
+	for (int i = 1; i < 16; i++)
 	{
 		v.pop_back();
 		v.erase(v.begin() + (2 * i));
@@ -327,31 +372,4 @@ void	insertion( void )
 	assert( v == vref );
 }
 
-void	suite_registrar( void )
-{
-	TestSuite	suite("Vector suite");
-
-	using namespace vector_suite;
-
-	suite.push_back(TestCase("Default ctor", default_ctor));
-	suite.push_back(TestCase("Fill ctor", fill_ctor));
-	suite.push_back(TestCase("Range ctor", range_ctor));
-	suite.push_back(TestCase("Copy ctor", copy_ctor));
-	suite.push_back(TestCase("Operator=", equal_op));
-	suite.push_back(TestCase("Logical operators", logical_op));
-	suite.push_back(TestCase("Assign", assign));
-	suite.push_back(TestCase("At", at));
-	suite.push_back(TestCase("Operator[]", at_op));
-	suite.push_back(TestCase("Front", front));
-	suite.push_back(TestCase("Back", back));
-	suite.push_back(TestCase("Data", data));
-	suite.push_back(TestCase("Iterators", iterators));
-	suite.push_back(TestCase("Size", size));
-	suite.push_back(TestCase("Clear", clear));
-	suite.push_back(TestCase("Insertion", insertion));
-
-	MasterSuite::instance().push_back(suite);
-}
-
-}	// namespace vector_suite
-}	// namespace unit_test
+TEST_SUITE_END()
