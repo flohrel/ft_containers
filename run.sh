@@ -29,7 +29,7 @@ header()
 {
 	set -o noglob			# disable globbing to prevent PAD_CHAR from expanding
 
-	HEAD_SIZE=32
+	HEAD_SIZE=64
 	NAME_SIZE=${#1}
 	PAD_WIDTH=$(((${HEAD_SIZE} - ${NAME_SIZE}) / 2))
 	PAD_PREC=$((${PAD_WIDTH} / 2))
@@ -59,6 +59,7 @@ compile()
 
 execute()
 {
+	TOTAL=0
 	for TEST_RUNNER in `ls tester/run_*`; do
 		if [[ ! -e ${TEST_RUNNER} ]]; then
 			printf "Error: ${TEST_RUNNER}: binary not found.\n"
@@ -73,12 +74,17 @@ execute()
 
 		RETURN_VALUE=$((${RETURN_VALUE}+"$?"))
 
+		local TIME="[$(tac ${LOGFILE} | grep 'Master' | grep 'testing' | grep -Eo "[+-]?([0-9]*[.])?[0-9]+ms$" | head -1)]"
+		printf "\033[%dD${MAGENTA}%s ${DEFAULT}" $((${#TIME} + 1)) ${TIME}
+
 		if [[ "$?" -ne 0 ]]; then
-			printf "${RED}${CROSS}${DEFAULT} => "
-			printf "errors reported in ${LOGFILE}.\n"
+			printf "${RED}${CROSS}${DEFAULT} => errors reported in ${LOGFILE}."
 		else
-			printf "${GREEN}${CHECK}${DEFAULT}\n"
+			printf "${GREEN}${CHECK}${DEFAULT}"
 		fi
+		printf "\n"
+
+		TOTAL=`echo "$(echo ${TIME} | grep -Eo "[+-]?([0-9]*[.])?[0-9]+") + ${TOTAL}" | bc `
 	done
 }
 
@@ -89,8 +95,8 @@ tester()
 	compile "$1"
 	execute "$1"
 	make -C tester fclean &>> ${LOGFILE}
-	printf "Time elapsed:"
-	printf "%19s\n\n" `grep 'Total elapsed time' ${LOGFILE} | grep -Eo "[+-]?([0-9]*[.])?[0-9]+ms$"`
+	printf "%-*s" ${BODY_WIDTH} "Total time elapsed:"
+	printf "\033[%dD${CYAN}%sms${DEFAULT}\n" $((${#TOTAL} + 1)) ${TOTAL}
 }
 
 print_usage()
@@ -129,18 +135,23 @@ if [[ "$#" -eq 2 ]]; then
 else
 	for i in ${Namespaces[@]}; do
 		tester "$i"
+		printf "\n"
 	done
 fi
 
 if [[ "${RETURN_VALUE}" -eq 0 ]]; then
-	for n in $(grep 'Total elapsed time' ${LOGDIR}/*.out | grep -Eo "[+-]?([0-9]*[.])?[0-9]+") ; do		# Get total execution time of each binary
-		NB+=("$n")																						# and put them in a list
+	for log_file in $(ls ${LOGDIR}/*.out); do
+		sum=0
+		for time in $(cat ${log_file} | grep "Master" | grep testing | grep -Eo "[+-]?([0-9]*[.])?[0-9]+") ; do		# Get total execution time of each binary
+			sum=$(echo "${sum} + ${time}" | bc)																							# sum them
+		done
+		NB+=(${sum})																								# and put them in a list
 	done
-	QUOTIENT=$(echo "scale=1 ; ${NB[0]} / ${NB[1]}" | bc)												# get the quotient of (ft_exec_time / std_exec_time)
+	QUOTIENT=$(echo "scale=1 ; ${NB[0]} / ${NB[1]}" | bc)															# get the quotient of (ft_exec_time / std_exec_time)
 	printf "FT namespace is "
-	if [[ $(echo "${QUOTIENT} > 1" | bc | grep 1) ]]; then												# if quotient > 1
-		if [[ $(echo "${QUOTIENT} > 20" | bc | grep 1) ]]; then											#	&& quotient > 20
-			RETURN_VALUE=1																				# then test failed
+	if [[ $(echo "${QUOTIENT} > 1" | bc | grep 1) ]]; then															# if quotient > 1
+		if [[ $(echo "${QUOTIENT} > 20" | bc | grep 1) ]]; then														#	&& quotient > 20
+			RETURN_VALUE=1																							 then test failed
 		fi
 		printf "%s times slower" ${QUOTIENT}
 	else
