@@ -75,7 +75,7 @@ execute()
 		RETURN_VALUE=$((${RETURN_VALUE}+"$?"))
 
 		local TIME="[$(tac ${LOGFILE} | grep 'Master' | grep 'testing' | grep -Eo "[+-]?([0-9]*[.])?[0-9]+ms$" | head -1)]"
-		printf "\033[%dD${MAGENTA}%s ${DEFAULT}" $((${#TIME} + 1)) ${TIME}
+		printf "\033[%dD%s " $((${#TIME} + 1)) ${TIME}
 
 		if [[ "$?" -ne 0 ]]; then
 			printf "${RED}${CROSS}${DEFAULT} => errors reported in ${LOGFILE}."
@@ -95,8 +95,8 @@ tester()
 	compile "$1"
 	execute "$1"
 	make -C tester fclean &>> ${LOGFILE}
-	printf "%-*s" ${BODY_WIDTH} "Total time elapsed:"
-	printf "\033[%dD${CYAN}%sms${DEFAULT}\n" $((${#TOTAL} + 1)) ${TOTAL}
+	printf "${MAGENTA}%-*s" ${BODY_WIDTH} "Total time elapsed:"
+	printf "\033[%dD%sms${DEFAULT}\n" $((${#TOTAL} + 1)) ${TOTAL}
 }
 
 print_usage()
@@ -153,9 +153,9 @@ if [[ "${RETURN_VALUE}" -eq 0 ]]; then
 		if [[ $(echo "${QUOTIENT} > 20" | bc | grep 1) ]]; then														#	&& quotient > 20
 			RETURN_VALUE=1																							 then test failed
 		fi
-		printf "%s times slower" ${QUOTIENT}
+		printf "${RED}%s${DEFAULT} times slower" ${QUOTIENT}
 	else
-		printf "%s times faster" `echo "scale=1; 1 / ${QUOTIENT}" | bc`
+		printf "${GREEN}%s${DEFAULT} times faster" `echo "scale=1; 1 / ${QUOTIENT}" | bc`
 	fi
 	printf " than STD\n"
 fi
