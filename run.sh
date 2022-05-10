@@ -51,7 +51,7 @@ compile()
 	if [[ "$?" -ne 0 ]]; then
 		printf "${RED}${CROSS}${DEFAULT}\n"
 		printf "Error: compilation failed. See ${LOGFILE} for more details.\n"
-		exit $?
+		exit "$?"
 	else
 		printf "${GREEN}${CHECK}${DEFAULT}\n"
 	fi
@@ -59,27 +59,27 @@ compile()
 
 execute()
 {
-	TESTER="tester/tester"
+	for TEST_RUNNER in `ls tester/run_*`; do
+		if [[ ! -e ${TEST_RUNNER} ]]; then
+			printf "Error: ${TEST_RUNNER}: binary not found.\n"
+			exit "$?"
+		elif [[ ! -x ${TEST_RUNNER} ]]; then
+			chmod +x ${TEST_RUNNER}
+		fi
 
-	if [[ ! -e ${TESTER} ]]; then
-		printf "Error: binary not found.\n"
-		exit $?
-	elif [[ ! -x ${TESTER} ]]; then
-		chmod +x ${TESTER}
-	fi
+		printf "%-*s" ${BODY_WIDTH} "Executing ${TEST_RUNNER##*/}..."
 
-	printf "%-*s" ${BODY_WIDTH} "Executing..."
+		./${TEST_RUNNER} &>> ${LOGFILE}
 
-	./${TESTER} &>> ${LOGFILE}
+		RETURN_VALUE=$((${RETURN_VALUE}+"$?"))
 
-	RETURN_VALUE=$(($RETURN_VALUE+$?))
-
-	if [[ "$?" -ne 0 ]]; then
-		printf "${RED}${CROSS}${DEFAULT} => "
-		printf "errors reported in ${LOGFILE}.\n"
-	else
-		printf "${GREEN}${CHECK}${DEFAULT}\n"
-	fi
+		if [[ "$?" -ne 0 ]]; then
+			printf "${RED}${CROSS}${DEFAULT} => "
+			printf "errors reported in ${LOGFILE}.\n"
+		else
+			printf "${GREEN}${CHECK}${DEFAULT}\n"
+		fi
+	done
 }
 
 tester()

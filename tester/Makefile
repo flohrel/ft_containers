@@ -54,7 +54,7 @@ CROSS		=	\xE2\x9D\x8C
 
 # DISPLAY
 HEAD_SIZE	=	32
-NAME_SIZE	=	$(shell NAME='$(NAME)'; printf "$${#NAME}")
+NAME_SIZE	=	$(shell NAME='$(NAME)'; printf "$${\#NAME}")
 PAD_WIDTH	=	$(shell printf "$$((($(HEAD_SIZE) - $(NAME_SIZE)) / 2))")
 PAD_PREC	=	$(shell printf "$$(($(PAD_WIDTH) / 2))")
 PAD_CHAR	=	\*
@@ -84,7 +84,7 @@ $(BUILDIR)/%.o:	%.cpp | $(DEPDIR)
 				@$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 				@printf '$(DELPREV)%-*s$(GREEN)$(CHECK)$(DEFAULT)\n' $(BODY_WIDTH) $(notdir $@)
 				@printf "$(YELLOW)Linking source files and generating $@ binary...\n$(DEFAULT)"
-				@$(CXX) $(CXXFLAGS) -o run_$(basename $(notdir $@)) $(CPPFLAGS) $^ $(LDFLAGS)
+				@$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o run_$(basename $(notdir $@)) $^ $(LDFLAGS)
 				@printf "$(DELPREV)$(GREEN)Binary generated$(DEFAULT)\n"
 
 $(NAME):		$(OBJ)
