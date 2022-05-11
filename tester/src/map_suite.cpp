@@ -249,26 +249,82 @@ TEST_CASE(clear)
 
 TEST_CASE(insertion)
 {
+	mstd_rand				mrand(1024);
+	map_std					mref = mrand();
+	map_std::iterator cit = mref.begin();
+	map_ft					m;
+	map_std					mstd;
+
+	for (size_t i = 0; i < 1024; i++)
+	{
+		m.insert(ft::make_pair((*cit).first, (*cit).second));
+		cit++;
+	}
+	assert( m == mref );
+
+	cit = mref.begin();
+	map_ft::iterator	cit2 = m.begin();
+	for (size_t i = 0; i < 1024; i++)
+	{
+		if (i % 2)
+		{
+			m.erase(cit2);
+			mref.erase(cit);
+		}
+		cit++;
+		cit2++;
+	}
+	assert( m == mref );
 }
 
 TEST_CASE(swap)
 {
+	mft_rand	mrand(1024);
+	map_ft		m1 = mrand();
+	map_ft		m2 = mrand();
+	map_ft		m1_copy = m1;
+	map_ft		m2_copy = m2;
+
+	assert( m1 == m1_copy );
+	assert( m2 == m2_copy );
+	m1.swap(m2);
+	assert( m1 == m2_copy );
+	assert( m2 == m1_copy );
 }
 
 TEST_CASE(count)
 {
+	mft_rand	mrand(1024);
+	map_ft		m = mrand();
+
+	assert( m.size() == 1024 );
+
+	map_ft::iterator	it = m.begin();
+	for (size_t i = 0; i < 10; i++)
+	{
+		it++;
+	}
+	m.erase( m.begin(), it );
+	assert( m.size() == (1024 - 10) );
+
+	m.clear();
+	assert( m.size() == 0 );
 }
 
 TEST_CASE(find)
 {
-}
+	map_ft	m;
+	map_std	mref;
 
-TEST_CASE(equal_range)
-{
-}
+	m.insert(ft::make_pair("foo", 0));
+	mref.insert(std::make_pair("foo", 0));
+	m.insert(ft::make_pair("bar", 42));
+	mref.insert(std::make_pair("bar", 42));
+	m.insert(ft::make_pair("baz", 666));
+	mref.insert(std::make_pair("baz", 666));
 
-TEST_CASE(bounds)
-{
+	assert( m.find("foo") != m.end() );
+	assert( m.find("truc") == m.end() );
 }
 
 TEST_SUITE_END()
