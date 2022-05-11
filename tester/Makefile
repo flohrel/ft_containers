@@ -12,7 +12,8 @@ BUILDIR		=	build
 DEPDIR		=	$(BUILDIR)/.deps
 
 SRC			=	vector_suite.cpp \
-				map_suite.cpp
+				map_suite.cpp \
+				set_suite.cpp
 OBJ			=	$(SRC:%.cpp=$(BUILDIR)/%.o)
 DEP			=	$(SRC:%.cpp=$(DEPDIR)/%.d)
 
