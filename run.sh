@@ -33,13 +33,13 @@ header()
 	NAME_SIZE=${#1}
 	PAD_WIDTH=$(((${HEAD_SIZE} - ${NAME_SIZE}) / 2))
 	PAD_PREC=$((${PAD_WIDTH} / 2))
-	PAD_CHAR='*'
+	PAD_CHAR='\*'
 	PAD_STR=`eval printf "${PAD_CHAR}%.0s" {1..${PAD_WIDTH}}`
 	LEFT_PAD=`printf '%-*.*s' ${PAD_WIDTH} ${PAD_PREC} ${PAD_STR}`
 	RIGHT_PAD=`printf '%*.*s' $((${PAD_WIDTH} + ${NAME_SIZE} % 2)) ${PAD_PREC} ${PAD_STR}`
 	BODY_WIDTH=$((${HEAD_SIZE} - 1))
 	
-	printf "${LEFT_PAD}${BLUE}${1}${DEFAULT}${RIGHT_PAD}\n"
+	printf "\n${LEFT_PAD}${BLUE}${1}${DEFAULT}${RIGHT_PAD}\n"
 
 	set +o noglob			# restore globbing
 }
@@ -95,7 +95,7 @@ tester()
 	compile "$1"
 	execute "$1"
 	make -C tester fclean &>> ${LOGFILE}
-	printf "${MAGENTA}%-*s" ${BODY_WIDTH} "Total time elapsed:"
+	printf "\n${MAGENTA}%-*s" ${BODY_WIDTH} "Total time elapsed:"
 	printf "\033[%dD%sms${DEFAULT}\n" $((${#TOTAL} + 1)) ${TOTAL}
 }
 
@@ -148,10 +148,10 @@ if [[ "${RETURN_VALUE}" -eq 0 ]]; then
 		NB+=(${sum})																								# and put them in a list
 	done
 	QUOTIENT=$(echo "scale=1 ; ${NB[0]} / ${NB[1]}" | bc)															# get the quotient of (ft_exec_time / std_exec_time)
-	printf "FT namespace is "
+	printf "\nFT namespace is "
 	if [[ $(echo "${QUOTIENT} > 1" | bc | grep 1) ]]; then															# if quotient > 1
 		if [[ $(echo "${QUOTIENT} > 20" | bc | grep 1) ]]; then														#	&& quotient > 20
-			RETURN_VALUE=1																							 then test failed
+			RETURN_VALUE=1																							# then test failed
 		fi
 		printf "${RED}%s${DEFAULT} times slower" ${QUOTIENT}
 	else

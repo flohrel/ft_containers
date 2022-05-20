@@ -2,6 +2,7 @@
 ## Variables ##
 ###############
 
+NAME		=	ft_containers
 INCLUDE		=	include
 TESTDIR		=	tester
 LOGDIR		=	log
@@ -18,6 +19,7 @@ BLUE		=	\033[1;34m
 MAGENTA 	=	\033[1;35m
 CYAN 		=	\033[1;36m
 WHITE 		=	\033[1;107m
+DIM			=	\033[2m
 
 # TERMCAPS
 UP			=	\033[1A
@@ -36,14 +38,14 @@ CROSS		=	\xE2\x9D\x8C
 all:			run
 
 clean:
-				@printf "$(YELLOW)Deleting build files...$(DEFAULT)\n"
+				@printf "$(YELLOW)[$(NAME)] Deleting build files...$(DEFAULT)\n"
 				@$(RM) $(OBJ)
-				@printf "$(DELPREV)Log files deleted\n"
+				@printf "$(DELPREV)$(DIM)[$(NAME)] Log files deleted$(DEFAULT)\n"
 
 fclean:			clean
-				@printf "$(YELLOW)Deleting log directory...$(DEFAULT)\n"
+				@printf "$(YELLOW)[$(NAME)] Deleting log directory...$(DEFAULT)\n"
 				@$(RM) $(LOGDIR)
-				@printf "$(DELPREV)Log directory deleted\n"
+				@printf "$(DELPREV)$(DIM)[$(NAME)] Log directory deleted$(DEFAULT)\n"
 				@make -sC $(TESTDIR) fclean
 
 run:

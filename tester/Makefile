@@ -2,7 +2,7 @@
 ## Variables ##
 ###############
 
-NAME		=	test runner
+NAME		=	tester
 
 VPATH		=	src libunitcpp/src
 LIBDIR		=	libunitcpp
@@ -44,6 +44,7 @@ BLUE		=	\033[1;34m
 MAGENTA 	=	\033[1;35m
 CYAN 		=	\033[1;36m
 WHITE 		=	\033[1;107m
+DIM			=	\033[2m
 
 # TERMCAPS
 UP			=	\033[1A
@@ -102,17 +103,17 @@ lib:
 				@$(MAKE) -sC libunitcpp
 
 header:
-				@printf '$(LEFT_PAD)$(BLUE)$(NAME)$(DEFAULT)$(RIGHT_PAD)\n'
+				@printf "\n$(LEFT_PAD)$(BLUE)$(NAME)$(DEFAULT)$(RIGHT_PAD)\n"
 
 clean:
-				@printf "$(YELLOW)Deleting object and dependency files...$(DEFAULT)\n"
+				@printf "$(YELLOW)[$(NAME)] Deleting object and dependency files...$(DEFAULT)\n"
 				@$(RM) $(OBJ)
-				@printf "$(DELPREV)Build files deleted\n"
+				@printf "$(DELPREV)$(DIM)[$(NAME)] Build files deleted$(DEFAULT)\n"
 
 fclean:			clean
-				@printf "$(YELLOW)Deleting build directory and library...$(DEFAULT)\n"
+				@printf "$(YELLOW)[$(NAME)] Deleting build directory and library...$(DEFAULT)\n"
 				@$(RM) $(BUILDIR) $(wildcard run_*)
-				@printf "$(DELPREV)Build directory and binary deleted\n"
+				@printf "$(DELPREV)$(DIM)[$(NAME)] Build directory and binary deleted$(DEFAULT)\n"
 				@$(MAKE) -sC $(LIBDIR) fclean
 
 re:				fclean
