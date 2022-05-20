@@ -8,7 +8,7 @@ TEST_SUITE(vector_suite)
 using namespace std;
 using namespace unit_test;
 
-/* Equality for containers with direct value comparison (vector / stack) */
+/* Equality for containers with direct value comparison */
 template< typename T, typename U >
 bool operator==(const T& lhs, const U& rhs)
 {
