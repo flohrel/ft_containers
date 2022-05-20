@@ -94,7 +94,7 @@ tester()
 	LOGFILE="${LOGDIR}/${1,,}.out"
 	compile "$1"
 	execute "$1"
-	make -C tester fclean &>> ${LOGFILE}
+	make -sC tester fclean &>> ${LOGFILE}
 	printf "\n${MAGENTA}%-*s" ${BODY_WIDTH} "Total time elapsed:"
 	printf "\033[%dD%sms${DEFAULT}\n" $((${#TOTAL} + 1)) ${TOTAL}
 }

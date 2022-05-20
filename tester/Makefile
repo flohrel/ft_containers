@@ -56,7 +56,7 @@ CHECK		=	\xE2\x9C\x94
 CROSS		=	\xE2\x9D\x8C
 
 # DISPLAY
-HEAD_SIZE	=	32
+HEAD_SIZE	=	64
 NAME_SIZE	=	$(shell NAME='$(NAME)'; printf "$${\#NAME}")
 PAD_WIDTH	=	$(shell printf "$$((($(HEAD_SIZE) - $(NAME_SIZE)) / 2))")
 PAD_PREC	=	$(shell printf "$$(($(PAD_WIDTH) / 2))")
